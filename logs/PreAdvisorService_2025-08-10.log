@@ -1,0 +1,186 @@
+2025-08-10 00:48:11,734 - PreAdvisorService - INFO - info:62 - Prompt template loaded successfully
+2025-08-10 00:48:11,736 - PreAdvisorService - INFO - info:62 - PreAdvisorService initialized successfully
+2025-08-10 00:48:11,739 - PreAdvisorService - INFO - info:62 - USER_ACTION: generate_pre_advice - Details: {'sales_type': 'hunter', 'industry': 'IT', 'product': 'SaaS'}
+2025-08-10 00:48:11,740 - PreAdvisorService - INFO - info:62 - SERVICE_CALL: OpenAIProvider.call_llm - Params: {'mode': 'speed'}
+2025-08-10 00:48:11,740 - PreAdvisorService - INFO - info:62 - API_CALL: LLM_Generation - SUCCESS - Response time: 0.00s
+2025-08-10 00:48:11,741 - PreAdvisorService - INFO - info:62 - Pre-advice generated successfully in 0.00s
+2025-08-10 16:36:58,645 - PreAdvisorService - INFO - info:62 - Prompt template loaded successfully
+2025-08-10 16:36:58,647 - PreAdvisorService - INFO - info:62 - PreAdvisorService initialized successfully
+2025-08-10 16:36:58,648 - PreAdvisorService - INFO - info:62 - USER_ACTION: generate_pre_advice - Details: {'sales_type': 'hunter', 'industry': 'IT', 'product': 'SaaS'}
+2025-08-10 16:36:58,649 - PreAdvisorService - INFO - info:62 - SERVICE_CALL: OpenAIProvider.call_llm - Params: {'mode': 'speed'}
+2025-08-10 16:36:58,650 - PreAdvisorService - INFO - info:62 - API_CALL: LLM_Generation - SUCCESS - Response time: 0.00s
+2025-08-10 16:36:58,651 - PreAdvisorService - INFO - info:62 - Pre-advice generated successfully in 0.00s
+2025-08-10 16:39:53,047 - PreAdvisorService - INFO - info:62 - Prompt template loaded successfully
+2025-08-10 16:39:53,048 - PreAdvisorService - INFO - info:62 - PreAdvisorService initialized successfully
+2025-08-10 16:39:53,048 - PreAdvisorService - INFO - info:62 - USER_ACTION: generate_pre_advice - Details: {'sales_type': 'hunter', 'industry': 'IT', 'product': 'SaaS'}
+2025-08-10 16:39:53,049 - PreAdvisorService - INFO - info:62 - SERVICE_CALL: OpenAIProvider.call_llm - Params: {'mode': 'speed'}
+2025-08-10 16:39:53,049 - PreAdvisorService - INFO - info:62 - API_CALL: LLM_Generation - SUCCESS - Response time: 0.00s
+2025-08-10 16:39:53,051 - PreAdvisorService - INFO - info:62 - Pre-advice generated successfully in 0.00s
+2025-08-10 16:42:34,104 - PreAdvisorService - INFO - info:62 - Prompt template loaded successfully
+2025-08-10 16:42:34,104 - PreAdvisorService - INFO - info:62 - PreAdvisorService initialized successfully
+2025-08-10 16:42:34,105 - PreAdvisorService - INFO - info:62 - USER_ACTION: generate_pre_advice - Details: {'sales_type': 'hunter', 'industry': 'IT', 'product': 'SaaS'}
+2025-08-10 16:42:34,105 - PreAdvisorService - INFO - info:62 - SERVICE_CALL: OpenAIProvider.call_llm - Params: {'mode': 'speed'}
+2025-08-10 16:42:34,106 - PreAdvisorService - INFO - info:62 - API_CALL: LLM_Generation - SUCCESS - Response time: 0.00s
+2025-08-10 16:42:34,107 - PreAdvisorService - INFO - info:62 - Pre-advice generated successfully in 0.00s
+2025-08-10 16:52:11,501 - PreAdvisorService - INFO - info:62 - Prompt template loaded successfully
+2025-08-10 16:52:11,502 - PreAdvisorService - INFO - info:62 - PreAdvisorService initialized successfully
+2025-08-10 16:52:11,502 - PreAdvisorService - INFO - info:62 - USER_ACTION: generate_pre_advice - Details: {'sales_type': 'hunter', 'industry': 'IT', 'product': 'SaaS'}
+2025-08-10 16:52:11,503 - PreAdvisorService - INFO - info:62 - SERVICE_CALL: OpenAIProvider.call_llm - Params: {'mode': 'speed'}
+2025-08-10 16:52:11,503 - PreAdvisorService - INFO - info:62 - API_CALL: LLM_Generation - SUCCESS - Response time: 0.00s
+2025-08-10 16:52:11,504 - PreAdvisorService - INFO - info:62 - Pre-advice generated successfully in 0.00s
+2025-08-10 16:57:44,236 - PreAdvisorService - INFO - info:62 - Prompt template loaded successfully
+2025-08-10 16:57:44,237 - PreAdvisorService - INFO - info:62 - PreAdvisorService initialized successfully
+2025-08-10 16:57:44,238 - PreAdvisorService - INFO - info:62 - USER_ACTION: generate_pre_advice - Details: {'sales_type': 'hunter', 'industry': 'IT', 'product': 'SaaS'}
+2025-08-10 16:57:44,238 - PreAdvisorService - INFO - info:62 - SERVICE_CALL: OpenAIProvider.call_llm - Params: {'mode': 'speed'}
+2025-08-10 16:57:44,238 - PreAdvisorService - INFO - info:62 - API_CALL: LLM_Generation - SUCCESS - Response time: 0.00s
+2025-08-10 16:57:44,240 - PreAdvisorService - INFO - info:62 - Pre-advice generated successfully in 0.00s
+2025-08-10 17:01:01,060 - PreAdvisorService - INFO - info:62 - Prompt template loaded successfully
+2025-08-10 17:01:01,060 - PreAdvisorService - INFO - info:62 - PreAdvisorService initialized successfully
+2025-08-10 17:01:01,061 - PreAdvisorService - INFO - info:62 - USER_ACTION: generate_pre_advice - Details: {'sales_type': 'hunter', 'industry': 'IT', 'product': 'SaaS'}
+2025-08-10 17:01:01,061 - PreAdvisorService - INFO - info:62 - SERVICE_CALL: OpenAIProvider.call_llm - Params: {'mode': 'speed'}
+2025-08-10 17:01:01,062 - PreAdvisorService - INFO - info:62 - API_CALL: LLM_Generation - SUCCESS - Response time: 0.00s
+2025-08-10 17:01:01,064 - PreAdvisorService - INFO - info:62 - Pre-advice generated successfully in 0.00s
+2025-08-10 17:08:29,240 - PreAdvisorService - INFO - info:62 - Prompt template loaded successfully
+2025-08-10 17:08:29,242 - PreAdvisorService - INFO - info:62 - PreAdvisorService initialized successfully
+2025-08-10 17:08:29,244 - PreAdvisorService - INFO - info:62 - USER_ACTION: generate_pre_advice - Details: {'sales_type': 'hunter', 'industry': 'IT', 'product': 'SaaS'}
+2025-08-10 17:08:29,244 - PreAdvisorService - INFO - info:62 - SERVICE_CALL: OpenAIProvider.call_llm - Params: {'mode': 'speed'}
+2025-08-10 17:08:29,245 - PreAdvisorService - INFO - info:62 - API_CALL: LLM_Generation - SUCCESS - Response time: 0.00s
+2025-08-10 17:08:29,247 - PreAdvisorService - INFO - info:62 - Pre-advice generated successfully in 0.00s
+2025-08-10 17:15:47,787 - PreAdvisorService - INFO - info:62 - Prompt template loaded successfully
+2025-08-10 17:15:47,788 - PreAdvisorService - INFO - info:62 - PreAdvisorService initialized successfully
+2025-08-10 17:15:47,788 - PreAdvisorService - INFO - info:62 - USER_ACTION: generate_pre_advice - Details: {'sales_type': 'hunter', 'industry': 'IT', 'product': 'SaaS'}
+2025-08-10 17:15:47,789 - PreAdvisorService - INFO - info:62 - SERVICE_CALL: OpenAIProvider.call_llm - Params: {'mode': 'speed'}
+2025-08-10 17:15:47,789 - PreAdvisorService - INFO - info:62 - API_CALL: LLM_Generation - SUCCESS - Response time: 0.00s
+2025-08-10 17:15:47,791 - PreAdvisorService - INFO - info:62 - Pre-advice generated successfully in 0.00s
+2025-08-10 17:21:10,799 - PreAdvisorService - INFO - info:62 - Prompt template loaded successfully
+2025-08-10 17:21:10,802 - PreAdvisorService - INFO - info:62 - PreAdvisorService initialized successfully
+2025-08-10 17:21:10,802 - PreAdvisorService - INFO - info:62 - USER_ACTION: generate_pre_advice - Details: {'sales_type': 'hunter', 'industry': 'IT', 'product': 'SaaS'}
+2025-08-10 17:21:10,802 - PreAdvisorService - INFO - info:62 - SERVICE_CALL: OpenAIProvider.call_llm - Params: {'mode': 'speed'}
+2025-08-10 17:21:10,803 - PreAdvisorService - INFO - info:62 - API_CALL: LLM_Generation - SUCCESS - Response time: 0.00s
+2025-08-10 17:21:10,803 - PreAdvisorService - INFO - info:62 - Pre-advice generated successfully in 0.00s
+2025-08-10 17:27:51,104 - PreAdvisorService - INFO - info:62 - Prompt template loaded successfully
+2025-08-10 17:27:51,106 - PreAdvisorService - INFO - info:62 - PreAdvisorService initialized successfully
+2025-08-10 17:27:51,107 - PreAdvisorService - INFO - info:62 - USER_ACTION: generate_pre_advice - Details: {'sales_type': 'hunter', 'industry': 'IT', 'product': 'SaaS'}
+2025-08-10 17:27:51,107 - PreAdvisorService - INFO - info:62 - SERVICE_CALL: OpenAIProvider.call_llm - Params: {'mode': 'speed'}
+2025-08-10 17:27:51,108 - PreAdvisorService - INFO - info:62 - API_CALL: LLM_Generation - SUCCESS - Response time: 0.00s
+2025-08-10 17:27:51,109 - PreAdvisorService - INFO - info:62 - Pre-advice generated successfully in 0.00s
+2025-08-10 17:33:11,737 - PreAdvisorService - INFO - info:62 - Prompt template loaded successfully
+2025-08-10 17:33:11,738 - PreAdvisorService - INFO - info:62 - PreAdvisorService initialized successfully
+2025-08-10 17:33:11,739 - PreAdvisorService - INFO - info:62 - USER_ACTION: generate_pre_advice - Details: {'sales_type': 'hunter', 'industry': 'IT', 'product': 'SaaS'}
+2025-08-10 17:33:11,739 - PreAdvisorService - INFO - info:62 - SERVICE_CALL: OpenAIProvider.call_llm - Params: {'mode': 'speed'}
+2025-08-10 17:33:11,740 - PreAdvisorService - INFO - info:62 - API_CALL: LLM_Generation - SUCCESS - Response time: 0.00s
+2025-08-10 17:33:11,743 - PreAdvisorService - INFO - info:62 - Pre-advice generated successfully in 0.00s
+2025-08-10 17:41:37,754 - PreAdvisorService - INFO - info:62 - Prompt template loaded successfully
+2025-08-10 17:41:37,755 - PreAdvisorService - INFO - info:62 - PreAdvisorService initialized successfully
+2025-08-10 17:41:37,756 - PreAdvisorService - INFO - info:62 - USER_ACTION: generate_pre_advice - Details: {'sales_type': 'hunter', 'industry': 'IT', 'product': 'SaaS'}
+2025-08-10 17:41:37,756 - PreAdvisorService - INFO - info:62 - SERVICE_CALL: OpenAIProvider.call_llm - Params: {'mode': 'speed'}
+2025-08-10 17:41:37,756 - PreAdvisorService - INFO - info:62 - API_CALL: LLM_Generation - SUCCESS - Response time: 0.00s
+2025-08-10 17:41:37,758 - PreAdvisorService - INFO - info:62 - Pre-advice generated successfully in 0.00s
+2025-08-10 17:42:59,645 - PreAdvisorService - INFO - info:62 - Prompt template loaded successfully
+2025-08-10 17:42:59,646 - PreAdvisorService - INFO - info:62 - PreAdvisorService initialized successfully
+2025-08-10 17:42:59,646 - PreAdvisorService - INFO - info:62 - USER_ACTION: generate_pre_advice - Details: {'sales_type': 'hunter', 'industry': 'IT', 'product': 'SaaS'}
+2025-08-10 17:42:59,646 - PreAdvisorService - INFO - info:62 - SERVICE_CALL: OpenAIProvider.call_llm - Params: {'mode': 'speed'}
+2025-08-10 17:42:59,647 - PreAdvisorService - INFO - info:62 - API_CALL: LLM_Generation - SUCCESS - Response time: 0.00s
+2025-08-10 17:42:59,649 - PreAdvisorService - INFO - info:62 - Pre-advice generated successfully in 0.00s
+2025-08-10 17:53:45,429 - PreAdvisorService - INFO - info:62 - Prompt template loaded successfully
+2025-08-10 17:53:45,431 - PreAdvisorService - INFO - info:62 - PreAdvisorService initialized successfully
+2025-08-10 17:53:45,431 - PreAdvisorService - INFO - info:62 - USER_ACTION: generate_pre_advice - Details: {'sales_type': 'hunter', 'industry': 'IT', 'product': 'SaaS'}
+2025-08-10 17:53:45,431 - PreAdvisorService - INFO - info:62 - SERVICE_CALL: OpenAIProvider.call_llm - Params: {'mode': 'speed'}
+2025-08-10 17:53:45,432 - PreAdvisorService - INFO - info:62 - API_CALL: LLM_Generation - SUCCESS - Response time: 0.00s
+2025-08-10 17:53:45,434 - PreAdvisorService - INFO - info:62 - Pre-advice generated successfully in 0.00s
+2025-08-10 18:00:43,834 - PreAdvisorService - INFO - info:62 - Prompt template loaded successfully
+2025-08-10 18:00:43,836 - PreAdvisorService - INFO - info:62 - PreAdvisorService initialized successfully
+2025-08-10 18:00:43,836 - PreAdvisorService - INFO - info:62 - USER_ACTION: generate_pre_advice - Details: {'sales_type': 'hunter', 'industry': 'IT', 'product': 'SaaS'}
+2025-08-10 18:00:43,837 - PreAdvisorService - INFO - info:62 - SERVICE_CALL: OpenAIProvider.call_llm - Params: {'mode': 'speed'}
+2025-08-10 18:00:43,837 - PreAdvisorService - INFO - info:62 - API_CALL: LLM_Generation - SUCCESS - Response time: 0.00s
+2025-08-10 18:00:43,840 - PreAdvisorService - INFO - info:62 - Pre-advice generated successfully in 0.00s
+2025-08-10 18:05:45,374 - PreAdvisorService - INFO - info:62 - Prompt template loaded successfully
+2025-08-10 18:05:45,375 - PreAdvisorService - INFO - info:62 - PreAdvisorService initialized successfully
+2025-08-10 18:05:45,375 - PreAdvisorService - INFO - info:62 - USER_ACTION: generate_pre_advice - Details: {'sales_type': 'hunter', 'industry': 'IT', 'product': 'SaaS'}
+2025-08-10 18:05:45,376 - PreAdvisorService - INFO - info:62 - SERVICE_CALL: OpenAIProvider.call_llm - Params: {'mode': 'speed'}
+2025-08-10 18:05:45,377 - PreAdvisorService - INFO - info:62 - API_CALL: LLM_Generation - SUCCESS - Response time: 0.00s
+2025-08-10 18:05:45,379 - PreAdvisorService - INFO - info:62 - Pre-advice generated successfully in 0.00s
+2025-08-10 18:09:13,194 - PreAdvisorService - INFO - info:62 - Prompt template loaded successfully
+2025-08-10 18:09:13,195 - PreAdvisorService - INFO - info:62 - PreAdvisorService initialized successfully
+2025-08-10 18:09:13,196 - PreAdvisorService - INFO - info:62 - USER_ACTION: generate_pre_advice - Details: {'sales_type': 'hunter', 'industry': 'IT', 'product': 'SaaS'}
+2025-08-10 18:09:13,196 - PreAdvisorService - INFO - info:62 - SERVICE_CALL: OpenAIProvider.call_llm - Params: {'mode': 'speed'}
+2025-08-10 18:09:13,196 - PreAdvisorService - INFO - info:62 - API_CALL: LLM_Generation - SUCCESS - Response time: 0.00s
+2025-08-10 18:09:13,200 - PreAdvisorService - INFO - info:62 - Pre-advice generated successfully in 0.00s
+2025-08-10 18:18:48,856 - PreAdvisorService - INFO - info:62 - Prompt template loaded successfully
+2025-08-10 18:18:48,857 - PreAdvisorService - INFO - info:62 - PreAdvisorService initialized successfully
+2025-08-10 18:18:48,857 - PreAdvisorService - INFO - info:62 - USER_ACTION: generate_pre_advice - Details: {'sales_type': 'hunter', 'industry': 'IT', 'product': 'SaaS'}
+2025-08-10 18:18:48,857 - PreAdvisorService - INFO - info:62 - SERVICE_CALL: OpenAIProvider.call_llm - Params: {'mode': 'speed'}
+2025-08-10 18:18:48,858 - PreAdvisorService - INFO - info:62 - API_CALL: LLM_Generation - SUCCESS - Response time: 0.00s
+2025-08-10 18:18:48,858 - PreAdvisorService - INFO - info:62 - Pre-advice generated successfully in 0.00s
+2025-08-10 18:29:55,448 - PreAdvisorService - INFO - info:62 - Prompt template loaded successfully
+2025-08-10 18:29:55,449 - PreAdvisorService - INFO - info:62 - PreAdvisorService initialized successfully
+2025-08-10 18:29:55,449 - PreAdvisorService - INFO - info:62 - USER_ACTION: generate_pre_advice - Details: {'sales_type': 'hunter', 'industry': 'IT', 'product': 'SaaS'}
+2025-08-10 18:29:55,450 - PreAdvisorService - INFO - info:62 - SERVICE_CALL: OpenAIProvider.call_llm - Params: {'mode': 'speed'}
+2025-08-10 18:29:55,450 - PreAdvisorService - INFO - info:62 - API_CALL: LLM_Generation - SUCCESS - Response time: 0.00s
+2025-08-10 18:29:55,450 - PreAdvisorService - INFO - info:62 - Pre-advice generated successfully in 0.00s
+2025-08-10 18:32:10,128 - PreAdvisorService - INFO - info:62 - Prompt template loaded successfully
+2025-08-10 18:32:10,129 - PreAdvisorService - INFO - info:62 - PreAdvisorService initialized successfully
+2025-08-10 18:32:10,130 - PreAdvisorService - INFO - info:62 - USER_ACTION: generate_pre_advice - Details: {'sales_type': 'hunter', 'industry': 'IT', 'product': 'SaaS'}
+2025-08-10 18:32:10,130 - PreAdvisorService - INFO - info:62 - SERVICE_CALL: OpenAIProvider.call_llm - Params: {'mode': 'speed'}
+2025-08-10 18:32:10,130 - PreAdvisorService - INFO - info:62 - API_CALL: LLM_Generation - SUCCESS - Response time: 0.00s
+2025-08-10 18:32:10,132 - PreAdvisorService - INFO - info:62 - Pre-advice generated successfully in 0.00s
+2025-08-10 18:39:10,456 - PreAdvisorService - INFO - info:62 - Prompt template loaded successfully
+2025-08-10 18:39:10,457 - PreAdvisorService - INFO - info:62 - PreAdvisorService initialized successfully
+2025-08-10 18:39:10,457 - PreAdvisorService - INFO - info:62 - USER_ACTION: generate_pre_advice - Details: {'sales_type': 'hunter', 'industry': 'IT', 'product': 'SaaS'}
+2025-08-10 18:39:10,458 - PreAdvisorService - INFO - info:62 - SERVICE_CALL: OpenAIProvider.call_llm - Params: {'mode': 'speed'}
+2025-08-10 18:39:10,458 - PreAdvisorService - INFO - info:62 - API_CALL: LLM_Generation - SUCCESS - Response time: 0.00s
+2025-08-10 18:39:10,460 - PreAdvisorService - INFO - info:62 - Pre-advice generated successfully in 0.00s
+2025-08-10 19:30:19,450 - PreAdvisorService - INFO - info:62 - Prompt template loaded successfully
+2025-08-10 19:30:19,451 - PreAdvisorService - INFO - info:62 - PreAdvisorService initialized successfully
+2025-08-10 19:30:19,452 - PreAdvisorService - INFO - info:62 - USER_ACTION: generate_pre_advice - Details: {'sales_type': 'hunter', 'industry': 'IT', 'product': 'SaaS'}
+2025-08-10 19:30:19,454 - PreAdvisorService - INFO - info:62 - SERVICE_CALL: OpenAIProvider.call_llm - Params: {'mode': 'speed'}
+2025-08-10 19:30:19,455 - PreAdvisorService - INFO - info:62 - API_CALL: LLM_Generation - SUCCESS - Response time: 0.00s
+2025-08-10 19:30:19,457 - PreAdvisorService - INFO - info:62 - Pre-advice generated successfully in 0.00s
+2025-08-10 19:40:06,063 - PreAdvisorService - INFO - info:62 - Prompt template loaded successfully
+2025-08-10 19:40:06,064 - PreAdvisorService - INFO - info:62 - PreAdvisorService initialized successfully
+2025-08-10 19:40:06,064 - PreAdvisorService - INFO - info:62 - USER_ACTION: generate_pre_advice - Details: {'sales_type': 'hunter', 'industry': 'IT', 'product': 'SaaS'}
+2025-08-10 19:40:06,065 - PreAdvisorService - INFO - info:62 - SERVICE_CALL: OpenAIProvider.call_llm - Params: {'mode': 'speed'}
+2025-08-10 19:40:06,065 - PreAdvisorService - INFO - info:62 - API_CALL: LLM_Generation - SUCCESS - Response time: 0.00s
+2025-08-10 19:40:06,067 - PreAdvisorService - INFO - info:62 - Pre-advice generated successfully in 0.00s
+2025-08-10 19:46:34,392 - PreAdvisorService - INFO - info:62 - Prompt template loaded successfully
+2025-08-10 19:46:34,393 - PreAdvisorService - INFO - info:62 - PreAdvisorService initialized successfully
+2025-08-10 19:46:34,393 - PreAdvisorService - INFO - info:62 - USER_ACTION: generate_pre_advice - Details: {'sales_type': 'hunter', 'industry': 'IT', 'product': 'SaaS'}
+2025-08-10 19:46:34,393 - PreAdvisorService - INFO - info:62 - SERVICE_CALL: OpenAIProvider.call_llm - Params: {'mode': 'speed'}
+2025-08-10 19:46:34,394 - PreAdvisorService - INFO - info:62 - API_CALL: LLM_Generation - SUCCESS - Response time: 0.00s
+2025-08-10 19:46:34,394 - PreAdvisorService - INFO - info:62 - Pre-advice generated successfully in 0.00s
+2025-08-10 20:05:02,258 - PreAdvisorService - INFO - info:62 - Prompt template loaded successfully
+2025-08-10 20:05:02,260 - PreAdvisorService - INFO - info:62 - PreAdvisorService initialized successfully
+2025-08-10 20:05:02,261 - PreAdvisorService - INFO - info:62 - USER_ACTION: generate_pre_advice - Details: {'sales_type': 'hunter', 'industry': 'IT', 'product': 'SaaS'}
+2025-08-10 20:05:02,262 - PreAdvisorService - INFO - info:62 - SERVICE_CALL: OpenAIProvider.call_llm - Params: {'mode': 'speed'}
+2025-08-10 20:05:02,262 - PreAdvisorService - INFO - info:62 - API_CALL: LLM_Generation - SUCCESS - Response time: 0.00s
+2025-08-10 20:05:02,263 - PreAdvisorService - INFO - info:62 - Pre-advice generated successfully in 0.00s
+2025-08-10 20:18:32,912 - PreAdvisorService - INFO - info:62 - Prompt template loaded successfully
+2025-08-10 20:18:32,913 - PreAdvisorService - INFO - info:62 - PreAdvisorService initialized successfully
+2025-08-10 20:18:32,913 - PreAdvisorService - INFO - info:62 - USER_ACTION: generate_pre_advice - Details: {'sales_type': 'hunter', 'industry': 'IT', 'product': 'SaaS'}
+2025-08-10 20:18:32,913 - PreAdvisorService - INFO - info:62 - SERVICE_CALL: OpenAIProvider.call_llm - Params: {'mode': 'speed'}
+2025-08-10 20:18:32,914 - PreAdvisorService - INFO - info:62 - API_CALL: LLM_Generation - SUCCESS - Response time: 0.00s
+2025-08-10 20:18:32,914 - PreAdvisorService - INFO - info:62 - Pre-advice generated successfully in 0.00s
+2025-08-10 20:31:15,154 - PreAdvisorService - INFO - info:62 - Prompt template loaded successfully
+2025-08-10 20:31:15,156 - PreAdvisorService - INFO - info:62 - PreAdvisorService initialized successfully
+2025-08-10 20:31:15,156 - PreAdvisorService - INFO - info:62 - USER_ACTION: generate_pre_advice - Details: {'sales_type': 'hunter', 'industry': 'IT', 'product': 'SaaS'}
+2025-08-10 20:31:15,156 - PreAdvisorService - INFO - info:62 - SERVICE_CALL: OpenAIProvider.call_llm - Params: {'mode': 'speed'}
+2025-08-10 20:31:15,156 - PreAdvisorService - INFO - info:62 - API_CALL: LLM_Generation - SUCCESS - Response time: 0.00s
+2025-08-10 20:31:15,158 - PreAdvisorService - INFO - info:62 - Pre-advice generated successfully in 0.00s
+2025-08-10 20:54:25,245 - PreAdvisorService - INFO - info:62 - Prompt template loaded successfully
+2025-08-10 20:54:25,245 - PreAdvisorService - INFO - info:62 - PreAdvisorService initialized successfully
+2025-08-10 20:54:25,245 - PreAdvisorService - INFO - info:62 - USER_ACTION: generate_pre_advice - Details: {'sales_type': 'hunter', 'industry': 'IT', 'product': 'SaaS'}
+2025-08-10 20:54:25,246 - PreAdvisorService - INFO - info:62 - SERVICE_CALL: OpenAIProvider.call_llm - Params: {'mode': 'speed'}
+2025-08-10 20:54:25,246 - PreAdvisorService - INFO - info:62 - API_CALL: LLM_Generation - SUCCESS - Response time: 0.00s
+2025-08-10 20:54:25,248 - PreAdvisorService - INFO - info:62 - Pre-advice generated successfully in 0.00s
+2025-08-10 20:57:16,126 - PreAdvisorService - INFO - info:62 - Prompt template loaded successfully
+2025-08-10 20:57:16,126 - PreAdvisorService - INFO - info:62 - PreAdvisorService initialized successfully
+2025-08-10 20:57:16,127 - PreAdvisorService - INFO - info:62 - USER_ACTION: generate_pre_advice - Details: {'sales_type': 'hunter', 'industry': 'IT', 'product': 'SaaS'}
+2025-08-10 20:57:16,127 - PreAdvisorService - INFO - info:62 - SERVICE_CALL: OpenAIProvider.call_llm - Params: {'mode': 'speed'}
+2025-08-10 20:57:16,127 - PreAdvisorService - INFO - info:62 - API_CALL: LLM_Generation - SUCCESS - Response time: 0.00s
+2025-08-10 20:57:16,128 - PreAdvisorService - INFO - info:62 - Pre-advice generated successfully in 0.00s
+2025-08-10 22:47:37,575 - PreAdvisorService - INFO - info:62 - Prompt template loaded successfully
+2025-08-10 22:47:37,575 - PreAdvisorService - INFO - info:62 - PreAdvisorService initialized successfully
+2025-08-10 22:47:37,576 - PreAdvisorService - INFO - info:62 - USER_ACTION: generate_pre_advice - Details: {'sales_type': 'hunter', 'industry': 'IT', 'product': 'SaaS'}
+2025-08-10 22:47:37,576 - PreAdvisorService - INFO - info:62 - SERVICE_CALL: OpenAIProvider.call_llm - Params: {'mode': 'speed'}
+2025-08-10 22:47:37,576 - PreAdvisorService - INFO - info:62 - API_CALL: LLM_Generation - SUCCESS - Response time: 0.00s
+2025-08-10 22:47:37,577 - PreAdvisorService - INFO - info:62 - Pre-advice generated successfully in 0.00s

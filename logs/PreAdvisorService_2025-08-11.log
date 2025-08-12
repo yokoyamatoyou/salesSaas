@@ -1,0 +1,18 @@
+2025-08-11 11:31:40,616 - PreAdvisorService - INFO - info:62 - Prompt template loaded successfully
+2025-08-11 11:31:40,619 - PreAdvisorService - INFO - info:62 - PreAdvisorService initialized successfully
+2025-08-11 11:31:40,619 - PreAdvisorService - INFO - info:62 - USER_ACTION: generate_pre_advice - Details: {'sales_type': 'hunter', 'industry': 'IT', 'product': 'SaaS'}
+2025-08-11 11:31:40,619 - PreAdvisorService - INFO - info:62 - SERVICE_CALL: OpenAIProvider.call_llm - Params: {'mode': 'speed'}
+2025-08-11 11:31:40,620 - PreAdvisorService - INFO - info:62 - API_CALL: LLM_Generation - SUCCESS - Response time: 0.00s
+2025-08-11 11:31:40,621 - PreAdvisorService - INFO - info:62 - Pre-advice generated successfully in 0.00s
+2025-08-11 12:15:05,718 - PreAdvisorService - INFO - info:62 - Prompt template loaded successfully
+2025-08-11 12:15:05,719 - PreAdvisorService - INFO - info:62 - PreAdvisorService initialized successfully
+2025-08-11 12:15:05,719 - PreAdvisorService - INFO - info:62 - USER_ACTION: generate_pre_advice - Details: {'sales_type': 'hunter', 'industry': 'IT', 'product': 'SaaS'}
+2025-08-11 12:15:05,719 - PreAdvisorService - INFO - info:62 - SERVICE_CALL: OpenAIProvider.call_llm - Params: {'mode': 'speed'}
+2025-08-11 12:15:05,719 - PreAdvisorService - INFO - info:62 - API_CALL: LLM_Generation - SUCCESS - Response time: 0.00s
+2025-08-11 12:15:05,720 - PreAdvisorService - INFO - info:62 - Pre-advice generated successfully in 0.00s
+2025-08-11 12:23:04,686 - PreAdvisorService - INFO - info:62 - Prompt template loaded successfully
+2025-08-11 12:23:04,686 - PreAdvisorService - INFO - info:62 - PreAdvisorService initialized successfully
+2025-08-11 12:23:04,687 - PreAdvisorService - INFO - info:62 - USER_ACTION: generate_pre_advice - Details: {'sales_type': 'hunter', 'industry': 'IT', 'product': 'SaaS'}
+2025-08-11 12:23:04,687 - PreAdvisorService - INFO - info:62 - SERVICE_CALL: OpenAIProvider.call_llm - Params: {'mode': 'speed'}
+2025-08-11 12:23:04,688 - PreAdvisorService - INFO - info:62 - API_CALL: LLM_Generation - SUCCESS - Response time: 0.00s
+2025-08-11 12:23:04,689 - PreAdvisorService - INFO - info:62 - Pre-advice generated successfully in 0.00s

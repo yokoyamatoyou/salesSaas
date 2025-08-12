@@ -1,0 +1,21 @@
+{
+  "default_llm_mode": "speed",
+  "max_tokens": 1000,
+  "temperature": 0.7,
+  "search_provider": "stub",
+  "search_results_limit": 5,
+  "search_trusted_domains": [
+    "www.bloomberg.co.jp",
+    "www.nikkei.com",
+    "www.itmedia.co.jp",
+    "www.impress.co.jp"
+  ],
+  "search_time_window_days": 60,
+  "search_language": "ja",
+  "language": "ja",
+  "theme": "light",
+  "data_dir": "./data",
+  "auto_save": true,
+  "custom_prompts": {},
+  "sales_type_colors": {}
+}
