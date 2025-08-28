@@ -4,6 +4,7 @@ import uuid
 from datetime import datetime
 from core.models import SalesType
 from services.icebreaker import IcebreakerService
+from components.copy_button import copy_button
 
 def show_icebreaker_page():
     st.header("🎯 アイスブレイク生成")
@@ -144,11 +145,7 @@ def display_icebreakers(sales_type: SalesType, industry: str, icebreakers: list,
                 st.markdown(f"**{i}. {icebreaker}**")
             
             with col2:
-                # コピーボタン
-                if st.button(f"📋 コピー", key=f"copy_{i}", use_container_width=True):
-                    st.write("✅ コピーしました！")
-                    # クリップボードにコピー（Streamlitでは表示のみ）
-                    st.session_state[f"copied_{i}"] = True
+                copy_button(icebreaker, key=f"copy_{i}", use_container_width=True)
             
             # 使用シーン別のアドバイス（モバイル対応）
             with st.expander(f"使用シーン {i}", expanded=False):

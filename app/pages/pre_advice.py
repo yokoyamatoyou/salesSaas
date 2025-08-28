@@ -8,6 +8,7 @@ from services.icebreaker import IcebreakerService
 from providers.storage_local import LocalStorageProvider
 from datetime import datetime
 from components.sales_type import sales_type_selectbox
+from components.copy_button import copy_button
 
 
 def render_pre_advice_form():
@@ -325,17 +326,7 @@ def render_icebreaker_section():
                         st.rerun()
 
                 with col2:
-                    if st.button(
-                        f"📋 コピー",
-                        key=f"copy_{idx}",
-                        use_container_width=True,
-                    ):
-                        st.markdown("**コピー対象テキスト：**")
-                        st.code(line, language="text")
-                        st.success(
-                            "✅ 上記テキストを選択してCtrl+Cでコピーしてください"
-                        )
-                        st.balloons()
+                    copy_button(line, key=f"copy_{idx}", use_container_width=True)
 
                 with col3:
                     if st.button(
@@ -360,39 +351,17 @@ def render_icebreaker_section():
                 box-shadow: 0 8px 16px rgba(0, 255, 136, 0.2);
             ">
                 <h3 style="margin: 0 0 15px 0; color: #166534; text-align: center;">🎯 選択済みアイスブレイク</h3>
-                <div style="
-                    background: white;
-                    padding: 15px;
-                    border-radius: 8px;
-                    border: 1px solid #bbf7d0;
-                    font-size: 16px;
-                    line-height: 1.6;
-                    color: #166534;
-                    cursor: pointer;
-                    user-select: text;
-                ">
+                <p style="margin: 0; color: #166534; line-height: 1.6;">
                     {st.session_state.selected_icebreaker}
-                </div>
-                <div style="margin: 15px 0 0 0; text-align: center;">
-                    <button onclick="navigator.clipboard.writeText('{st.session_state.selected_icebreaker}')"
-                            style="
-                                background: #16a34a;
-                                color: white;
-                                border: none;
-                                padding: 8px 16px;
-                                border-radius: 6px;
-                                cursor: pointer;
-                                font-size: 14px;
-                            ">
-                        📋 クリップボードにコピー
-                    </button>
-                </div>
-                <p style="margin: 15px 0 0 0; text-align: center; color: #16a34a; font-size: 14px;">
-                    💡 上記ボタンでコピー、またはテキストを選択してCtrl+Cでコピーしてください
                 </p>
             </div>
             """,
                 unsafe_allow_html=True,
+            )
+            copy_button(
+                st.session_state.selected_icebreaker,
+                key="selected_icebreaker_copy",
+                use_container_width=True,
             )
 
 
@@ -830,14 +799,7 @@ def _legacy_show_pre_advice_page():
                         st.rerun()
                 
                 with col2:
-                    # コピーボタン（改善版）
-                    if st.button(f"📋 コピー", key=f"copy_{idx}", use_container_width=True):
-                        # クリップボードにコピー（Streamlitの制限により、ユーザーに選択を促す）
-                        st.markdown(f"**コピー対象テキスト：**")
-                        st.code(line, language="text")
-                        st.success("✅ 上記テキストを選択してCtrl+Cでコピーしてください")
-                        # コピー成功のフィードバック
-                        st.balloons()
+                    copy_button(line, key=f"copy_{idx}", use_container_width=True)
                 
                 with col3:
                     # 詳細表示ボタン
@@ -849,50 +811,28 @@ def _legacy_show_pre_advice_page():
         # 選択中のアイスブレイクを強調表示
         if st.session_state.selected_icebreaker:
             st.markdown("### ❄️ 選択中のアイスブレイク")
-            
+
             # コピーしやすい形式で表示（改善版）
             st.markdown(f"""
             <div style="
-                border: 3px solid #00ff88; 
-                border-radius: 15px; 
-                padding: 20px; 
-                margin: 15px 0; 
+                border: 3px solid #00ff88;
+                border-radius: 15px;
+                padding: 20px;
+                margin: 15px 0;
                 background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
                 box-shadow: 0 8px 16px rgba(0, 255, 136, 0.2);
             ">
                 <h3 style="margin: 0 0 15px 0; color: #166534; text-align: center;">🎯 選択済みアイスブレイク</h3>
-                <div style="
-                    background: white; 
-                    padding: 15px; 
-                    border-radius: 8px; 
-                    border: 1px solid #bbf7d0;
-                    font-size: 16px;
-                    line-height: 1.6;
-                    color: #166534;
-                    cursor: pointer;
-                    user-select: text;
-                ">
+                <p style="margin: 0; color: #166534; line-height: 1.6;">
                     {st.session_state.selected_icebreaker}
-                </div>
-                <div style="margin: 15px 0 0 0; text-align: center;">
-                    <button onclick="navigator.clipboard.writeText('{st.session_state.selected_icebreaker}')" 
-                            style="
-                                background: #16a34a; 
-                                color: white; 
-                                border: none; 
-                                padding: 8px 16px; 
-                                border-radius: 6px; 
-                                cursor: pointer;
-                                font-size: 14px;
-                            ">
-                        📋 クリップボードにコピー
-                    </button>
-                </div>
-                <p style="margin: 15px 0 0 0; text-align: center; color: #16a34a; font-size: 14px;">
-                    💡 上記ボタンでコピー、またはテキストを選択してCtrl+Cでコピーしてください
                 </p>
             </div>
             """, unsafe_allow_html=True)
+            copy_button(
+                st.session_state.selected_icebreaker,
+                key="selected_icebreaker_copy2",
+                use_container_width=True,
+            )
 
     # 検索出典の表示（IcebreakerServiceが直近ニュースを保持）
     try:
@@ -1146,9 +1086,7 @@ def display_advice(advice: dict):
                     # レスポンシブ対応のボタンレイアウト
                     col1, col2 = st.columns([3, 1])
                     with col1:
-                        if st.button("📋 コピー", key="copy_call", use_container_width=True):
-                            st.code(openers["call"], language="text")
-                            st.success("✅ 上記テキストを選択してCtrl+Cでコピーしてください")
+                        copy_button(openers["call"], key="copy_call", use_container_width=True)
                     with col2:
                         # モバイルでのスペース確保
                         st.write("")
@@ -1194,9 +1132,7 @@ def display_advice(advice: dict):
                     
                     col1, col2 = st.columns([3, 1])
                     with col1:
-                        if st.button("📋 コピー", key="copy_visit", use_container_width=True):
-                            st.code(openers["visit"], language="text")
-                            st.success("✅ 上記テキストを選択してCtrl+Cでコピーしてください")
+                        copy_button(openers["visit"], key="copy_visit", use_container_width=True)
                     with col2:
                         st.write("")
                 else:
@@ -1241,9 +1177,7 @@ def display_advice(advice: dict):
                     
                     col1, col2 = st.columns([3, 1])
                     with col1:
-                        if st.button("📋 コピー", key="copy_email", use_container_width=True):
-                            st.code(openers["email"], language="text")
-                            st.success("✅ 上記テキストを選択してCtrl+Cでコピーしてください")
+                        copy_button(openers["email"], key="copy_email", use_container_width=True)
                     with col2:
                         st.write("")
                 else:
@@ -1276,9 +1210,7 @@ def display_advice(advice: dict):
                 # レスポンシブ対応のボタンレイアウト
                 col1, col2 = st.columns([3, 1])
                 with col1:
-                    if st.button(f"📋 コピー", key=f"copy_discovery_{i}", use_container_width=True):
-                        st.code(question, language="text")
-                        st.success("✅ 上記テキストを選択してCtrl+Cでコピーしてください")
+                    copy_button(question, key=f"copy_discovery_{i}", use_container_width=True)
                 with col2:
                     st.write("")
         
@@ -1309,9 +1241,7 @@ def display_advice(advice: dict):
                     
                     col1, col2 = st.columns([3, 1])
                     with col1:
-                        if st.button(f"📋 コピー", key=f"copy_diff_{i}", use_container_width=True):
-                            st.code(diff["talk"], language="text")
-                            st.success("✅ 上記テキストを選択してCtrl+Cでコピーしてください")
+                        copy_button(diff["talk"], key=f"copy_diff_{i}", use_container_width=True)
                     with col2:
                         st.write("")
                 else:
@@ -1336,9 +1266,7 @@ def display_advice(advice: dict):
                     
                     col1, col2 = st.columns([3, 1])
                     with col1:
-                        if st.button(f"📋 コピー", key=f"copy_diff_{i}", use_container_width=True):
-                            st.code(diff, language="text")
-                            st.success("✅ 上記テキストを選択してCtrl+Cでコピーしてください")
+                        copy_button(diff, key=f"copy_diff_{i}", use_container_width=True)
                     with col2:
                         st.write("")
         
@@ -1369,9 +1297,7 @@ def display_advice(advice: dict):
                     
                     col1, col2 = st.columns([3, 1])
                     with col1:
-                        if st.button(f"📋 コピー", key=f"copy_objection_{i}", use_container_width=True):
-                            st.code(objection["script"], language="text")
-                            st.success("✅ 上記テキストを選択してCtrl+Cでコピーしてください")
+                        copy_button(objection["script"], key=f"copy_objection_{i}", use_container_width=True)
                     with col2:
                         st.write("")
                 else:
@@ -1396,9 +1322,7 @@ def display_advice(advice: dict):
                     
                     col1, col2 = st.columns([3, 1])
                     with col1:
-                        if st.button(f"📋 コピー", key=f"copy_objection_{i}", use_container_width=True):
-                            st.code(objection, language="text")
-                            st.success("✅ 上記テキストを選択してCtrl+Cでコピーしてください")
+                        copy_button(objection, key=f"copy_objection_{i}", use_container_width=True)
                     with col2:
                         st.write("")
         
@@ -1427,9 +1351,7 @@ def display_advice(advice: dict):
                 
                 col1, col2 = st.columns([3, 1])
                 with col1:
-                    if st.button(f"📋 コピー", key=f"copy_action_{i}", use_container_width=True):
-                        st.code(action, language="text")
-                        st.success("✅ 上記テキストを選択してCtrl+Cでコピーしてください")
+                    copy_button(action, key=f"copy_action_{i}", use_container_width=True)
                 with col2:
                     st.write("")
         
@@ -1482,9 +1404,7 @@ def display_advice(advice: dict):
                 # レスポンシブ対応のボタンレイアウト
                 col1, col2 = st.columns([3, 1])
                 with col1:
-                    if st.button(f"📋 コピー", key=f"copy_mid_plan_{i}", use_container_width=True):
-                        st.code(plan, language="text")
-                        st.success("✅ 上記テキストを選択してCtrl+Cでコピーしてください")
+                    copy_button(plan, key=f"copy_mid_plan_{i}", use_container_width=True)
                 with col2:
                     st.write("")
     
@@ -1521,13 +1441,8 @@ def display_advice(advice: dict):
     # レスポンシブ対応のボタンレイアウト
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        if st.button("📋 全体コピー", key="copy_all", use_container_width=True):
-            # JSONとして整形してコピー
-            import json
-            formatted_json = json.dumps(advice, ensure_ascii=False, indent=2)
-            st.code(formatted_json, language="json")
-            st.success("✅ 全体をJSON形式で表示しました！")
-            st.info("テキストを選択してCtrl+Cでコピーしてください")
+        formatted_json = json.dumps(advice, ensure_ascii=False, indent=2)
+        copy_button(formatted_json, key="copy_all", label="📋 全体コピー", use_container_width=True)
     
     # 保存成功時のセッション情報表示
     if 'pre_advice_session_id' in st.session_state:
