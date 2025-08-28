@@ -81,9 +81,13 @@ class OpenAIProvider:
             if "top_p" in mode_config:
                 request_params["top_p"] = mode_config["top_p"]
             
-            # JSONスキーマが指定されている場合
+            # JSONスキーマが指定されている場合は厳密な検証を有効化
             if json_schema:
-                request_params["response_format"] = {"type": "json_object"}
+                request_params["response_format"] = {
+                    "type": "json_schema",
+                    "json_schema": json_schema,
+                    "strict": True,
+                }
             
             response = self.client.chat.completions.create(**request_params)
             
