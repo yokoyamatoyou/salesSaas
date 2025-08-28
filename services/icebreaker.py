@@ -44,7 +44,9 @@ class IcebreakerService:
             prompt = self._build_prompt(sales_type, industry, company_hint, news_items, tone)
             
             # LLMで生成（プロバイダがない場合は例外→フォールバック）
-            response = self.llm_provider.call_llm(prompt, "creative", self._get_icebreaker_schema()) if self.llm_provider else None
+            response = self.llm_provider.call_llm(
+                prompt, "creative", self._get_icebreaker_schema()
+            ) if self.llm_provider else None
             
             # レスポンスからアイスブレイクを抽出
             if isinstance(response, dict) and "icebreakers" in response:
