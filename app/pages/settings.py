@@ -124,6 +124,7 @@ def show_search_settings(settings_manager: SettingsManager):
         - **Stub**: テスト用のダミーデータ
         - **CSE**: Google Custom Search Engine
         - **NewsAPI**: ニュースAPI
+        - **Hybrid**: CSEとNewsAPIの複合検索
         """)
         
         # 追加の検索制御
