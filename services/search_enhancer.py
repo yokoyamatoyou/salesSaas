@@ -20,11 +20,20 @@ class SearchEnhancerService:
     
     def __init__(self, settings_manager=None, llm_provider=None):
         self.settings_manager = settings_manager
-        self.llm_provider = llm_provider or OpenAIProvider()
-        self.search_provider = WebSearchProvider(settings_manager)
         self.error_handler = ErrorHandler()
         self.logger = Logger()
         self.prompts = self._load_prompts()
+
+        if llm_provider is not None:
+            self.llm_provider = llm_provider
+        else:
+            try:
+                self.llm_provider = OpenAIProvider()
+            except Exception as e:
+                self.logger.warning(f"OpenAIProviderの初期化に失敗: {e}")
+                self.llm_provider = None
+
+        self.search_provider = WebSearchProvider(settings_manager)
         
     def _load_prompts(self) -> Dict[str, Any]:
         """プロンプトテンプレートを読み込み"""
@@ -40,29 +49,26 @@ class SearchEnhancerService:
         try:
             if not self.prompts.get("query_optimization"):
                 return {"error": "プロンプトテンプレートが見つかりません"}
-            
+
             prompt = self.prompts["query_optimization"]
-            system_prompt = prompt["system"]
             user_prompt = prompt["user"].format(
                 original_query=original_query,
                 industry=industry or "未指定",
                 purpose=purpose or "一般的な調査"
             )
-            
-            # LLMによるクエリ最適化
-            response = self.llm_provider.call_llm(
-                system_prompt=system_prompt,
-                user_prompt=user_prompt,
-                temperature=0.3
-            )
-            
-            try:
-                result = json.loads(response)
-                return result
-            except json.JSONDecodeError:
-                # JSON解析に失敗した場合、フォールバック処理
+            full_prompt = f"{prompt['system']}\n{user_prompt}"
+
+            if not self.llm_provider:
                 return self._fallback_query_optimization(original_query, industry)
-                
+
+            response = self.llm_provider.call_llm(full_prompt, "speed")
+            content = response.get("content", "")
+
+            try:
+                return json.loads(content)
+            except json.JSONDecodeError:
+                return self._fallback_query_optimization(original_query, industry)
+
         except Exception as e:
             self.error_handler.handle_error(f"クエリ最適化に失敗: {e}")
             return {"error": f"クエリ最適化に失敗: {e}"}
@@ -115,28 +121,25 @@ class SearchEnhancerService:
         try:
             if not self.prompts.get("quality_assessment"):
                 return {"error": "プロンプトテンプレートが見つかりません"}
-            
+
             prompt = self.prompts["quality_assessment"]
-            system_prompt = prompt["system"]
             user_prompt = prompt["user"].format(
                 query=query,
                 search_results=json.dumps(search_results, ensure_ascii=False, indent=2)
             )
-            
-            # LLMによる品質評価
-            response = self.llm_provider.call_llm(
-                system_prompt=system_prompt,
-                user_prompt=user_prompt,
-                temperature=0.2
-            )
-            
-            try:
-                result = json.loads(response)
-                return result
-            except json.JSONDecodeError:
-                # JSON解析に失敗した場合、フォールバック処理
+            full_prompt = f"{prompt['system']}\n{user_prompt}"
+
+            if not self.llm_provider:
                 return self._fallback_quality_assessment(query, search_results)
-                
+
+            response = self.llm_provider.call_llm(full_prompt, "deep")
+            content = response.get("content", "")
+
+            try:
+                return json.loads(content)
+            except json.JSONDecodeError:
+                return self._fallback_quality_assessment(query, search_results)
+
         except Exception as e:
             self.error_handler.handle_error(f"品質評価に失敗: {e}")
             return {"error": f"品質評価に失敗: {e}"}
@@ -232,29 +235,26 @@ class SearchEnhancerService:
         try:
             if not self.prompts.get("industry_search_strategy"):
                 return {"error": "プロンプトテンプレートが見つかりません"}
-            
+
             prompt = self.prompts["industry_search_strategy"]
-            system_prompt = prompt["system"]
             user_prompt = prompt["user"].format(
                 industry=industry,
                 purpose=purpose,
                 time_period=time_period
             )
-            
-            # LLMによる戦略提案
-            response = self.llm_provider.call_llm(
-                system_prompt=system_prompt,
-                user_prompt=user_prompt,
-                temperature=0.3
-            )
-            
-            try:
-                result = json.loads(response)
-                return result
-            except json.JSONDecodeError:
-                # JSON解析に失敗した場合、フォールバック処理
+            full_prompt = f"{prompt['system']}\n{user_prompt}"
+
+            if not self.llm_provider:
                 return self._fallback_industry_strategy(industry, purpose)
-                
+
+            response = self.llm_provider.call_llm(full_prompt, "speed")
+            content = response.get("content", "")
+
+            try:
+                return json.loads(content)
+            except json.JSONDecodeError:
+                return self._fallback_industry_strategy(industry, purpose)
+
         except Exception as e:
             self.error_handler.handle_error(f"業界戦略の取得に失敗: {e}")
             return {"error": f"業界戦略の取得に失敗: {e}"}
@@ -304,28 +304,25 @@ class SearchEnhancerService:
         try:
             if not self.prompts.get("result_integration"):
                 return {"error": "プロンプトテンプレートが見つかりません"}
-            
+
             prompt = self.prompts["result_integration"]
-            system_prompt = prompt["system"]
             user_prompt = prompt["user"].format(
                 query=query,
                 search_results=json.dumps(search_results, ensure_ascii=False, indent=2)
             )
-            
-            # LLMによる結果統合
-            response = self.llm_provider.call_llm(
-                system_prompt=system_prompt,
-                user_prompt=user_prompt,
-                temperature=0.2
-            )
-            
-            try:
-                result = json.loads(response)
-                return result
-            except json.JSONDecodeError:
-                # JSON解析に失敗した場合、フォールバック処理
+            full_prompt = f"{prompt['system']}\n{user_prompt}"
+
+            if not self.llm_provider:
                 return self._fallback_result_integration(query, search_results)
-                
+
+            response = self.llm_provider.call_llm(full_prompt, "deep")
+            content = response.get("content", "")
+
+            try:
+                return json.loads(content)
+            except json.JSONDecodeError:
+                return self._fallback_result_integration(query, search_results)
+
         except Exception as e:
             self.error_handler.handle_error(f"結果統合に失敗: {e}")
             return {"error": f"結果統合に失敗: {e}"}
@@ -432,29 +429,26 @@ class SearchEnhancerService:
         try:
             if not self.prompts.get("continuous_improvement"):
                 return {"error": "プロンプトテンプレートが見つかりません"}
-            
+
             prompt = self.prompts["continuous_improvement"]
-            system_prompt = prompt["system"]
             user_prompt = prompt["user"].format(
                 current_challenges=current_challenges,
                 improvement_goals=improvement_goals,
                 available_resources=available_resources
             )
-            
-            # LLMによる改善計画の提案
-            response = self.llm_provider.call_llm(
-                system_prompt=system_prompt,
-                user_prompt=user_prompt,
-                temperature=0.3
-            )
-            
-            try:
-                result = json.loads(response)
-                return result
-            except json.JSONDecodeError:
-                # JSON解析に失敗した場合、フォールバック処理
+            full_prompt = f"{prompt['system']}\n{user_prompt}"
+
+            if not self.llm_provider:
                 return self._fallback_improvement_plan(current_challenges, improvement_goals)
-                
+
+            response = self.llm_provider.call_llm(full_prompt, "speed")
+            content = response.get("content", "")
+
+            try:
+                return json.loads(content)
+            except json.JSONDecodeError:
+                return self._fallback_improvement_plan(current_challenges, improvement_goals)
+
         except Exception as e:
             self.error_handler.handle_error(f"改善計画の取得に失敗: {e}")
             return {"error": f"改善計画の取得に失敗: {e}"}
