@@ -60,6 +60,13 @@ CSE_API_KEY=
 CSE_CX=
 ```
 
+## LLMプロバイダのJSONスキーマ対応
+
+`OpenAIProvider.call_llm` に `json_schema` を渡すと、OpenAI API は
+`response_format={"type": "json_schema", "json_schema": schema, "strict": True}`
+を利用して呼び出されます。スキーマに合わない応答は `ValueError`
+として扱われ、呼び出し元で検知できます。
+
 ## テスト
 
 ```bash

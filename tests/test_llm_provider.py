@@ -91,9 +91,13 @@ class TestOpenAIProvider:
                 provider = OpenAIProvider()
                 schema = {"type": "object", "required": ["structured"]}
                 result = provider.call_llm("構造化プロンプト", "creative", schema)
-                
+
                 call_args = mock_client.chat.completions.create.call_args[1]
-                assert call_args["response_format"] == {"type": "json_object"}
+                assert call_args["response_format"] == {
+                    "type": "json_schema",
+                    "json_schema": schema,
+                    "strict": True,
+                }
                 
                 # JSONスキーマ指定時は直接パースされたレスポンスが返される
                 assert result == {"structured": "data"}
@@ -159,9 +163,16 @@ class TestOpenAIProvider:
                 
                 provider = OpenAIProvider()
                 schema = {"type": "object", "required": ["field1", "field2"]}
-                
+
                 with pytest.raises(ValueError, match="LLMの応答が期待されるスキーマに従っていません"):
                     provider.call_llm("プロンプト", "speed", schema)
+
+                call_args = mock_client.chat.completions.create.call_args[1]
+                assert call_args["response_format"] == {
+                    "type": "json_schema",
+                    "json_schema": schema,
+                    "strict": True,
+                }
     
     def test_validate_schema(self):
         """スキーマ検証のテスト"""
