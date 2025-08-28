@@ -9,6 +9,7 @@ from services.post_analyzer import PostAnalyzerService
 from services.settings_manager import SettingsManager
 from providers.storage_local import LocalStorageProvider
 from datetime import datetime
+from components.sales_type import sales_type_selectbox
 
 def show_post_review_page():
     st.header("🔍 商談後ふりかえり解析")
@@ -23,13 +24,7 @@ def show_post_review_page():
         col1, col2 = st.columns(2)
         
         with col1:
-            sales_type = st.selectbox(
-                "営業タイプ *",
-                options=list(SalesType),
-                format_func=lambda x: f"{x.value} ({get_sales_type_emoji(x)})",
-                help="営業スタイルを選択してください",
-                key="post_review_sales_type"
-            )
+            sales_type = sales_type_selectbox(key="post_review_sales_type")
             
             industry = st.text_input(
                 "業界 *", 
@@ -173,21 +168,6 @@ def show_post_review_page():
         except Exception as e:
             st.error(f"❌ 分析の実行に失敗しました: {str(e)}")
             st.info("しばらく時間をおいて再度お試しください。問題が続く場合は管理者にお問い合わせください。")
-
-def get_sales_type_emoji(sales_type: SalesType) -> str:
-    """営業タイプに対応する絵文字を取得"""
-    emoji_map = {
-        SalesType.HUNTER: "🏹",
-        SalesType.CLOSER: "🔒",
-        SalesType.RELATION: "🤝",
-        SalesType.CONSULTANT: "🧭",
-        SalesType.CHALLENGER: "⚡",
-        SalesType.STORYTELLER: "📖",
-        SalesType.ANALYST: "📊",
-        SalesType.PROBLEM_SOLVER: "🧩",
-        SalesType.FARMER: "🌾"
-    }
-    return emoji_map.get(sales_type, "💼")
 
 def display_analysis_result(analysis: dict):
     """分析結果の表示"""

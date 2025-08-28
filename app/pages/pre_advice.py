@@ -7,8 +7,512 @@ from services.pre_advisor import PreAdvisorService
 from services.icebreaker import IcebreakerService
 from providers.storage_local import LocalStorageProvider
 from datetime import datetime
+from components.sales_type import sales_type_selectbox
+
+
+def render_pre_advice_form():
+    """事前アドバイス入力フォームを表示"""
+    with st.form("pre_advice_form", clear_on_submit=False):
+        col1, col2 = st.columns(2)
+
+        with col1:
+            sales_type = sales_type_selectbox(key="sales_type_select")
+
+            industry = st.text_input(
+                "業界 *",
+                placeholder="例: IT、製造業、金融業",
+                help="対象となる業界を入力してください（2文字以上）",
+                key="industry_input",
+            )
+
+            if industry:
+                industry_errors = validate_industry(industry)
+                if industry_errors:
+                    for error in industry_errors:
+                        st.error(f"⚠️ {error}")
+                else:
+                    st.success("✅ 業界名が有効です")
+
+            product = st.text_input(
+                "商品・サービス *",
+                placeholder="例: SaaS、コンサルティング",
+                help="提供する商品・サービスを入力してください（2文字以上）",
+                key="product_input",
+            )
+
+            if product:
+                product_errors = validate_product(product)
+                if product_errors:
+                    for error in product_errors:
+                        st.error(f"⚠️ {error}")
+                else:
+                    st.success("✅ 商品名が有効です")
+
+            description_type = st.radio(
+                "説明の入力方法",
+                ["テキスト", "URL"],
+                help="商品・サービスの説明をテキストで入力するか、URLで指定するかを選択してください",
+                key="description_type",
+            )
+            if description_type == "テキスト":
+                description = st.text_area(
+                    "説明",
+                    placeholder="商品・サービスの詳細説明",
+                    help="商品・サービスの特徴や価値を詳しく説明してください",
+                    key="description_text",
+                )
+                description_url = None
+            else:
+                description = None
+                description_url = st.text_input(
+                    "説明URL",
+                    placeholder="https://example.com",
+                    help="商品・サービスの説明が記載されているWebページのURLを入力してください",
+                    key="description_url",
+                )
+
+        with col2:
+            competitor_type = st.radio(
+                "競合の入力方法",
+                ["テキスト", "URL"],
+                help="競合情報をテキストで入力するか、URLで指定するかを選択してください",
+                key="competitor_type",
+            )
+            if competitor_type == "テキスト":
+                competitor = st.text_input(
+                    "競合",
+                    placeholder="例: 競合A、競合B",
+                    help="主要な競合企業やサービスを入力してください",
+                    key="competitor_text",
+                )
+                competitor_url = None
+            else:
+                competitor = None
+                competitor_url = st.text_input(
+                    "競合URL",
+                    placeholder="https://competitor.com",
+                    help="競合情報が記載されているWebページのURLを入力してください",
+                    key="competitor_url",
+                )
+
+            stage = st.selectbox(
+                "商談ステージ *",
+                ["初期接触", "ニーズ発掘", "提案", "商談", "クロージング"],
+                help="現在の商談の進行段階を選択してください",
+                key="stage_select",
+            )
+
+            purpose = st.text_input(
+                "目的 *",
+                placeholder="例: 新規顧客獲得、既存顧客拡大",
+                help="この商談の目的を具体的に入力してください（5文字以上）",
+                key="purpose_input",
+            )
+
+            if purpose:
+                purpose_errors = validate_purpose(purpose)
+                if purpose_errors:
+                    for error in purpose_errors:
+                        st.error(f"⚠️ {error}")
+                else:
+                    st.success("✅ 目的が有効です")
+
+            constraints_input = st.text_area(
+                "制約",
+                placeholder="例: 予算制限、期間制限、技術制約（改行で区切って入力）",
+                help="商談や提案における制約事項があれば入力してください（各制約は3文字以上）",
+                key="constraints_input",
+            )
+
+        col1, col2, col3 = st.columns([1, 1, 1])
+        with col2:
+            submitted = st.form_submit_button(
+                "🚀 アドバイスを生成",
+                type="primary",
+                use_container_width=True,
+            )
+
+    form_data = {
+        "sales_type": sales_type,
+        "industry": industry,
+        "product": product,
+        "description": description,
+        "description_url": description_url,
+        "competitor": competitor,
+        "competitor_url": competitor_url,
+        "stage": stage,
+        "purpose": purpose,
+        "constraints_input": constraints_input,
+    }
+    return submitted, form_data
+
+
+def render_icebreaker_section():
+    """アイスブレイク生成セクションを表示"""
+    st.markdown("---")
+    st.markdown("### ❄️ アイスブレイク生成（任意）")
+
+    if st.session_state.get("screen_width", 1000) < 800:
+        ib_col1, ib_col2, ib_col3 = st.columns([1, 1, 1])
+    else:
+        ib_col1, ib_col2, ib_col3 = st.columns([2, 1, 1])
+
+    with ib_col1:
+        st.text_input(
+            "会社ヒント",
+            placeholder="例: 〇〇グループ、最近M&Aあり、採用強化中 など",
+            help="相手企業に関するヒントがあれば入力してください",
+            key="company_hint_input",
+        )
+    with ib_col2:
+        st.checkbox(
+            "業界ニュースを使用", value=True, key="use_news_checkbox"
+        )
+    with ib_col3:
+        generate_icebreak = st.button(
+            "❄️ アイスブレイクを生成", use_container_width=True, type="primary"
+        )
+
+    if "icebreakers" not in st.session_state:
+        st.session_state.icebreakers = []
+    if "selected_icebreaker" not in st.session_state:
+        st.session_state.selected_icebreaker = None
+
+    sales_type_val = st.session_state.get("sales_type_select")
+    industry_val = st.session_state.get("industry_input")
+
+    if sales_type_val and industry_val and generate_icebreak:
+        try:
+            from services.settings_manager import SettingsManager
+
+            settings_manager = SettingsManager()
+            ice_service = IcebreakerService(settings_manager)
+            with st.spinner("❄️ アイスブレイク生成中..."):
+                st.session_state.icebreakers = ice_service.generate_icebreakers(
+                    sales_type=sales_type_val,
+                    industry=industry_val,
+                    company_hint=st.session_state.get("company_hint_input") or None,
+                    search_enabled=st.session_state.get("use_news_checkbox", True),
+                )
+            st.success("✅ アイスブレイクを生成しました！")
+            st.session_state.icebreak_last_news = getattr(
+                ice_service, "last_news_items", []
+            )
+        except Exception as e:
+            st.warning(
+                f"アイスブレイク生成に失敗しました（フォールバックを表示）: {e}"
+            )
+            try:
+                ice_service = IcebreakerService(None)
+                st.session_state.icebreakers = ice_service._generate_fallback_icebreakers(
+                    sales_type=sales_type_val,
+                    industry=industry_val,
+                    tone=ice_service._get_tone_for_type(sales_type_val),
+                )
+            except Exception:
+                st.session_state.icebreakers = []
+
+    if st.session_state.icebreakers:
+        st.markdown("#### 🎯 アイスブレイク候補")
+        for idx, line in enumerate(st.session_state.icebreakers, 1):
+            with st.container():
+                if st.session_state.selected_icebreaker == line:
+                    st.markdown(
+                        f"""
+                    <div style="
+                        border: 2px solid #00ff88;
+                        border-radius: 10px;
+                        padding: 15px;
+                        margin: 10px 0;
+                        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    ">
+                        <h4 style="margin: 0 0 10px 0; color: #0369a1;">🎯 選択中: {line}</h4>
+                        <p style="margin: 0; color: #0c4a6e;">このアイスブレイクが選択されています</p>
+                    </div>
+                    """,
+                        unsafe_allow_html=True,
+                    )
+                else:
+                    st.markdown(
+                        f"""
+                    <div style="
+                        border: 1px solid #e5e7eb;
+                        border-radius: 10px;
+                        padding: 15px;
+                        margin: 10px 0;
+                        background: white;
+                        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                    ">
+                        <h4 style="margin: 0 0 10px 0; color: #374151;">{idx}. {line}</h4>
+                    </div>
+                    """,
+                        unsafe_allow_html=True,
+                    )
+
+                col1, col2, col3 = st.columns([1, 1, 1])
+
+                with col1:
+                    if st.button(
+                        f"🎯 選択",
+                        key=f"select_{idx}",
+                        use_container_width=True,
+                        type="primary"
+                        if st.session_state.selected_icebreaker == line
+                        else "secondary",
+                    ):
+                        st.session_state.selected_icebreaker = line
+                        st.rerun()
+
+                with col2:
+                    if st.button(
+                        f"📋 コピー",
+                        key=f"copy_{idx}",
+                        use_container_width=True,
+                    ):
+                        st.markdown("**コピー対象テキスト：**")
+                        st.code(line, language="text")
+                        st.success(
+                            "✅ 上記テキストを選択してCtrl+Cでコピーしてください"
+                        )
+                        st.balloons()
+
+                with col3:
+                    if st.button(
+                        f"👁️ 詳細",
+                        key=f"detail_{idx}",
+                        use_container_width=True,
+                    ):
+                        st.info(f"**アイスブレイク詳細：**\n\n{line}")
+
+                st.markdown("---")
+
+        if st.session_state.selected_icebreaker:
+            st.markdown("### ❄️ 選択中のアイスブレイク")
+            st.markdown(
+                f"""
+            <div style="
+                border: 3px solid #00ff88;
+                border-radius: 15px;
+                padding: 20px;
+                margin: 15px 0;
+                background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+                box-shadow: 0 8px 16px rgba(0, 255, 136, 0.2);
+            ">
+                <h3 style="margin: 0 0 15px 0; color: #166534; text-align: center;">🎯 選択済みアイスブレイク</h3>
+                <div style="
+                    background: white;
+                    padding: 15px;
+                    border-radius: 8px;
+                    border: 1px solid #bbf7d0;
+                    font-size: 16px;
+                    line-height: 1.6;
+                    color: #166534;
+                    cursor: pointer;
+                    user-select: text;
+                ">
+                    {st.session_state.selected_icebreaker}
+                </div>
+                <div style="margin: 15px 0 0 0; text-align: center;">
+                    <button onclick="navigator.clipboard.writeText('{st.session_state.selected_icebreaker}')"
+                            style="
+                                background: #16a34a;
+                                color: white;
+                                border: none;
+                                padding: 8px 16px;
+                                border-radius: 6px;
+                                cursor: pointer;
+                                font-size: 14px;
+                            ">
+                        📋 クリップボードにコピー
+                    </button>
+                </div>
+                <p style="margin: 15px 0 0 0; text-align: center; color: #16a34a; font-size: 14px;">
+                    💡 上記ボタンでコピー、またはテキストを選択してCtrl+Cでコピーしてください
+                </p>
+            </div>
+            """,
+                unsafe_allow_html=True,
+            )
+
+
+def render_save_section(sales_input: SalesInput, advice: dict):
+    """結果保存ボタンと処理"""
+    if st.button("💾 生成結果を保存", use_container_width=False):
+        try:
+            session_id = save_pre_advice(
+                sales_input=sales_input,
+                advice=advice,
+                selected_icebreaker=st.session_state.get("selected_icebreaker"),
+            )
+            st.session_state.pre_advice_session_id = session_id
+
+            st.success("✅ 結果を保存しました！")
+
+            st.markdown("---")
+            st.markdown(
+                """
+                <div style="
+                    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                    padding: 25px;
+                    border-radius: 15px;
+                    margin: 20px 0;
+                    text-align: center;
+                    color: white;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                ">
+                    <h3 style="margin: 0; color: white; font-size: 1.5em;">💾 保存完了</h3>
+                    <p style="margin: 15px 0; opacity: 0.9; font-size: 1.1em;">セッションが正常に保存されました</p>
+                    <div style="
+                        background: rgba(255, 255, 255, 0.2);
+                        padding: 15px;
+                        border-radius: 10px;
+                        margin: 15px 0;
+                        font-family: monospace;
+                        font-size: 1.2em;
+                        letter-spacing: 1px;
+                    ">
+                        <strong>セッションID:</strong> {session_id}
+                    </div>
+                    <p style="margin: 10px 0 0 0; opacity: 0.8; font-size: 0.9em;">
+                        📁 保存場所: data/sessions/{session_id}.json
+                    </p>
+                </div>
+                """.format(session_id=session_id),
+                unsafe_allow_html=True,
+            )
+
+            col1, col2, col3 = st.columns([1, 1, 1])
+            with col1:
+                if st.button(
+                    "📚 履歴ページで確認", key="view_history", use_container_width=True
+                ):
+                    st.switch_page("pages/history.py")
+            with col2:
+                if st.button(
+                    "🔄 新しいアドバイスを生成", key="new_advice", use_container_width=True
+                ):
+                    st.session_state.pre_advice_form_data = {}
+                    st.session_state.pop("pre_advice_session_id", None)
+                    st.rerun()
+            with col3:
+                if st.button(
+                    "📥 JSONダウンロード", key="download_json", use_container_width=True
+                ):
+                    download_data = {
+                        "session_id": session_id,
+                        "timestamp": datetime.now().isoformat(),
+                        "type": "pre_advice",
+                        "input": sales_input.dict(),
+                        "output": {
+                            "advice": advice,
+                            "selected_icebreaker": st.session_state.get(
+                                "selected_icebreaker"
+                            ),
+                        },
+                    }
+                    json_str = json.dumps(download_data, ensure_ascii=False, indent=2)
+                    st.download_button(
+                        label="📥 ダウンロード開始",
+                        data=json_str,
+                        file_name=f"pre_advice_{session_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
+                        mime="application/json",
+                        key="download_button",
+                        use_container_width=True,
+                    )
+
+            st.info(
+                "💡 **次のステップ**: 履歴ページで保存されたセッションを確認したり、新しいアドバイスを生成したりできます。"
+            )
+        except Exception as e:
+            st.error(f"❌ 保存に失敗しました: {str(e)}")
+            st.info(
+                "しばらく時間をおいて再度お試しください。問題が続く場合は管理者にお問い合わせください。"
+            )
+
 
 def show_pre_advice_page():
+    """事前アドバイスページを表示"""
+    st.header("事前アドバイス生成")
+    st.write("商談前の準備をサポートします。営業タイプ、業界、商品情報を入力してください。")
+
+    if "pre_advice_form_data" not in st.session_state:
+        st.session_state.pre_advice_form_data = {}
+
+    submitted, form_data = render_pre_advice_form()
+    render_icebreaker_section()
+
+    autorun = st.session_state.pop("pre_advice_autorun", False)
+    if submitted or autorun:
+        constraints_input = form_data.get("constraints_input")
+        constraints = [c.strip() for c in constraints_input.split("\n") if c.strip()] if constraints_input else []
+
+        sales_input = SalesInput(
+            sales_type=form_data["sales_type"],
+            industry=form_data["industry"],
+            product=form_data["product"],
+            description=form_data["description"],
+            description_url=form_data["description_url"],
+            competitor=form_data["competitor"],
+            competitor_url=form_data["competitor_url"],
+            stage=form_data["stage"],
+            purpose=form_data["purpose"],
+            constraints=constraints,
+        )
+
+        validation_errors = validate_sales_input(sales_input)
+        if validation_errors:
+            st.error("❌ 入力内容に問題があります。以下を確認してください：")
+            for error in validation_errors:
+                st.error(f"• {error}")
+            return
+
+        try:
+            with st.spinner("🤖 AIがアドバイスを生成中..."):
+                from services.settings_manager import SettingsManager
+
+                settings_manager = SettingsManager()
+                service = PreAdvisorService(settings_manager)
+                advice = service.generate_advice(sales_input)
+
+            st.success("✅ アドバイスの生成が完了しました！")
+
+            if st.session_state.selected_icebreaker:
+                st.markdown("### ❄️ アイスブレイク（選択中）")
+                st.markdown(f"> {st.session_state.selected_icebreaker}")
+
+            display_advice(advice)
+
+            sources = st.session_state.get("icebreak_last_news", [])
+            if sources:
+                st.markdown("### 🔍 参考出典")
+                for item in sources:
+                    title = item.get("title") or "出典"
+                    url = item.get("url") or ""
+                    src = item.get("source") or "web"
+                    score = item.get("score")
+                    reasons = ", ".join(item.get("reasons", [])) if isinstance(item.get("reasons"), list) else None
+                    meta = []
+                    if src:
+                        meta.append(src)
+                    if score is not None:
+                        meta.append(f"score: {score}")
+                    if reasons:
+                        meta.append(reasons)
+                    meta_str = f"（{' / '.join(meta)}）" if meta else ""
+                    if url:
+                        st.markdown(f"- [{title}]({url}) {meta_str}")
+                    else:
+                        st.markdown(f"- {title} {meta_str}")
+
+            render_save_section(sales_input, advice)
+        except Exception as e:
+            st.error(f"❌ アドバイスの生成に失敗しました: {str(e)}")
+            st.info(
+                "しばらく時間をおいて再度お試しください。問題が続く場合は管理者にお問い合わせください。"
+            )
+
+def _legacy_show_pre_advice_page():
     st.header("事前アドバイス生成")
     st.write("商談前の準備をサポートします。営業タイプ、業界、商品情報を入力してください。")
     
@@ -509,21 +1013,6 @@ def show_pre_advice_page():
         except Exception as e:
             st.error(f"❌ アドバイスの生成に失敗しました: {str(e)}")
             st.info("しばらく時間をおいて再度お試しください。問題が続く場合は管理者にお問い合わせください。")
-
-def get_sales_type_emoji(sales_type: SalesType) -> str:
-    """営業タイプに対応する絵文字を取得"""
-    emoji_map = {
-        SalesType.HUNTER: "🏹",
-        SalesType.CLOSER: "🔒",
-        SalesType.RELATION: "🤝",
-        SalesType.CONSULTANT: "🧭",
-        SalesType.CHALLENGER: "⚡",
-        SalesType.STORYTELLER: "📖",
-        SalesType.ANALYST: "📊",
-        SalesType.PROBLEM_SOLVER: "🧩",
-        SalesType.FARMER: "🌾"
-    }
-    return emoji_map.get(sales_type, "💼")
 
 def display_advice(advice: dict):
     """アドバイスの表示"""
