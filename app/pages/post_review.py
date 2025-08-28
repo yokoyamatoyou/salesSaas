@@ -10,6 +10,7 @@ from services.settings_manager import SettingsManager
 from providers.storage_local import LocalStorageProvider
 from datetime import datetime
 from components.sales_type import sales_type_selectbox
+from components.copy_button import copy_button
 
 def show_post_review_page():
     st.header("🔍 商談後ふりかえり解析")
@@ -239,9 +240,7 @@ def display_analysis_result(analysis: dict):
                         st.markdown(f"**対応策：** {objection['counter']}")
                         
                         # コピーボタン
-                        if st.button(f"📋 コピー", key=f"copy_objection_{i}", use_container_width=True):
-                            st.code(objection['counter'], language="text")
-                            st.success("✅ 上記テキストを選択してCtrl+Cでコピーしてください")
+                        copy_button(objection['counter'], key=f"copy_objection_{i}", use_container_width=True)
     
     # リスク分析
     if "risks" in analysis and analysis["risks"]:
@@ -286,9 +285,7 @@ def display_analysis_result(analysis: dict):
             """, unsafe_allow_html=True)
             
             # コピーボタン
-            if st.button(f"📋 コピー", key=f"copy_action_{i}", use_container_width=True):
-                st.code(action, language="text")
-                st.success("✅ 上記テキストを選択してCtrl+Cでコピーしてください")
+            copy_button(action, key=f"copy_action_{i}", use_container_width=True)
     
     # フォローアップメール
     if "followup_email" in analysis:
@@ -303,10 +300,8 @@ def display_analysis_result(analysis: dict):
             st.code(email["body"], language="text")
             
             # メール全体をコピー
-            if st.button("📋 メール全体をコピー", key="copy_email", use_container_width=True):
-                full_email = f"件名: {email['subject']}\n\n{email['body']}"
-                st.code(full_email, language="text")
-                st.success("✅ 上記メール内容を選択してCtrl+Cでコピーしてください")
+            full_email = f"件名: {email['subject']}\n\n{email['body']}"
+            copy_button(full_email, key="copy_email", label="📋 メール全体をコピー", use_container_width=True)
     
     # 指標更新
     if "metrics_update" in analysis:
@@ -327,12 +322,8 @@ def display_analysis_result(analysis: dict):
     with col1:
         st.markdown("**📋 全体をコピー：**")
     with col2:
-        if st.button("📋 全体コピー", key="copy_all", use_container_width=True):
-            # JSONとして整形してコピー
-            formatted_json = json.dumps(analysis, ensure_ascii=False, indent=2)
-            st.code(formatted_json, language="json")
-            st.success("✅ 全体をJSON形式で表示しました！")
-            st.info("テキストを選択してCtrl+Cでコピーしてください")
+        formatted_json = json.dumps(analysis, ensure_ascii=False, indent=2)
+        copy_button(formatted_json, key="copy_all", label="📋 全体コピー", use_container_width=True)
 
 def save_post_review(**kwargs) -> str:
     """商談後ふりかえり解析の結果をセッション形式で保存し、Session IDを返す"""
