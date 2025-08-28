@@ -11,12 +11,20 @@ from components.sales_type import sales_type_selectbox
 
 
 def render_pre_advice_form():
-    """事前アドバイス入力フォームを表示"""
-    with st.form("pre_advice_form", clear_on_submit=False):
-        col1, col2 = st.columns(2)
+    """事前アドバイス入力フォームを段階的に表示"""
+    total_steps = 3
+    if "pre_form_step" not in st.session_state:
+        st.session_state.pre_form_step = 1
 
-        with col1:
-            sales_type = sales_type_selectbox(key="sales_type_select")
+    step = st.session_state.pre_form_step
+    st.progress(step / total_steps)
+    st.markdown(f"### ステップ {step}/{total_steps}")
+
+    submitted = False
+
+    if step == 1:
+        with st.form("pre_advice_step1", clear_on_submit=False):
+            sales_type_selectbox(key="sales_type_select")
 
             industry = st.text_input(
                 "業界 *",
@@ -48,6 +56,16 @@ def render_pre_advice_form():
                 else:
                     st.success("✅ 商品名が有効です")
 
+            next_clicked = st.form_submit_button(
+                "次へ", type="primary", use_container_width=True
+            )
+
+        if next_clicked:
+            st.session_state.pre_form_step = 2
+            st.rerun()
+
+    elif step == 2:
+        with st.form("pre_advice_step2", clear_on_submit=False):
             description_type = st.radio(
                 "説明の入力方法",
                 ["テキスト", "URL"],
@@ -55,23 +73,20 @@ def render_pre_advice_form():
                 key="description_type",
             )
             if description_type == "テキスト":
-                description = st.text_area(
+                st.text_area(
                     "説明",
                     placeholder="商品・サービスの詳細説明",
                     help="商品・サービスの特徴や価値を詳しく説明してください",
                     key="description_text",
                 )
-                description_url = None
             else:
-                description = None
-                description_url = st.text_input(
+                st.text_input(
                     "説明URL",
                     placeholder="https://example.com",
                     help="商品・サービスの説明が記載されているWebページのURLを入力してください",
                     key="description_url",
                 )
 
-        with col2:
             competitor_type = st.radio(
                 "競合の入力方法",
                 ["テキスト", "URL"],
@@ -79,23 +94,49 @@ def render_pre_advice_form():
                 key="competitor_type",
             )
             if competitor_type == "テキスト":
-                competitor = st.text_input(
+                st.text_input(
                     "競合",
                     placeholder="例: 競合A、競合B",
                     help="主要な競合企業やサービスを入力してください",
                     key="competitor_text",
                 )
-                competitor_url = None
             else:
-                competitor = None
-                competitor_url = st.text_input(
+                st.text_input(
                     "競合URL",
                     placeholder="https://competitor.com",
                     help="競合情報が記載されているWebページのURLを入力してください",
                     key="competitor_url",
                 )
 
-            stage = st.selectbox(
+            is_mobile = st.session_state.get("screen_width", 1000) < 600
+            if is_mobile:
+                back_clicked = st.form_submit_button(
+                    "戻る", use_container_width=True
+                )
+                next_clicked = st.form_submit_button(
+                    "次へ", type="primary", use_container_width=True
+                )
+            else:
+                back_col, next_col = st.columns(2)
+                with back_col:
+                    back_clicked = st.form_submit_button(
+                        "戻る", use_container_width=True
+                    )
+                with next_col:
+                    next_clicked = st.form_submit_button(
+                        "次へ", type="primary", use_container_width=True
+                    )
+
+        if back_clicked:
+            st.session_state.pre_form_step = 1
+            st.rerun()
+        elif next_clicked:
+            st.session_state.pre_form_step = 3
+            st.rerun()
+
+    else:  # step == 3
+        with st.form("pre_advice_step3", clear_on_submit=False):
+            st.selectbox(
                 "商談ステージ *",
                 ["初期接触", "ニーズ発掘", "提案", "商談", "クロージング"],
                 help="現在の商談の進行段階を選択してください",
@@ -117,32 +158,51 @@ def render_pre_advice_form():
                 else:
                     st.success("✅ 目的が有効です")
 
-            constraints_input = st.text_area(
+            st.text_area(
                 "制約",
                 placeholder="例: 予算制限、期間制限、技術制約（改行で区切って入力）",
                 help="商談や提案における制約事項があれば入力してください（各制約は3文字以上）",
                 key="constraints_input",
             )
 
-        col1, col2, col3 = st.columns([1, 1, 1])
-        with col2:
-            submitted = st.form_submit_button(
-                "🚀 アドバイスを生成",
-                type="primary",
-                use_container_width=True,
-            )
+            is_mobile = st.session_state.get("screen_width", 1000) < 600
+            if is_mobile:
+                back_clicked = st.form_submit_button(
+                    "戻る", use_container_width=True
+                )
+                submitted = st.form_submit_button(
+                    "🚀 アドバイスを生成",
+                    type="primary",
+                    use_container_width=True,
+                )
+            else:
+                back_col, submit_col = st.columns(2)
+                with back_col:
+                    back_clicked = st.form_submit_button(
+                        "戻る", use_container_width=True
+                    )
+                with submit_col:
+                    submitted = st.form_submit_button(
+                        "🚀 アドバイスを生成",
+                        type="primary",
+                        use_container_width=True,
+                    )
+
+        if back_clicked:
+            st.session_state.pre_form_step = 2
+            st.rerun()
 
     form_data = {
-        "sales_type": sales_type,
-        "industry": industry,
-        "product": product,
-        "description": description,
-        "description_url": description_url,
-        "competitor": competitor,
-        "competitor_url": competitor_url,
-        "stage": stage,
-        "purpose": purpose,
-        "constraints_input": constraints_input,
+        "sales_type": st.session_state.get("sales_type_select"),
+        "industry": st.session_state.get("industry_input"),
+        "product": st.session_state.get("product_input"),
+        "description": st.session_state.get("description_text"),
+        "description_url": st.session_state.get("description_url"),
+        "competitor": st.session_state.get("competitor_text"),
+        "competitor_url": st.session_state.get("competitor_url"),
+        "stage": st.session_state.get("stage_select"),
+        "purpose": st.session_state.get("purpose_input"),
+        "constraints_input": st.session_state.get("constraints_input"),
     }
     return submitted, form_data
 
