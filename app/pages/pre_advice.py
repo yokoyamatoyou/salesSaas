@@ -74,6 +74,7 @@ def render_pre_advice_form():
                 key="description_type",
             )
             if description_type == "テキスト":
+                st.session_state["description_url"] = None
                 st.text_area(
                     "説明",
                     placeholder="商品・サービスの詳細説明",
@@ -81,6 +82,7 @@ def render_pre_advice_form():
                     key="description_text",
                 )
             else:
+                st.session_state["description_text"] = None
                 st.text_input(
                     "説明URL",
                     placeholder="https://example.com",
@@ -95,6 +97,7 @@ def render_pre_advice_form():
                 key="competitor_type",
             )
             if competitor_type == "テキスト":
+                st.session_state["competitor_url"] = None
                 st.text_input(
                     "競合",
                     placeholder="例: 競合A、競合B",
@@ -102,6 +105,7 @@ def render_pre_advice_form():
                     key="competitor_text",
                 )
             else:
+                st.session_state["competitor_text"] = None
                 st.text_input(
                     "競合URL",
                     placeholder="https://competitor.com",
@@ -193,14 +197,35 @@ def render_pre_advice_form():
             st.session_state.pre_form_step = 2
             st.rerun()
 
+    description = (
+        st.session_state.get("description_text")
+        if st.session_state.get("description_type") == "テキスト"
+        else None
+    )
+    description_url = (
+        st.session_state.get("description_url")
+        if st.session_state.get("description_type") == "URL"
+        else None
+    )
+    competitor = (
+        st.session_state.get("competitor_text")
+        if st.session_state.get("competitor_type") == "テキスト"
+        else None
+    )
+    competitor_url = (
+        st.session_state.get("competitor_url")
+        if st.session_state.get("competitor_type") == "URL"
+        else None
+    )
+
     form_data = {
         "sales_type": st.session_state.get("sales_type_select"),
         "industry": st.session_state.get("industry_input"),
         "product": st.session_state.get("product_input"),
-        "description": st.session_state.get("description_text"),
-        "description_url": st.session_state.get("description_url"),
-        "competitor": st.session_state.get("competitor_text"),
-        "competitor_url": st.session_state.get("competitor_url"),
+        "description": description,
+        "description_url": description_url,
+        "competitor": competitor,
+        "competitor_url": competitor_url,
         "stage": st.session_state.get("stage_select"),
         "purpose": st.session_state.get("purpose_input"),
         "constraints_input": st.session_state.get("constraints_input"),
