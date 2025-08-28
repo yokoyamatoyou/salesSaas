@@ -1,8 +1,10 @@
+import json
 import pytest
 from unittest.mock import Mock, patch
 from core.models import SalesInput, SalesType
 from services.pre_advisor import PreAdvisorService
 from services.post_analyzer import PostAnalyzerService
+from services.search_enhancer import SearchEnhancerService
 
 def test_pre_advisor_service():
     """事前アドバイスサービスのテスト"""
@@ -75,4 +77,28 @@ def test_post_analyzer_service():
         assert "summary" in result
         assert "bant" in result
         assert "next_actions" in result
+
+
+def test_search_enhancer_calls_llm():
+    """検索高度化サービスがLLMを呼び出すことを確認"""
+    with patch('services.search_enhancer.OpenAIProvider') as mock_provider:
+        mock_llm = Mock()
+        mock_llm.call_llm.return_value = {"content": json.dumps({"optimized_queries": [], "search_strategy": ""})}
+        mock_provider.return_value = mock_llm
+
+        service = SearchEnhancerService()
+        result = service.enhance_search_query("テスト", industry="IT")
+
+        assert "optimized_queries" in result
+        mock_llm.call_llm.assert_called_once()
+        args, _ = mock_llm.call_llm.call_args
+        assert args[1] == "speed"
+
+
+def test_search_enhancer_without_api_key():
+    """APIキーがなくてもフォールバックが動作することを確認"""
+    with patch('services.search_enhancer.OpenAIProvider', side_effect=ValueError("OPENAI_API_KEYが設定されていません")):
+        service = SearchEnhancerService()
+        result = service.enhance_search_query("テスト", industry="IT")
+        assert "optimized_queries" in result
 
