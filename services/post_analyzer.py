@@ -11,28 +11,45 @@ from services.logger import Logger
 
 logger = Logger("PostAnalyzerService")
 
+_global_llm_provider: Optional[OpenAIProvider] = None
+
+
 class PostAnalyzerService:
     """商談後ふりかえり解析サービス"""
-    
+
     def __init__(self, settings_manager=None):
         """初期化"""
         self.settings_manager = settings_manager
         self.llm_provider = None
         self.prompt_template = None
-        
+
         # プロンプトテンプレートの読み込み
         self._load_prompt_template()
-        
-        # LLMプロバイダーの初期化
-        if settings_manager:
+
+        # LLMプロバイダーの初期化（共有インスタンスを利用）
+        global _global_llm_provider
+        if _global_llm_provider is not None:
+            self.llm_provider = _global_llm_provider
+            return
+
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key and settings_manager:
             try:
                 llm_config = settings_manager.get_llm_config()
-                if llm_config.get('api_key'):
-                    self.llm_provider = OpenAIProvider(api_key=llm_config['api_key'])
-                else:
-                    logger.warning("OpenAI APIキーが設定されていません")
+                api_key = llm_config.get("api_key")
+                if api_key and not os.getenv("OPENAI_API_KEY"):
+                    os.environ["OPENAI_API_KEY"] = api_key
+            except Exception as e:
+                logger.warning(f"LLM設定の取得に失敗: {e}")
+
+        if api_key:
+            try:
+                _global_llm_provider = OpenAIProvider(settings_manager)
+                self.llm_provider = _global_llm_provider
             except Exception as e:
                 logger.warning(f"LLMプロバイダーの初期化に失敗: {e}")
+        else:
+            logger.warning("OpenAI APIキーが設定されていません")
     
     def _load_prompt_template(self):
         """プロンプトテンプレートを読み込み"""

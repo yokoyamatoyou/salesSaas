@@ -1,44 +1,55 @@
 """
 商談後ふりかえり解析サービスのテスト
 """
-import pytest
 import os
-import tempfile
 from unittest.mock import Mock, patch
+
+import pytest
+
 from core.models import SalesType
 from services.post_analyzer import PostAnalyzerService
-from services.settings_manager import SettingsManager
 from services.error_handler import ConfigurationError
+
+
+@pytest.fixture(autouse=True)
+def reset_provider(monkeypatch):
+    """環境変数と共有LLMプロバイダーをリセット"""
+    from services import post_analyzer
+
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    post_analyzer._global_llm_provider = None
+    yield
+    post_analyzer._global_llm_provider = None
 
 class TestPostAnalyzerService:
     """PostAnalyzerServiceのテスト"""
     
-    def test_init_without_settings_manager(self):
-        """設定マネージャーなしでの初期化"""
-        service = PostAnalyzerService()
-        assert service.settings_manager is None
-        assert service.llm_provider is None
-        assert service.prompt_template is not None
-    
+    def test_init_with_env_api_key(self, monkeypatch):
+        """環境変数のAPIキーで初期化"""
+        monkeypatch.setenv("OPENAI_API_KEY", "env_key")
+        with patch('services.post_analyzer.OpenAIProvider') as mock_provider:
+            mock_provider.return_value = Mock()
+            service = PostAnalyzerService()
+            assert service.llm_provider is mock_provider.return_value
+            mock_provider.assert_called_once()
+
     def test_init_with_settings_manager(self):
-        """設定マネージャーありでの初期化"""
+        """設定マネージャーのAPIキーで初期化"""
         mock_settings = Mock()
         mock_settings.get_llm_config.return_value = {"api_key": "test_key"}
-        
         with patch('services.post_analyzer.OpenAIProvider') as mock_provider:
             mock_provider.return_value = Mock()
             service = PostAnalyzerService(mock_settings)
-            
-            assert service.settings_manager == mock_settings
-            assert service.llm_provider is not None
-    
-    def test_init_without_api_key(self):
+            assert service.llm_provider is mock_provider.return_value
+            mock_provider.assert_called_once_with(mock_settings)
+
+    def test_init_without_api_key(self, caplog):
         """APIキーなしでの初期化"""
         mock_settings = Mock()
         mock_settings.get_llm_config.return_value = {}
-        
         service = PostAnalyzerService(mock_settings)
         assert service.llm_provider is None
+        assert "APIキーが設定されていません" in caplog.text
     
     def test_load_prompt_template_success(self):
         """プロンプトテンプレートの読み込み成功"""
