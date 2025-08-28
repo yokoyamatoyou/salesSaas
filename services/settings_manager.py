@@ -50,8 +50,13 @@ class SettingsManager:
     def update_setting(self, key: str, value: Any) -> bool:
         """特定の設定を更新"""
         settings = self.load_settings()
-        
+
         if hasattr(settings, key):
+            if key == "search_provider":
+                try:
+                    value = SearchProvider(value)
+                except Exception:
+                    value = SearchProvider.STUB
             setattr(settings, key, value)
             return self.save_settings(settings)
         return False

@@ -1,6 +1,6 @@
 from enum import Enum
 from typing import List, Optional, Union, Dict, Any
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 class SalesType(str, Enum):
     HUNTER = "hunter"  # 🏹 ハンター
@@ -23,6 +23,7 @@ class SearchProvider(str, Enum):
     CSE = "cse"
     NEWSAPI = "newsapi"
     STUB = "stub"
+    HYBRID = "hybrid"
 
 class AppSettings(BaseModel):
     """アプリケーション設定"""
@@ -51,6 +52,17 @@ class AppSettings(BaseModel):
     # カスタマイズ設定
     custom_prompts: Dict[str, str] = Field(default_factory=dict, description="カスタムプロンプト")
     sales_type_colors: Dict[str, str] = Field(default_factory=dict, description="営業タイプ別の色設定")
+
+    @field_validator("search_provider", mode="before")
+    @classmethod
+    def _validate_search_provider(cls, v: Any) -> SearchProvider:
+        """検索プロバイダーの値を検証し、不正値はSTUBにフォールバック"""
+        if isinstance(v, SearchProvider):
+            return v
+        try:
+            return SearchProvider(str(v))
+        except Exception:
+            return SearchProvider.STUB
 
 class SalesInput(BaseModel):
     sales_type: SalesType

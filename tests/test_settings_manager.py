@@ -223,6 +223,25 @@ class TestSettingsManager:
         assert "limit" in search_config
         assert search_config["provider"] == SearchProvider.STUB
         assert search_config["limit"] == 5
+
+    def test_hybrid_search_provider_persistence(self):
+        """hybridプロバイダー設定の永続化テスト"""
+        # 事前にhybrid設定をファイルに保存
+        settings = AppSettings(search_provider=SearchProvider.HYBRID)
+        self.settings_manager.save_settings(settings)
+
+        # 設定を読み込みhybridが適用されることを確認
+        loaded = self.settings_manager.load_settings()
+        assert loaded.search_provider == SearchProvider.HYBRID
+
+        # 新しいインスタンスで再読込し、設定が保持されていることを確認
+        new_manager = SettingsManager(str(self.config_file))
+        reloaded = new_manager.load_settings()
+        assert reloaded.search_provider == SearchProvider.HYBRID
+
+        # get_search_configでもhybridが取得されることを確認
+        search_config = new_manager.get_search_config()
+        assert search_config["provider"] == SearchProvider.HYBRID
     
     def test_get_ui_config(self):
         """UI設定の取得テスト"""
