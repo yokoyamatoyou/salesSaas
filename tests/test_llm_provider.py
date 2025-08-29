@@ -243,10 +243,40 @@ class TestOpenAIProvider:
             with patch('providers.llm_openai.OpenAI') as mock_openai:
                 mock_client = Mock()
                 mock_openai.return_value = mock_client
-                
+
                 mock_client.chat.completions.create.side_effect = Exception("network error")
-                
+
                 provider = OpenAIProvider()
-                
+
                 with pytest.raises(Exception, match="LLM呼び出しでエラーが発生しました"):
                     provider.call_llm("プロンプト", "speed")
+
+    def test_get_default_modes_clamps_low_values(self):
+        """設定値が範囲外の場合にクランプされるかを検証"""
+        with patch.dict('os.environ', {'OPENAI_API_KEY': 'test-key'}):
+            with patch('providers.llm_openai.OpenAI'):
+                fake_settings = type('S', (), {'temperature': -1.0, 'max_tokens': 10000})()
+                settings_manager = Mock()
+                settings_manager.load_settings.return_value = fake_settings
+                provider = OpenAIProvider(settings_manager=settings_manager)
+                modes = provider.MODES
+                assert modes['speed']['temperature'] == 0.0
+                assert modes['deep']['temperature'] == 0.0
+                assert modes['creative']['temperature'] == 0.0
+                assert modes['speed']['max_tokens'] == 4000
+                assert modes['deep']['max_tokens'] == 4000
+                assert modes['creative']['max_tokens'] == 3200
+
+    def test_get_default_modes_clamps_high_temperature(self):
+        """温度が上限を超える場合にクランプされるかを検証"""
+        with patch.dict('os.environ', {'OPENAI_API_KEY': 'test-key'}):
+            with patch('providers.llm_openai.OpenAI'):
+                fake_settings = type('S', (), {'temperature': 5.0, 'max_tokens': 500})()
+                settings_manager = Mock()
+                settings_manager.load_settings.return_value = fake_settings
+                provider = OpenAIProvider(settings_manager=settings_manager)
+                modes = provider.MODES
+                assert modes['speed']['temperature'] == 2.0
+                assert modes['creative']['temperature'] == 2.0
+                assert modes['deep']['temperature'] == pytest.approx(1.6)
+                assert modes['speed']['max_tokens'] == 500
