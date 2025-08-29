@@ -220,6 +220,16 @@ def show_ui_settings(settings_manager: SettingsManager):
             value=settings.auto_save,
             help="生成されたアドバイスや分析を自動で保存"
         )
+        show_tutorial = st.checkbox(
+            t("show_tutorial_on_start"),
+            value=settings.show_tutorial_on_start,
+            help=t("show_tutorial_on_start_help"),
+        )
+
+        if st.button(t("show_tutorial_again")):
+            st.session_state["force_show_tutorial"] = True
+            st.rerun()
+
         
         # 設定の説明
         st.info("""
@@ -290,6 +300,7 @@ def show_ui_settings(settings_manager: SettingsManager):
         settings.language = language
         settings.theme = theme
         settings.auto_save = auto_save
+        settings.show_tutorial_on_start = show_tutorial
         
         if settings_manager.save_settings(settings):
             st.success("UI設定を保存しました！")

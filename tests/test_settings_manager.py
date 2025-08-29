@@ -37,6 +37,7 @@ class TestSettingsManager:
         assert settings.search_provider == SearchProvider.STUB
         assert settings.language == "ja"
         assert settings.theme == "light"
+        assert settings.show_tutorial_on_start is True
         
         # 設定ファイルが作成されていることを確認
         assert self.config_file.exists()
@@ -69,6 +70,7 @@ class TestSettingsManager:
         assert settings.search_provider == SearchProvider.NEWSAPI
         assert settings.language == "en"
         assert settings.theme == "dark"
+        assert settings.show_tutorial_on_start is True
     
     def test_load_settings_invalid_file(self):
         """無効な設定ファイルの読み込みテスト"""
