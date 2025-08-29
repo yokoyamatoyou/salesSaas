@@ -94,3 +94,19 @@ def test_export_sessions(tmp_path: Path):
     assert {"session_id", "user_id", "success"}.issubset(rows[0].keys())
 
 
+def test_save_session_invalid_names(tmp_path: Path):
+    provider = LocalStorageProvider(data_dir=str(tmp_path))
+    with pytest.raises(ValueError):
+        provider.save_session({}, session_id="../bad")
+    with pytest.raises(ValueError):
+        provider.save_session({}, session_id="bad/name")
+
+
+def test_save_data_invalid_filename(tmp_path: Path):
+    provider = LocalStorageProvider(data_dir=str(tmp_path))
+    with pytest.raises(ValueError):
+        provider.save_data("../bad.json", {})
+    with pytest.raises(ValueError):
+        provider.save_data("bad/name.json", {})
+
+
