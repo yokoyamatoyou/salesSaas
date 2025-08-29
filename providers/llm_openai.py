@@ -3,6 +3,7 @@ import json
 from typing import Literal, Dict, Any, Optional
 from openai import OpenAI
 from tenacity import retry, stop_after_attempt, wait_exponential
+from jsonschema import validate as jsonschema_validate, ValidationError
 
 MODEL_TOKEN_LIMIT = 4000
 
@@ -127,15 +128,11 @@ class OpenAIProvider:
     
     def validate_schema(self, response: Dict[str, Any], expected_schema: Dict[str, Any]) -> bool:
         """レスポンスが期待されるスキーマに従っているかを検証"""
-        # 基本的なスキーマ検証（簡易版）
-        if not isinstance(response, dict):
+        try:
+            jsonschema_validate(instance=response, schema=expected_schema)
+            return True
+        except ValidationError:
             return False
-        
-        # 必須フィールドのチェック
-        required_fields = expected_schema.get("required", [])
-        for field in required_fields:
-            if field not in response:
-                return False
-        
-        return True
+        except Exception:
+            return False
 
