@@ -17,7 +17,7 @@ def test_save_and_load_session(tmp_path: Path):
         "output": {"result": 1},
     }
 
-    session_id = provider.save_session(payload)
+    session_id = provider.save_session(payload, team_id="t0")
     assert isinstance(session_id, str) and len(session_id) > 0
 
     # ファイルが作成されている
@@ -30,6 +30,7 @@ def test_save_and_load_session(tmp_path: Path):
     assert data["data"] == payload
     assert data.get("pinned") is False
     assert data.get("tags") == []
+    assert data.get("team_id") == "t0"
 
 
 def test_set_pinned_and_list_order(tmp_path: Path):
@@ -79,19 +80,19 @@ def test_delete_session(tmp_path: Path):
 
 def test_export_sessions(tmp_path: Path):
     provider = LocalStorageProvider(data_dir=str(tmp_path))
-    provider.save_session({"type": "pre_advice", "input": {}, "output": {}}, user_id="u1", success=True)
-    provider.save_session({"type": "post_review", "input": {}, "output": {}}, user_id="u2", success=False)
+    provider.save_session({"type": "pre_advice", "input": {}, "output": {}}, user_id="u1", team_id="t1", success=True)
+    provider.save_session({"type": "post_review", "input": {}, "output": {}}, user_id="u2", team_id="t2", success=False)
 
     json_data = provider.export_sessions("json")
     parsed = json.loads(json_data)
     assert len(parsed) == 2
-    assert {"session_id", "user_id", "success"}.issubset(parsed[0].keys())
+    assert {"session_id", "user_id", "team_id", "success"}.issubset(parsed[0].keys())
 
     csv_data = provider.export_sessions("csv")
     reader = csv.DictReader(csv_data.splitlines())
     rows = list(reader)
     assert len(rows) == 2
-    assert {"session_id", "user_id", "success"}.issubset(rows[0].keys())
+    assert {"session_id", "user_id", "team_id", "success"}.issubset(rows[0].keys())
 
 
 def test_save_session_invalid_names(tmp_path: Path):

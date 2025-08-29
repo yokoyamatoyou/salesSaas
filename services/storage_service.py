@@ -1,4 +1,5 @@
 import os
+from typing import Any, Dict
 from providers.storage_local import LocalStorageProvider
 
 try:
@@ -31,3 +32,21 @@ def get_storage_provider():
 
     data_dir = os.getenv("DATA_DIR", "./data")
     return LocalStorageProvider(data_dir=data_dir)
+
+
+def save_session(
+    data: Dict[str, Any],
+    session_id: str | None = None,
+    user_id: str | None = None,
+    team_id: str | None = None,
+    success: bool | None = None,
+) -> str:
+    """Save session data with metadata using configured provider."""
+    provider = get_storage_provider()
+    return provider.save_session(
+        data,
+        session_id=session_id,
+        user_id=user_id,
+        team_id=team_id,
+        success=success,
+    )
