@@ -1,5 +1,6 @@
 import os
 import json
+import logging
 from typing import Literal, Dict, Any, Optional
 from openai import (
     OpenAI,
@@ -10,6 +11,9 @@ from openai import (
 )
 from tenacity import retry, stop_after_attempt, wait_exponential
 from jsonschema import validate as jsonschema_validate, ValidationError
+
+
+logger = logging.getLogger(__name__)
 
 MODEL_TOKEN_LIMIT = 4000
 
@@ -89,7 +93,13 @@ class OpenAIProvider:
     def MODES(self):
         return self._get_default_modes()
     
-    def call_llm(self, prompt: str, mode: Literal["speed", "deep", "creative"], json_schema: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(min=1, max=8), reraise=True)
+    def call_llm(
+        self,
+        prompt: str,
+        mode: Literal["speed", "deep", "creative"],
+        json_schema: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
         """LLMを呼び出してJSON形式で応答を取得"""
         mode_config = self.MODES[mode]
         
@@ -155,14 +165,19 @@ class OpenAIProvider:
             # バリデーションエラーはそのまま再発生
             raise e
         except RateLimitError as e:
+            logger.error("Rate limit exceeded", exc_info=e)
             raise LLMError("APIレート制限に達しました。しばらく待ってから再試行してください。") from e
         except BadRequestError as e:
+            logger.error("Quota exceeded", exc_info=e)
             raise LLMError("APIクォータが不足しています。") from e
         except AuthenticationError as e:
+            logger.error("Invalid API key", exc_info=e)
             raise LLMError("無効なAPIキーです。OPENAI_API_KEYを確認してください。") from e
         except APIError as e:
+            logger.error("OpenAI API error", exc_info=e)
             raise LLMError(f"LLM呼び出しでエラーが発生しました: {e}") from e
         except Exception as e:
+            logger.error("Unexpected error during LLM call", exc_info=e)
             raise LLMError(f"LLM呼び出しでエラーが発生しました: {e}") from e
     
     def validate_schema(self, response: Dict[str, Any], expected_schema: Dict[str, Any]) -> bool:
