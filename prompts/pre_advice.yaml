@@ -10,16 +10,16 @@ system: |
   - 明確なKPIと次アクションを設定
 
 user: |
-  営業タイプ: {sales_type}
-  業界: {industry}
-  商品・サービス: {product}
-  説明: {description}
-  説明URL: {description_url}
-  競合: {competitor}
-  競合URL: {competitor_url}
-  商談ステージ: {stage}
-  目的: {purpose}
-  制約: {constraints}
+  営業タイプ: $sales_type
+  業界: $industry
+  商品・サービス: $product
+  説明: $description
+  説明URL: $description_url
+  競合: $competitor
+  競合URL: $competitor_url
+  商談ステージ: $stage
+  目的: $purpose
+  制約: $constraints
   
   上記の情報を基に、営業担当者の商談前準備をサポートするアドバイスを生成してください。
   
