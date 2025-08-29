@@ -11,10 +11,11 @@ from services.storage_service import get_storage_provider
 from datetime import datetime
 from components.sales_type import sales_type_selectbox
 from components.copy_button import copy_button
+from translations import t
 
 def show_post_review_page():
-    st.header("🔍 商談後ふりかえり解析")
-    st.write("商談後の議事録やメモを分析し、次回への改善点とアクションプランを生成します。")
+    st.header(t("post_review_header"))
+    st.write(t("post_review_desc"))
     
     # セッション状態の初期化
     if 'post_review_form_data' not in st.session_state:

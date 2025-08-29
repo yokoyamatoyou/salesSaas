@@ -3,18 +3,19 @@ import json
 from pathlib import Path
 from services.settings_manager import SettingsManager
 from core.models import LLMMode, SearchProvider
+from translations import t
 
 def show_settings_page():
     """設定ページを表示"""
-    st.title("⚙️ 設定・カスタマイズ")
-    st.markdown("アプリケーションの動作をカスタマイズできます。")
+    st.title(t("settings_page_title"))
+    st.markdown(t("settings_page_desc"))
     
     # 設定マネージャーの初期化
     settings_manager = SettingsManager()
     
     # タブで設定を分類
     tab1, tab2, tab3, tab4, tab5 = st.tabs([
-        "🤖 LLM設定", "🔍 検索設定", "🎨 UI設定", "💾 データ設定", "📁 インポート/エクスポート"
+        t("tab_llm"), t("tab_search"), t("tab_ui"), t("tab_data"), t("tab_import_export")
     ])
     
     with tab1:
@@ -34,7 +35,7 @@ def show_settings_page():
 
 def show_llm_settings(settings_manager: SettingsManager):
     """LLM設定を表示"""
-    st.header("LLM設定")
+    st.header(t("tab_llm"))
     
     settings = settings_manager.load_settings()
     
@@ -91,7 +92,7 @@ def show_llm_settings(settings_manager: SettingsManager):
 
 def show_search_settings(settings_manager: SettingsManager):
     """検索設定を表示"""
-    st.header("検索設定")
+    st.header(t("tab_search"))
     
     settings = settings_manager.load_settings()
     
@@ -177,20 +178,23 @@ def show_search_settings(settings_manager: SettingsManager):
 
 def show_ui_settings(settings_manager: SettingsManager):
     """UI設定を表示"""
-    st.header("UI設定")
+    st.header(t("tab_ui"))
     
     settings = settings_manager.load_settings()
     
     col1, col2 = st.columns(2)
-    
+
     with col1:
         # 言語設定
         language = st.selectbox(
-            "言語設定",
+            t("language_setting"),
             options=["ja", "en"],
             index=0 if settings.language == "ja" else 1,
-            help="アプリケーションの表示言語"
+            help=t("language_setting_help"),
+            key="language_select",
         )
+        if st.session_state.get("language") != language:
+            st.session_state["language"] = language
         
         # テーマ設定
         theme = st.selectbox(
@@ -285,7 +289,7 @@ def show_ui_settings(settings_manager: SettingsManager):
 
 def show_data_settings(settings_manager: SettingsManager):
     """データ設定を表示"""
-    st.header("データ設定")
+    st.header(t("tab_data"))
     
     settings = settings_manager.load_settings()
     
@@ -359,7 +363,7 @@ def show_data_settings(settings_manager: SettingsManager):
 
 def show_import_export(settings_manager: SettingsManager):
     """インポート/エクスポート設定を表示"""
-    st.header("設定のインポート/エクスポート")
+    st.header(t("tab_import_export"))
     
     col1, col2 = st.columns(2)
     

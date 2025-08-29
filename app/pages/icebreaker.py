@@ -5,10 +5,11 @@ from datetime import datetime
 from core.models import SalesType
 from services.icebreaker import IcebreakerService
 from components.copy_button import copy_button
+from translations import t
 
 def show_icebreaker_page():
-    st.header("🎯 アイスブレイク生成")
-    st.write("営業タイプと業界に応じた、自然で親しみやすいアイスブレイクを生成します。")
+    st.header(t("icebreaker_header"))
+    st.write(t("icebreaker_desc"))
     
     # 履歴からの即時再生成（オートラン）の処理
     if st.session_state.get("icebreaker_autorun"):
