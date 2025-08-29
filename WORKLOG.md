@@ -3,6 +3,7 @@
 ## 2024-04-27
 ### Task
 - Set up work logging files: added WORKLOG.md and updated AGENT.md to document the new logging rule requiring four perspective reviews per task.
+  - refs: [AGENT.md, WORKLOG.md] (b780c7a)
 
 ### Reviews
 1. **Python上級エンジニア視点**: ドキュメントの構文やリンクに問題なし。将来的なメンテナンスの基盤として明確。
@@ -16,7 +17,9 @@
 ## 2025-08-28
 ### Task
 - AGENT.md にフェーズ進捗チェックボックスを追加
+  - refs: [AGENT.md] (75baaf1)
 - 旧進捗ファイル（進捗.txt）を削除し管理を一本化
+  - refs: [進捗.txt] (75baaf1)
 
 ### Reviews
 1. **Python上級エンジニア視点**: Markdown の構文が正しく、チェックボックスで進捗が一目で把握できる。
@@ -30,6 +33,7 @@
 ## 2025-08-29
 ### Task
 - pre_adviceフォームで説明/競合の入力モード切替時に非選択値をクリアし、XORバリデーションエラーを回避するよう修正
+  - refs: [app/pages/pre_advice.py] (dddbd4a)
 
 ### Reviews
 1. **Python上級エンジニア視点**: session_state の管理が明確になり、不要な値が検証に渡らないため保守性が向上。
@@ -43,7 +47,9 @@
 ## 2025-08-30
 ### Task
 - PostAnalyzerService が環境変数または設定マネージャーから API キーを取得し、共有 OpenAIProvider を再利用するよう修正
+  - refs: [services/post_analyzer.py] (8321c16)
 - API キー有無で初期化が成功することを確認するユニットテストを追加
+  - refs: [tests/test_post_analyzer.py] (8321c16)
 
 ### Reviews
 1. **Python上級エンジニア視点**: Singleton の導入で不要な初期化が避けられ、エラーハンドリングも改善された。
