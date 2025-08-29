@@ -1,0 +1,28 @@
+import pytest
+import pytest
+from services import storage_service
+
+
+class DummyProvider:
+    def __init__(self, *args, **kwargs):
+        pass
+
+
+def test_gcs_requires_bucket(monkeypatch):
+    monkeypatch.setenv("STORAGE_PROVIDER", "gcs")
+    monkeypatch.delenv("GCS_BUCKET_NAME", raising=False)
+    monkeypatch.delenv("GCS_PREFIX", raising=False)
+    monkeypatch.setattr(storage_service, "GCSStorageProvider", DummyProvider)
+    with pytest.raises(RuntimeError) as exc:
+        storage_service.get_storage_provider()
+    assert "GCS_BUCKET_NAME" in str(exc.value)
+
+
+def test_gcs_requires_prefix(monkeypatch):
+    monkeypatch.setenv("STORAGE_PROVIDER", "gcs")
+    monkeypatch.setenv("GCS_BUCKET_NAME", "bucket")
+    monkeypatch.setenv("GCS_PREFIX", "")
+    monkeypatch.setattr(storage_service, "GCSStorageProvider", DummyProvider)
+    with pytest.raises(RuntimeError) as exc:
+        storage_service.get_storage_provider()
+    assert "GCS_PREFIX" in str(exc.value)

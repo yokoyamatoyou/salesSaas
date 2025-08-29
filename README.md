@@ -55,10 +55,15 @@ chmod +x start_local.sh
 APP_ENV=local
 OPENAI_API_KEY=sk-xxxx
 DATA_DIR=./data
+STORAGE_PROVIDER=local  # local|gcs
+GCS_BUCKET_NAME=        # required when STORAGE_PROVIDER=gcs
+GCS_PREFIX=sessions     # optional prefix path
 SEARCH_PROVIDER=none   # none|cse|newsapi 等
 CSE_API_KEY=
 CSE_CX=
 ```
+
+`STORAGE_PROVIDER` を `gcs` に設定する場合は、`GCS_BUCKET_NAME`（必須）と必要に応じて `GCS_PREFIX` を指定してください。ローカルからGCSにアクセスする際は `GOOGLE_APPLICATION_CREDENTIALS` にサービスアカウントJSONのパスを設定します。
 
 ## LLMプロバイダのJSONスキーマ対応
 
