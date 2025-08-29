@@ -117,6 +117,7 @@ class IcebreakerService:
     def _generate_fallback_icebreakers(self, sales_type: SalesType, industry: str, tone: str) -> List[str]:
         """フォールバック用のアイスブレイクを生成"""
         # 営業タイプと業界に応じた基本的なアイスブレイク
+        # "お聞かせください" is the correct polite phrase. Avoid the typo "お聞かください".
         fallback_templates = {
             SalesType.HUNTER: [
                 f"最近の{industry}業界の動向はいかがですか？",
