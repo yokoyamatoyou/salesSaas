@@ -15,20 +15,11 @@ def main():
         layout="wide",
     )
 
-    # モバイルUI最適化（レスポンシブCSS + サイドバー非表示）
-    st.markdown(
-        """
-        <style>
-        @media (max-width: 640px) {
-          .block-container { padding-left: 0.6rem; padding-right: 0.6rem; }
-          .stButton>button { width: 100%; }
-          .stTextInput>div>div>input, textarea, select { font-size: 16px; }
-          section[data-testid="stSidebar"] { display: none; }
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
+    # モバイルUI最適化のCSSを読み込み
+    css_path = os.path.join(os.path.dirname(__file__), "static", "responsive.css")
+    if os.path.exists(css_path):
+        with open(css_path) as f:
+            st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
     # 画面幅を取得してセッションステートに保存
     if "screen_width" not in st.session_state:
