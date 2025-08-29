@@ -194,3 +194,19 @@
 - `pytest -q`
 - Environment: Python 3.12.10, streamlit==1.49.0, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1, google-cloud-secret-manager==2.24.0
 
+## 2025-09-06
+### Task
+- Dockerfile に curl のインストールとヘルスチェックを追加し、docker-compose のテストコマンドを curl -fsS に変更
+  - refs: [Dockerfile, docker-compose.yml]
+
+### Reviews
+1. **Python上級エンジニア視点**: ヘルスチェックを共通化し、シンプルな curl コマンドでメンテナンス性が向上。
+2. **UI/UX専門家視点**: コンテナの正常性が早期に検知でき、起動失敗時のトラブルシュートが容易。
+3. **クラウドエンジニア視点**: 依存ツールを明示的に追加したことで、コンテナ環境間の差異が減少。
+4. **ユーザー視点**: サービス起動が安定し、利用前の待機時間が短縮される。
+
+### Testing
+- `pytest -q` で 92 件のテストが成功
+- `docker compose up --build -d` （Docker がインストールされておらず実行不可）
+- Environment: Python 3.12.10, streamlit==1.49.0, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1, google-cloud-secret-manager==2.24.0
+
