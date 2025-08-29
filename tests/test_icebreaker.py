@@ -99,6 +99,23 @@ class TestIcebreakerService:
         assert len(result) == 3
         # フォールバックでは業界名が含まれることを確認
         assert any("IT" in icebreaker for icebreaker in result)
+
+    def test_build_prompt_handles_braces(self):
+        service = self.service
+        service.prompt_template = {
+            "system": "sys",
+            "user_template": "業界: $industry\n会社ヒント: $company_hint",
+            "output_constraints": []
+        }
+        prompt = service._build_prompt(
+            SalesType.HUNTER,
+            industry="I{T}",
+            company_hint="Comp{any}",
+            news_items=[],
+            tone="tone",
+        )
+        assert "I{T}" in prompt
+        assert "Comp{any}" in prompt
     
     def test_get_tone_for_type(self):
         """営業タイプ別トーンの取得テスト"""

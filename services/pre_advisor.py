@@ -2,12 +2,14 @@ import yaml
 import os
 import time
 from typing import Dict, Any
+from string import Template
 from core.models import SalesInput
 from core.schema import get_pre_advice_schema
 from providers.llm_openai import OpenAIProvider
 from providers.search_provider import WebSearchProvider
 from services.logger import Logger
 from services.error_handler import ErrorHandler, ServiceError, ConfigurationError
+from services.utils import escape_braces
 
 class PreAdvisorService:
     def __init__(self, settings_manager=None):
@@ -118,30 +120,33 @@ class PreAdvisorService:
     def _build_prompt(self, sales_input: SalesInput) -> str:
         """プロンプトを構築"""
         # 説明フィールドの処理
-        description = sales_input.description or ""
-        description_url = sales_input.description_url or ""
-        
+        description = escape_braces(sales_input.description or "")
+        description_url = escape_braces(sales_input.description_url or "")
+
         # 競合フィールドの処理
-        competitor = sales_input.competitor or ""
-        competitor_url = sales_input.competitor_url or ""
-        
+        competitor = escape_braces(sales_input.competitor or "")
+        competitor_url = escape_braces(sales_input.competitor_url or "")
+
         # 制約の処理
-        constraints_text = ", ".join(sales_input.constraints) if sales_input.constraints else "なし"
-        
+        constraints_text = escape_braces(
+            ", ".join(sales_input.constraints) if sales_input.constraints else "なし"
+        )
+
         # プロンプトテンプレートを適用
-        prompt = self.prompt_template["user"].format(
-            sales_type=sales_input.sales_type.value,
-            industry=sales_input.industry,
-            product=sales_input.product,
+        user_template = Template(self.prompt_template["user"])
+        prompt = user_template.safe_substitute(
+            sales_type=escape_braces(sales_input.sales_type.value),
+            industry=escape_braces(sales_input.industry),
+            product=escape_braces(sales_input.product),
             description=description,
             description_url=description_url,
             competitor=competitor,
             competitor_url=competitor_url,
-            stage=sales_input.stage,
-            purpose=sales_input.purpose,
-            constraints=constraints_text
+            stage=escape_braces(sales_input.stage),
+            purpose=escape_braces(sales_input.purpose),
+            constraints=constraints_text,
         )
-        
+
         # システムメッセージと出力形式を追加
         full_prompt = f"""
 {self.prompt_template['system']}
@@ -150,6 +155,7 @@ class PreAdvisorService:
 
 {prompt}
 """
-        
-        return full_prompt
+
+        # エスケープした波括弧を元に戻す
+        return full_prompt.replace("{{", "{").replace("}}", "}")
 

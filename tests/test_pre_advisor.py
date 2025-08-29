@@ -79,14 +79,14 @@ output_format: "出力形式"
                             
                             # YAMLの戻り値を設定
                             mock_yaml_load.return_value = {
-                                "user": "営業タイプ: {sales_type}\n業界: {industry}",
+                                "user": "営業タイプ: $sales_type\n業界: $industry\n説明: $description",
                                 "system": "システムメッセージ",
                                 "output_format": "出力形式"
                             }
-                            
+
                             service = PreAdvisorService()
                             service.prompt_template = {
-                                "user": "営業タイプ: {sales_type}\n業界: {industry}",
+                                "user": "営業タイプ: $sales_type\n業界: $industry\n説明: $description",
                                 "system": "システムメッセージ",
                                 "output_format": "出力形式"
                             }
@@ -95,7 +95,7 @@ output_format: "出力形式"
                                 sales_type=SalesType.HUNTER,
                                 industry="IT",
                                 product="SaaS",
-                                description="テスト商品",
+                                description="テスト商品{詳細}",
                                 description_url=None,
                                 competitor="競合A",
                                 competitor_url=None,
@@ -107,6 +107,7 @@ output_format: "出力形式"
                             prompt = service._build_prompt(sales_input)
                             assert "営業タイプ: hunter" in prompt
                             assert "業界: IT" in prompt
+                            assert "説明: テスト商品{詳細}" in prompt
                             assert "システムメッセージ" in prompt
                             assert "出力形式" in prompt
     

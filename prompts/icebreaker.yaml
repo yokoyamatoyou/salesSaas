@@ -8,14 +8,14 @@ system: |
   - 商談の導入として適切な内容にする
 
 user_template: |
-  営業タイプ: {sales_type} ({tone})
-  業界: {industry}
-  会社ヒント: {company_hint}
-  
+  営業タイプ: $sales_type ($tone)
+  業界: $industry
+  会社ヒント: $company_hint
+
   業界ニュース:
-  {news_items}
-  
-  上記の情報を基に、{tone}のトーンで1行のアイスブレイクを3つ生成してください。
+  $news_items
+
+  上記の情報を基に、$toneのトーンで1行のアイスブレイクを3つ生成してください。
   各アイスブレイクは自然で親しみやすく、商談の導入として適切な内容にしてください。
 
 output_constraints:

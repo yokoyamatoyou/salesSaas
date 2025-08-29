@@ -1,8 +1,10 @@
 import yaml
 from typing import List, Dict, Any
+from string import Template
 from core.models import SalesType
 from providers.llm_openai import OpenAIProvider
 from providers.search_provider import WebSearchProvider
+from services.utils import escape_braces
 
 class IcebreakerService:
     def __init__(self, settings_manager=None):
@@ -81,24 +83,30 @@ class IcebreakerService:
         """プロンプトを構築"""
         # システムメッセージ
         system_msg = self.prompt_template["system"]
-        
+
         # 業界ニュースの詳細を文字列として構築
         news_details = ""
         if news_items:
-            news_details = "\n".join([f"- {item['title']}: {item['snippet']}" for item in news_items])
-        
+            news_details = "\n".join(
+                [
+                    f"- {escape_braces(item['title'])}: {escape_braces(item['snippet'])}"
+                    for item in news_items
+                ]
+            )
+
         # ユーザーメッセージ
-        user_msg = self.prompt_template["user_template"].format(
-            sales_type=sales_type.value,
-            tone=tone,
-            industry=industry,
-            company_hint=company_hint or 'なし',
-            news_items=news_details
+        user_template = Template(self.prompt_template["user_template"])
+        user_msg = user_template.safe_substitute(
+            sales_type=escape_braces(sales_type.value),
+            tone=escape_braces(tone),
+            industry=escape_braces(industry),
+            company_hint=escape_braces(company_hint or 'なし'),
+            news_items=escape_braces(news_details),
         )
-        
+
         # 出力制約
         output_constraints = "\n".join(self.prompt_template["output_constraints"])
-        
+
         # 完全なプロンプトを構築
         full_prompt = f"""
 {system_msg}
@@ -111,8 +119,8 @@ class IcebreakerService:
 上記の情報を基に、{tone}のトーンで1行のアイスブレイクを3つ生成してください。
 各アイスブレイクは自然で親しみやすく、商談の導入として適切な内容にしてください。
 """
-        
-        return full_prompt
+
+        return full_prompt.replace("{{", "{").replace("}}", "}")
     
     def _generate_fallback_icebreakers(self, sales_type: SalesType, industry: str, tone: str) -> List[str]:
         """フォールバック用のアイスブレイクを生成"""
