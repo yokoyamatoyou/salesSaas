@@ -64,3 +64,18 @@
 ### Testing
 - `pytest -q` で 75 件のテストが成功
 - Environment: Python 3.12.10, streamlit==1.49.0, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1
+
+## 2025-08-31
+### Task
+ - pre_advice ページで `streamlit` を明示的にインポートし、依存関係の順序を整理
+  - refs: [app/pages/pre_advice.py]
+
+### Reviews
+1. **Python上級エンジニア視点**: 標準ライブラリ、サードパーティ、ローカルの順に整理され読みやすくなった。
+2. **UI/UX専門家視点**: 起動時のエラーが解消され、ユーザーがフォームに到達しやすい。
+3. **クラウドエンジニア視点**: 明示的な依存管理により、本番環境でのデプロイが安定。
+4. **ユーザー視点**: フォームが問題なく表示され、事前アドバイス生成までスムーズに進める。
+
+### Testing
+- `pytest -q` で 81 件のテストが成功
+- Environment: Python 3.12.10, streamlit==1.49.0, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1
