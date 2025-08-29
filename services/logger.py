@@ -4,6 +4,8 @@ from datetime import datetime
 from typing import Optional
 from pathlib import Path
 
+from .utils import mask_pii
+
 class Logger:
     """アプリケーション全体のログ管理サービス"""
     
@@ -59,29 +61,29 @@ class Logger:
     
     def info(self, message: str):
         """情報ログ"""
-        self.logger.info(message)
-    
+        self.logger.info(mask_pii(message))
+
     def warning(self, message: str):
         """警告ログ"""
-        self.logger.warning(message)
-    
+        self.logger.warning(mask_pii(message))
+
     def error(self, message: str, exc_info: Optional[Exception] = None):
         """エラーログ"""
         if exc_info:
-            self.logger.error(message, exc_info=exc_info)
+            self.logger.error(mask_pii(message), exc_info=exc_info)
         else:
-            self.logger.error(message)
-    
+            self.logger.error(mask_pii(message))
+
     def debug(self, message: str):
         """デバッグログ"""
-        self.logger.debug(message)
-    
+        self.logger.debug(mask_pii(message))
+
     def critical(self, message: str, exc_info: Optional[Exception] = None):
         """重大エラーログ"""
         if exc_info:
-            self.logger.critical(message, exc_info=exc_info)
+            self.logger.critical(mask_pii(message), exc_info=exc_info)
         else:
-            self.logger.critical(message)
+            self.logger.critical(mask_pii(message))
     
     def log_user_action(self, user_action: str, details: dict = None):
         """ユーザーアクションのログ"""
