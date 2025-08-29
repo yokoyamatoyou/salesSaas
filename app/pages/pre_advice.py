@@ -587,13 +587,22 @@ def show_pre_advice_page():
     st.header("事前アドバイス生成")
     st.write("商談前の準備をサポートします。営業タイプ、業界、商品情報を入力してください。")
 
+    is_mobile = st.session_state.get("screen_width", 1000) < 700
+
     if st.session_state.get("quickstart_mode"):
         submitted, form_data = render_quickstart_form()
     else:
         if "pre_advice_form_data" not in st.session_state:
             st.session_state.pre_advice_form_data = {}
-        submitted, form_data = render_pre_advice_form()
-        render_icebreaker_section()
+        if is_mobile:
+            tab_form, tab_ice = st.tabs(["入力フォーム", "アイスブレイク"])
+            with tab_form:
+                submitted, form_data = render_pre_advice_form()
+            with tab_ice:
+                render_icebreaker_section()
+        else:
+            submitted, form_data = render_pre_advice_form()
+            render_icebreaker_section()
 
     autorun = st.session_state.pop("pre_advice_autorun", False)
     if submitted or autorun:
