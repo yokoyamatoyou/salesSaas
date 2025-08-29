@@ -6,11 +6,12 @@ from urllib.parse import urlparse
 from services.storage_service import get_storage_provider
 from core.models import SalesType
 from streamlit_sortables import sort_items
+from translations import t
 
 
 def show_history_page() -> None:
-    st.header("履歴（セッション一覧）")
-    st.write("保存された生成結果を参照・再利用できます。")
+    st.header(t("history_header"))
+    st.write(t("history_desc"))
 
     
     provider = get_storage_provider()

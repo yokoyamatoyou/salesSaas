@@ -2,6 +2,7 @@ import os
 import streamlit as st
 from dotenv import load_dotenv
 from streamlit_javascript import st_javascript
+from translations import t
 
 # 環境変数を読み込み
 load_dotenv()
@@ -9,7 +10,7 @@ load_dotenv()
 
 def main():
     st.set_page_config(
-        page_title="営業特化SaaS",
+        page_title=t("app_title"),
         page_icon="🏢",
         layout="wide",
     )
@@ -40,7 +41,7 @@ def main():
                 width = 1000
         st.session_state.screen_width = width
 
-    st.title("🏢 営業特化SaaS")
+    st.title(t("app_title"))
     st.markdown("---")
 
     is_mobile = st.session_state.get("screen_width", 1000) < 700
@@ -52,20 +53,20 @@ def main():
     if is_mobile:
         # サイドバーの代わりにタブでページ切り替え
         st.checkbox(
-            "クイックスタートモード",
-            help="必要最小限の入力項目のみ表示",
+            t("quickstart_mode"),
+            help=t("quickstart_help"),
             key="quickstart_mode",
         )
-        tabs = st.tabs(
-            [
-                "事前アドバイス生成",
-                "商談後ふりかえり解析",
-                "アイスブレイク生成",
-                "履歴",
-                "設定・カスタマイズ",
-                "検索機能の高度化",
-            ]
-        )
+        page_keys = [
+            "pre_advice",
+            "post_review",
+            "icebreaker",
+            "history",
+            "settings",
+            "search_enhancement",
+        ]
+        page_labels = {k: t(k) for k in page_keys}
+        tabs = st.tabs([page_labels[k] for k in page_keys])
         with tabs[0]:
             from pages.pre_advice import show_pre_advice_page
 
@@ -92,50 +93,54 @@ def main():
             show_enhanced_search_page()
     else:
         # デスクトップでは従来どおりサイドバーを使用
-        st.sidebar.title("メニュー")
+        st.sidebar.title(t("menu"))
         if "page_select" not in st.session_state:
-            st.session_state.page_select = "事前アドバイス生成"
+            st.session_state.page_select = "pre_advice"
+
+        page_keys = [
+            "pre_advice",
+            "post_review",
+            "icebreaker",
+            "history",
+            "settings",
+            "search_enhancement",
+        ]
+        page_labels = {k: t(k) for k in page_keys}
 
         page = st.sidebar.selectbox(
-            "ページを選択",
-            [
-                "事前アドバイス生成",
-                "商談後ふりかえり解析",
-                "アイスブレイク生成",
-                "履歴",
-                "設定・カスタマイズ",
-                "検索機能の高度化",
-            ],
+            t("select_page"),
+            options=page_keys,
+            format_func=lambda x: page_labels[x],
             key="page_select",
         )
 
         st.sidebar.checkbox(
-            "クイックスタートモード",
-            help="必要最小限の入力項目のみ表示",
+            t("quickstart_mode"),
+            help=t("quickstart_help"),
             key="quickstart_mode",
         )
 
-        if page == "事前アドバイス生成":
+        if page == "pre_advice":
             from pages.pre_advice import show_pre_advice_page
 
             show_pre_advice_page()
-        elif page == "商談後ふりかえり解析":
+        elif page == "post_review":
             from pages.post_review import show_post_review_page
 
             show_post_review_page()
-        elif page == "アイスブレイク生成":
+        elif page == "icebreaker":
             from pages.icebreaker import show_icebreaker_page
 
             show_icebreaker_page()
-        elif page == "設定・カスタマイズ":
+        elif page == "settings":
             from pages.settings import show_settings_page
 
             show_settings_page()
-        elif page == "履歴":
+        elif page == "history":
             from pages.history import show_history_page
 
             show_history_page()
-        elif page == "検索機能の高度化":
+        elif page == "search_enhancement":
             from pages.search_enhancement import show_enhanced_search_page
 
             show_enhanced_search_page()

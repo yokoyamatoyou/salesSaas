@@ -9,16 +9,17 @@ from datetime import datetime
 from services.search_enhancer import SearchEnhancerService
 from services.settings_manager import SettingsManager
 from services.storage_service import get_storage_provider
+from translations import t
 
 def main():
     st.set_page_config(
-        page_title="検索機能の高度化",
+        page_title=t("search_enhancement_title"),
         page_icon="🔍",
         layout="wide"
     )
-    
-    st.title("🔍 検索機能の高度化")
-    st.markdown("LLMの知識を活用して検索結果の品質向上とスコアリングアルゴリズムを改善します")
+
+    st.title(t("search_enhancement_title"))
+    st.markdown(t("search_enhancement_desc"))
     
     # サービスの初期化
     try:
@@ -31,7 +32,7 @@ def main():
     
     # サイドバー設定
     with st.sidebar:
-        st.header("検索設定")
+        st.header(t("tab_search"))
         
         # 検索タイプの選択
         search_type = st.selectbox(
