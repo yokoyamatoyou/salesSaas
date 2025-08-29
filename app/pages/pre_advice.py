@@ -24,7 +24,8 @@ def update_form_data(src_key: str, dest_key: str) -> None:
 
 def render_form():
     """事前アドバイス入力フォームを段階的に表示"""
-    total_steps = 3
+    step_titles = ["基本情報", "詳細", "制約"]
+    total_steps = len(step_titles)
     if "pre_form_step" not in st.session_state:
         st.session_state.pre_form_step = 1
     if "pre_advice_form_data" not in st.session_state:
@@ -32,7 +33,7 @@ def render_form():
 
     step = st.session_state.pre_form_step
     st.progress(step / total_steps)
-    st.markdown(f"### ステップ {step}/{total_steps}")
+    st.markdown(f"### {step_titles[step - 1]} ({step}/{total_steps})")
 
     quickstart = st.session_state.get("quickstart_mode", False)
     submitted = False
