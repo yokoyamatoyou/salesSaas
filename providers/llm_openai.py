@@ -4,6 +4,8 @@ from typing import Literal, Dict, Any, Optional
 from openai import OpenAI
 from tenacity import retry, stop_after_attempt, wait_exponential
 
+MODEL_TOKEN_LIMIT = 4000
+
 class OpenAIProvider:
     def __init__(self, settings_manager=None):
         api_key = os.getenv("OPENAI_API_KEY")
@@ -17,19 +19,21 @@ class OpenAIProvider:
         if self.settings_manager:
             try:
                 settings = self.settings_manager.load_settings()
+                base_temp = max(0.0, min(2.0, settings.temperature))
+                base_tokens = max(1, min(MODEL_TOKEN_LIMIT, settings.max_tokens))
                 return {
                     "speed": {
-                        "temperature": settings.temperature,
+                        "temperature": base_temp,
                         "top_p": 0.9,
-                        "max_tokens": settings.max_tokens
+                        "max_tokens": base_tokens
                     },
                     "deep": {
-                        "temperature": settings.temperature * 0.8,
-                        "max_tokens": settings.max_tokens * 2
+                        "temperature": max(0.0, min(2.0, base_temp * 0.8)),
+                        "max_tokens": min(int(base_tokens * 2), MODEL_TOKEN_LIMIT)
                     },
                     "creative": {
-                        "temperature": settings.temperature * 1.5,
-                        "max_tokens": settings.max_tokens * 0.8
+                        "temperature": max(0.0, min(2.0, base_temp * 1.5)),
+                        "max_tokens": min(int(base_tokens * 0.8), MODEL_TOKEN_LIMIT)
                     }
                 }
             except Exception:
