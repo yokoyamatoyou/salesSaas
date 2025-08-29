@@ -1,5 +1,6 @@
 from typing import Optional, List
 from urllib.parse import urlparse
+import validators
 from .models import SalesInput, SalesType
 
 def validate_url(url: str) -> bool:
@@ -7,16 +8,14 @@ def validate_url(url: str) -> bool:
     if not url:
         return False
     try:
-        result = urlparse(url)
-        # サポートするスキームのみ許可
-        supported_schemes = ['http', 'https']
-        
-        # 各条件を個別にチェック
-        scheme_valid = result.scheme in supported_schemes
-        netloc_exists = bool(result.netloc)
-        netloc_length_valid = len(result.netloc) > 0
-        
-        return scheme_valid and netloc_exists and netloc_length_valid
+        parsed = urlparse(url)
+        # スキームは http/https のみ許可
+        if parsed.scheme not in {"http", "https"}:
+            return False
+        if not parsed.netloc:
+            return False
+        # validators.url は True か ValidationError を返す
+        return validators.url(url) is True
     except Exception:
         return False
 

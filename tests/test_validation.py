@@ -29,6 +29,8 @@ class TestURLValidation:
             "example.com",  # スキームなし
             "https://",  # ホストなし
             "http://",  # ホストなし
+            "https://exa_mple.com",  # 無効なホスト名
+            "https://example.com/invalid path",  # パスに空白
         ]
         
         for url in invalid_urls:
