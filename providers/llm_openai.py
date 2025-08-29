@@ -10,8 +10,25 @@ MODEL_TOKEN_LIMIT = 4000
 class OpenAIProvider:
     def __init__(self, settings_manager=None):
         api_key = os.getenv("OPENAI_API_KEY")
+
+        # Secret Managerから取得 (環境変数が未設定の場合)
+        if not api_key:
+            secret_name = os.getenv("OPENAI_API_SECRET_NAME")
+            project_id = os.getenv("GCP_PROJECT") or os.getenv("GOOGLE_CLOUD_PROJECT")
+            if secret_name and project_id:
+                try:
+                    from google.cloud import secretmanager
+
+                    client = secretmanager.SecretManagerServiceClient()
+                    secret_path = f"projects/{project_id}/secrets/{secret_name}/versions/latest"
+                    response = client.access_secret_version(name=secret_path)
+                    api_key = response.payload.data.decode("UTF-8")
+                except Exception:
+                    api_key = None
+
         if not api_key:
             raise ValueError("OPENAI_API_KEYが設定されていません")
+
         self.client = OpenAI(api_key=api_key)
         self.settings_manager = settings_manager
     

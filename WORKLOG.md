@@ -95,3 +95,22 @@
 ### Testing
 - `pytest -q` （コマンド未見つかりのため実行不可）
 
+## 2025-09-02
+### Task
+- OpenAIProvider が環境変数フォールバック付きで GCP Secret Manager から API キーを取得するよう更新
+  - refs: [providers/llm_openai.py]
+- 移行スクリプトの setup_secrets が Secret Manager を使用するよう更新
+  - refs: [migrate-to-gcp.sh]
+- google-cloud-secret-manager 依存を追加
+  - refs: [requirements.txt]
+
+### Reviews
+1. **Python上級エンジニア視点**: Secret Manager 統合により認証情報処理が明確化され、例外処理でフォールバックも安全に実装。
+2. **UI/UX専門家視点**: デプロイ後のキー設定が自動化され、開発者が煩雑な手作業を意識せずに利用可能。
+3. **クラウドエンジニア視点**: サービスアカウントに限定したアクセス権付与で、秘密情報の漏洩リスクを低減。
+4. **ユーザー視点**: 安全な鍵管理により、信頼性の高いサービス利用が期待できる。
+
+### Testing
+- `pytest -q` で 82 件のテストが成功
+- Environment: Python 3.12.10, streamlit==1.49.0, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1, google-cloud-secret-manager==2.24.0
+
