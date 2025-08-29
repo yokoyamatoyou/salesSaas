@@ -1,11 +1,10 @@
 import json
 from datetime import datetime
-from typing import List
 
 import streamlit as st
 
 from components.copy_button import copy_button
-from components.sales_type import sales_type_selectbox
+from components.sales_type import get_sales_type_emoji
 from core.models import SalesInput, SalesType
 from core.validation import (
     validate_industry,
@@ -18,11 +17,18 @@ from services.icebreaker import IcebreakerService
 from services.pre_advisor import PreAdvisorService
 
 
+def update_form_data(src_key: str, dest_key: str) -> None:
+    """セッションに入力値を保存"""
+    st.session_state.pre_advice_form_data[dest_key] = st.session_state.get(src_key)
+
+
 def render_pre_advice_form():
     """事前アドバイス入力フォームを段階的に表示"""
     total_steps = 3
     if "pre_form_step" not in st.session_state:
         st.session_state.pre_form_step = 1
+    if "pre_advice_form_data" not in st.session_state:
+        st.session_state.pre_advice_form_data = {}
 
     step = st.session_state.pre_form_step
     st.progress(step / total_steps)
@@ -31,14 +37,24 @@ def render_pre_advice_form():
     submitted = False
 
     if step == 1:
-        with st.form("pre_advice_step1", clear_on_submit=False):
-            sales_type_selectbox(key="sales_type_select")
+        with st.form("pre_advice_step1"):
+            st.selectbox(
+                "営業タイプ *",
+                options=list(SalesType),
+                format_func=lambda x: f"{x.value} ({get_sales_type_emoji(x)})",
+                help="営業スタイルを選択してください",
+                key="sales_type_select",
+                on_change=update_form_data,
+                args=("sales_type_select", "sales_type"),
+            )
 
             industry = st.text_input(
                 "業界 *",
                 placeholder="例: IT、製造業、金融業",
                 help="対象となる業界を入力してください（2文字以上）",
                 key="industry_input",
+                on_change=update_form_data,
+                args=("industry_input", "industry"),
             )
 
             if industry:
@@ -54,6 +70,8 @@ def render_pre_advice_form():
                 placeholder="例: SaaS、コンサルティング",
                 help="提供する商品・サービスを入力してください（2文字以上）",
                 key="product_input",
+                on_change=update_form_data,
+                args=("product_input", "product"),
             )
 
             if product:
@@ -73,28 +91,36 @@ def render_pre_advice_form():
             st.rerun()
 
     elif step == 2:
-        with st.form("pre_advice_step2", clear_on_submit=False):
+        with st.form("pre_advice_step2"):
             description_type = st.radio(
                 "説明の入力方法",
                 ["テキスト", "URL"],
                 help="商品・サービスの説明をテキストで入力するか、URLで指定するかを選択してください",
                 key="description_type",
+                on_change=update_form_data,
+                args=("description_type", "description_type"),
             )
             if description_type == "テキスト":
                 st.session_state["description_url"] = None
+                st.session_state.pre_advice_form_data["description_url"] = None
                 st.text_area(
                     "説明",
                     placeholder="商品・サービスの詳細説明",
                     help="商品・サービスの特徴や価値を詳しく説明してください",
                     key="description_text",
+                    on_change=update_form_data,
+                    args=("description_text", "description"),
                 )
             else:
                 st.session_state["description_text"] = None
+                st.session_state.pre_advice_form_data["description"] = None
                 st.text_input(
                     "説明URL",
                     placeholder="https://example.com",
                     help="商品・サービスの説明が記載されているWebページのURLを入力してください",
                     key="description_url",
+                    on_change=update_form_data,
+                    args=("description_url", "description_url"),
                 )
 
             competitor_type = st.radio(
@@ -102,22 +128,30 @@ def render_pre_advice_form():
                 ["テキスト", "URL"],
                 help="競合情報をテキストで入力するか、URLで指定するかを選択してください",
                 key="competitor_type",
+                on_change=update_form_data,
+                args=("competitor_type", "competitor_type"),
             )
             if competitor_type == "テキスト":
                 st.session_state["competitor_url"] = None
+                st.session_state.pre_advice_form_data["competitor_url"] = None
                 st.text_input(
                     "競合",
                     placeholder="例: 競合A、競合B",
                     help="主要な競合企業やサービスを入力してください",
                     key="competitor_text",
+                    on_change=update_form_data,
+                    args=("competitor_text", "competitor"),
                 )
             else:
                 st.session_state["competitor_text"] = None
+                st.session_state.pre_advice_form_data["competitor"] = None
                 st.text_input(
                     "競合URL",
                     placeholder="https://competitor.com",
                     help="競合情報が記載されているWebページのURLを入力してください",
                     key="competitor_url",
+                    on_change=update_form_data,
+                    args=("competitor_url", "competitor_url"),
                 )
 
             is_mobile = st.session_state.get("screen_width", 1000) < 600
@@ -147,12 +181,14 @@ def render_pre_advice_form():
             st.rerun()
 
     else:  # step == 3
-        with st.form("pre_advice_step3", clear_on_submit=False):
+        with st.form("pre_advice_step3"):
             st.selectbox(
                 "商談ステージ *",
                 ["初期接触", "ニーズ発掘", "提案", "商談", "クロージング"],
                 help="現在の商談の進行段階を選択してください",
                 key="stage_select",
+                on_change=update_form_data,
+                args=("stage_select", "stage"),
             )
 
             purpose = st.text_input(
@@ -160,6 +196,8 @@ def render_pre_advice_form():
                 placeholder="例: 新規顧客獲得、既存顧客拡大",
                 help="この商談の目的を具体的に入力してください（5文字以上）",
                 key="purpose_input",
+                on_change=update_form_data,
+                args=("purpose_input", "purpose"),
             )
 
             if purpose:
@@ -175,6 +213,8 @@ def render_pre_advice_form():
                 placeholder="例: 予算制限、期間制限、技術制約（改行で区切って入力）",
                 help="商談や提案における制約事項があれば入力してください（各制約は3文字以上）",
                 key="constraints_input",
+                on_change=update_form_data,
+                args=("constraints_input", "constraints_input"),
             )
 
             is_mobile = st.session_state.get("screen_width", 1000) < 600
@@ -204,38 +244,29 @@ def render_pre_advice_form():
             st.session_state.pre_form_step = 2
             st.rerun()
 
-    description = (
-        st.session_state.get("description_text")
-        if st.session_state.get("description_type") == "テキスト"
-        else None
-    )
-    description_url = (
-        st.session_state.get("description_url")
-        if st.session_state.get("description_type") == "URL"
-        else None
-    )
-    competitor = (
-        st.session_state.get("competitor_text")
-        if st.session_state.get("competitor_type") == "テキスト"
-        else None
-    )
-    competitor_url = (
-        st.session_state.get("competitor_url")
-        if st.session_state.get("competitor_type") == "URL"
-        else None
-    )
-
     form_data = {
-        "sales_type": st.session_state.get("sales_type_select"),
-        "industry": st.session_state.get("industry_input"),
-        "product": st.session_state.get("product_input"),
-        "description": description,
-        "description_url": description_url,
-        "competitor": competitor,
-        "competitor_url": competitor_url,
-        "stage": st.session_state.get("stage_select"),
-        "purpose": st.session_state.get("purpose_input"),
-        "constraints_input": st.session_state.get("constraints_input"),
+        "sales_type": st.session_state.pre_advice_form_data.get("sales_type")
+        or st.session_state.get("sales_type_select"),
+        "industry": st.session_state.pre_advice_form_data.get("industry")
+        or st.session_state.get("industry_input"),
+        "product": st.session_state.pre_advice_form_data.get("product")
+        or st.session_state.get("product_input"),
+        "description": st.session_state.pre_advice_form_data.get("description")
+        or st.session_state.get("description_text"),
+        "description_url": st.session_state.pre_advice_form_data.get("description_url")
+        or st.session_state.get("description_url"),
+        "competitor": st.session_state.pre_advice_form_data.get("competitor")
+        or st.session_state.get("competitor_text"),
+        "competitor_url": st.session_state.pre_advice_form_data.get("competitor_url")
+        or st.session_state.get("competitor_url"),
+        "stage": st.session_state.pre_advice_form_data.get("stage")
+        or st.session_state.get("stage_select"),
+        "purpose": st.session_state.pre_advice_form_data.get("purpose")
+        or st.session_state.get("purpose_input"),
+        "constraints_input": st.session_state.pre_advice_form_data.get(
+            "constraints_input"
+        )
+        or st.session_state.get("constraints_input"),
     }
     return submitted, form_data
 
@@ -256,10 +287,16 @@ def render_icebreaker_section():
             placeholder="例: 〇〇グループ、最近M&Aあり、採用強化中 など",
             help="相手企業に関するヒントがあれば入力してください",
             key="company_hint_input",
+            on_change=update_form_data,
+            args=("company_hint_input", "company_hint"),
         )
     with ib_col2:
         st.checkbox(
-            "業界ニュースを使用", value=True, key="use_news_checkbox"
+            "業界ニュースを使用",
+            value=True,
+            key="use_news_checkbox",
+            on_change=update_form_data,
+            args=("use_news_checkbox", "use_news_checkbox"),
         )
     with ib_col3:
         generate_icebreak = st.button(
@@ -271,8 +308,8 @@ def render_icebreaker_section():
     if "selected_icebreaker" not in st.session_state:
         st.session_state.selected_icebreaker = None
 
-    sales_type_val = st.session_state.get("sales_type_select")
-    industry_val = st.session_state.get("industry_input")
+    sales_type_val = st.session_state.pre_advice_form_data.get("sales_type")
+    industry_val = st.session_state.pre_advice_form_data.get("industry")
 
     if sales_type_val and industry_val and generate_icebreak:
         try:
@@ -284,8 +321,11 @@ def render_icebreaker_section():
                 st.session_state.icebreakers = ice_service.generate_icebreakers(
                     sales_type=sales_type_val,
                     industry=industry_val,
-                    company_hint=st.session_state.get("company_hint_input") or None,
-                    search_enabled=st.session_state.get("use_news_checkbox", True),
+                    company_hint=st.session_state.pre_advice_form_data.get("company_hint")
+                    or None,
+                    search_enabled=st.session_state.pre_advice_form_data.get(
+                        "use_news_checkbox", True
+                    ),
                 )
             st.success("✅ アイスブレイクを生成しました！")
             st.session_state.icebreak_last_news = getattr(
@@ -585,7 +625,7 @@ def _legacy_show_pre_advice_page():
         st.session_state.pre_advice_form_data = {}
     
     # 入力フォーム
-    with st.form("pre_advice_form", clear_on_submit=False):
+    with st.form("pre_advice_form"):
         col1, col2 = st.columns(2)
         
         with col1:
