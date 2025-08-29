@@ -1,6 +1,6 @@
 from enum import Enum
 from typing import List, Optional, Union, Dict, Any
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, HttpUrl
 
 class SalesType(str, Enum):
     HUNTER = "hunter"  # 🏹 ハンター
@@ -70,9 +70,9 @@ class SalesInput(BaseModel):
     industry: str
     product: str
     description: Optional[str] = None
-    description_url: Optional[str] = None
+    description_url: HttpUrl | None = None
     competitor: Optional[str] = None
-    competitor_url: Optional[str] = None
+    competitor_url: HttpUrl | None = None
     stage: str
     purpose: str
     constraints: List[str] = Field(default_factory=list)

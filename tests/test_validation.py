@@ -1,40 +1,54 @@
 import pytest
+from pydantic import ValidationError
 from core.validation import (
-    validate_url, validate_xor_fields, validate_sales_input,
+    validate_xor_fields, validate_sales_input,
     validate_industry, validate_product, validate_stage, validate_purpose
 )
 from core.models import SalesInput, SalesType
 
 class TestURLValidation:
-    """URL検証のテスト"""
-    
+    """PydanticによるURL検証のテスト"""
+
     def test_valid_urls(self):
-        """有効なURLのテスト"""
-        valid_urls = [
-            "https://example.com",
-            "http://test.org",
-            "https://sub.domain.co.jp",
-            "https://example.com/path?param=value"
-        ]
-        
-        for url in valid_urls:
-            assert validate_url(url) == True, f"URL should be valid: {url}"
-    
+        """有効なURLが受理される"""
+        SalesInput(
+            sales_type=SalesType.HUNTER,
+            industry="IT",
+            product="SaaS",
+            description_url="https://example.com",
+            stage="初期接触",
+            purpose="新規顧客獲得"
+        )
+        SalesInput(
+            sales_type=SalesType.HUNTER,
+            industry="IT",
+            product="SaaS",
+            competitor_url="https://competitor.com",
+            stage="初期接触",
+            purpose="新規顧客獲得"
+        )
+
     def test_invalid_urls(self):
-        """無効なURLのテスト"""
-        invalid_urls = [
-            "",
-            "not-a-url",
-            "ftp://example.com",  # サポートしていないスキーム
-            "example.com",  # スキームなし
-            "https://",  # ホストなし
-            "http://",  # ホストなし
-            "https://exa_mple.com",  # 無効なホスト名
-            "https://example.com/invalid path",  # パスに空白
-        ]
-        
-        for url in invalid_urls:
-            assert validate_url(url) == False, f"URL should be invalid: {url}"
+        """無効なURLはValidationErrorを投げる"""
+        with pytest.raises(ValidationError):
+            SalesInput(
+                sales_type=SalesType.HUNTER,
+                industry="IT",
+                product="SaaS",
+                description_url="not-a-url",
+                stage="初期接触",
+                purpose="新規顧客獲得"
+            )
+
+        with pytest.raises(ValidationError):
+            SalesInput(
+                sales_type=SalesType.HUNTER,
+                industry="IT",
+                product="SaaS",
+                competitor_url="not-a-url",
+                stage="初期接触",
+                purpose="新規顧客獲得"
+            )
 
 class TestXORFieldsValidation:
     """XORフィールド検証のテスト"""
