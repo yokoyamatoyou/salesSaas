@@ -46,17 +46,33 @@ def main():
 
     is_mobile = st.session_state.get("screen_width", 1000) < 700
 
+    # セッションステート初期化
+    st.session_state.setdefault("show_sidebar", False)
+    st.session_state.setdefault("quickstart_mode", False)
+
     # 環境変数の確認
     if not os.getenv("OPENAI_API_KEY"):
         st.warning("⚠️ OPENAI_API_KEYが設定されていません。一部機能が制限されます。")
 
     if is_mobile:
-        # サイドバーの代わりにタブでページ切り替え
-        st.checkbox(
-            t("quickstart_mode"),
-            help=t("quickstart_help"),
-            key="quickstart_mode",
-        )
+        # ハンバーガーメニューでサイドバーをトグル表示
+        cols = st.columns([1, 9])
+        with cols[0]:
+            if st.button("☰", help=t("sidebar_toggle_help"), key="menu_toggle"):
+                st.session_state.show_sidebar = not st.session_state.show_sidebar
+            # aria-label: toggle navigation menu
+
+        if st.session_state.show_sidebar:
+            with st.expander(t("menu"), expanded=True):
+                # aria-label: mobile sidebar content
+                st.checkbox(
+                    t("quickstart_mode"),
+                    help=t("quickstart_help"),
+                    key="quickstart_mode",
+                )  # aria-label: toggle quickstart mode
+
+        st.caption(t("tab_navigation_hint"))
+
         page_keys = [
             "pre_advice",
             "post_review",
@@ -66,6 +82,7 @@ def main():
             "search_enhancement",
         ]
         page_labels = {k: t(k) for k in page_keys}
+        # aria-label: page navigation tabs
         tabs = st.tabs([page_labels[k] for k in page_keys])
         with tabs[0]:
             from pages.pre_advice import show_pre_advice_page
