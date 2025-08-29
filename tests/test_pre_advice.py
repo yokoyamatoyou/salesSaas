@@ -2,8 +2,14 @@ import sys
 from pathlib import Path
 import streamlit as st
 sys.path.append(str(Path(__file__).resolve().parents[1] / "app"))
-from pages.pre_advice import render_pre_advice_form
-from core.models import SalesType
+from pages.pre_advice import (
+    render_form,
+    process_form_data,
+    validate_input,
+    display_result,
+)
+import pages.pre_advice as pre_advice
+from core.models import SalesType, SalesInput
 
 
 def test_step_progression(monkeypatch):
@@ -15,7 +21,7 @@ def test_step_progression(monkeypatch):
         return True
 
     monkeypatch.setattr(st, "form_submit_button", fake_submit)
-    render_pre_advice_form()
+    render_form()
     assert st.session_state.pre_form_step == 2
 
 
@@ -35,7 +41,77 @@ def test_final_submission(monkeypatch):
         return label == "🚀 アドバイスを生成"
 
     monkeypatch.setattr(st, "form_submit_button", fake_submit)
-    submitted, data = render_pre_advice_form()
+    submitted, data = render_form()
     assert submitted is True
     assert data["industry"] == "IT"
+
+
+def test_process_and_validate(monkeypatch):
+    st.session_state.clear()
+    st.session_state.quickstart_mode = False
+    form_data = {
+        "sales_type": SalesType.HUNTER,
+        "industry": "IT",
+        "product": "SaaS",
+        "description": "desc",
+        "description_url": None,
+        "competitor": "comp",
+        "competitor_url": None,
+        "stage": "初期接触",
+        "purpose": "新規顧客獲得",
+        "constraints_input": "予算制限\n期間延長",
+    }
+    sales_input = process_form_data(form_data)
+    assert sales_input.constraints == ["予算制限", "期間延長"]
+    assert validate_input(sales_input) == []
+
+    invalid = SalesInput(
+        sales_type=SalesType.HUNTER,
+        industry="IT",
+        product="SaaS",
+        description=None,
+        description_url=None,
+        competitor=None,
+        competitor_url=None,
+        stage="初期接触",
+        purpose="",
+        constraints=[],
+    )
+    assert validate_input(invalid)
+
+
+def test_display_result_calls(monkeypatch):
+    st.session_state.clear()
+    st.session_state.selected_icebreaker = "hello"
+    st.session_state.icebreak_last_news = [{"title": "t", "url": "u", "source": "web"}]
+
+    called = {}
+
+    def fake_display_advice(advice):
+        called["display_advice"] = True
+
+    def fake_save(si, adv):
+        called["save"] = (si, adv)
+
+    markdown_calls = []
+    monkeypatch.setattr(st, "markdown", lambda text, **kwargs: markdown_calls.append(text))
+    monkeypatch.setattr(pre_advice, "display_advice", fake_display_advice)
+    monkeypatch.setattr(pre_advice, "render_save_section", fake_save)
+
+    si = SalesInput(
+        sales_type=SalesType.HUNTER,
+        industry="IT",
+        product="SaaS",
+        description=None,
+        description_url=None,
+        competitor=None,
+        competitor_url=None,
+        stage="初期接触",
+        purpose="新規顧客獲得",
+        constraints=[],
+    )
+    display_result({}, si)
+    assert called["display_advice"] is True
+    assert called["save"] == (si, {})
+    assert any("hello" in m for m in markdown_calls)
 

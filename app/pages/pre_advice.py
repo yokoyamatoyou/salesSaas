@@ -22,7 +22,7 @@ def update_form_data(src_key: str, dest_key: str) -> None:
     st.session_state.pre_advice_form_data[dest_key] = st.session_state.get(src_key)
 
 
-def render_pre_advice_form():
+def render_form():
     """事前アドバイス入力フォームを段階的に表示"""
     total_steps = 3
     if "pre_form_step" not in st.session_state:
@@ -610,6 +610,71 @@ def render_save_section(sales_input: SalesInput, advice: dict):
             )
 
 
+def process_form_data(form_data: dict) -> SalesInput:
+    """フォームデータからSalesInputを生成"""
+    constraints_input = form_data.get("constraints_input")
+    constraints = (
+        [c.strip() for c in constraints_input.split("\n") if c.strip()]
+        if constraints_input
+        else []
+    )
+    quickstart = st.session_state.get("quickstart_mode")
+    return SalesInput(
+        sales_type=form_data["sales_type"],
+        industry=form_data["industry"],
+        product=form_data["product"] or ("未入力" if quickstart else ""),
+        description=form_data["description"],
+        description_url=form_data["description_url"],
+        competitor=form_data["competitor"],
+        competitor_url=form_data["competitor_url"],
+        stage=form_data["stage"] or ("初期接触" if quickstart else ""),
+        purpose=form_data["purpose"],
+        constraints=constraints,
+    )
+
+
+def validate_input(sales_input: SalesInput):
+    """SalesInputのバリデーション"""
+    return validate_sales_input(sales_input)
+
+
+def display_result(advice: dict, sales_input: SalesInput):
+    """生成結果の表示"""
+    if st.session_state.get("selected_icebreaker"):
+        st.markdown("### ❄️ アイスブレイク（選択中）")
+        st.markdown(f"> {st.session_state.selected_icebreaker}")
+
+    display_advice(advice)
+
+    sources = st.session_state.get("icebreak_last_news", [])
+    if sources:
+        st.markdown("### 🔍 参考出典")
+        for item in sources:
+            title = item.get("title") or "出典"
+            url = item.get("url") or ""
+            src = item.get("source") or "web"
+            score = item.get("score")
+            reasons = (
+                ", ".join(item.get("reasons", []))
+                if isinstance(item.get("reasons"), list)
+                else None
+            )
+            meta = []
+            if src:
+                meta.append(src)
+            if score is not None:
+                meta.append(f"score: {score}")
+            if reasons:
+                meta.append(reasons)
+            meta_str = f"（{' / '.join(meta)}）" if meta else ""
+            if url:
+                st.markdown(f"- [{title}]({url}) {meta_str}")
+            else:
+                st.markdown(f"- {title} {meta_str}")
+
+    render_save_section(sales_input, advice)
+
+
 def show_pre_advice_page():
     """事前アドバイスページを表示"""
     st.header(t("pre_advice_header"))
@@ -622,39 +687,22 @@ def show_pre_advice_page():
     if is_mobile:
         tab_form, tab_ice = st.tabs([t("input_form_tab"), t("icebreaker_tab")])
         with tab_form:
-            submitted, form_data = render_pre_advice_form()
+            submitted, form_data = render_form()
         with tab_ice:
             render_icebreaker_section()
     else:
-        submitted, form_data = render_pre_advice_form()
+        submitted, form_data = render_form()
         render_icebreaker_section()
 
     autorun = st.session_state.pop("pre_advice_autorun", False)
     if submitted or autorun:
-        constraints_input = form_data.get("constraints_input")
-        constraints = [c.strip() for c in constraints_input.split("\n") if c.strip()] if constraints_input else []
-
-        quickstart = st.session_state.get("quickstart_mode")
-        sales_input = SalesInput(
-            sales_type=form_data["sales_type"],
-            industry=form_data["industry"],
-            product=form_data["product"] or ("未入力" if quickstart else ""),
-            description=form_data["description"],
-            description_url=form_data["description_url"],
-            competitor=form_data["competitor"],
-            competitor_url=form_data["competitor_url"],
-            stage=form_data["stage"] or ("初期接触" if quickstart else ""),
-            purpose=form_data["purpose"],
-            constraints=constraints,
-        )
-
-        validation_errors = validate_sales_input(sales_input)
-        if validation_errors:
+        sales_input = process_form_data(form_data)
+        errors = validate_input(sales_input)
+        if errors:
             st.error("❌ 入力内容に問題があります。以下を確認してください：")
-            for error in validation_errors:
+            for error in errors:
                 st.error(f"• {error}")
             return
-
         try:
             with st.spinner("🤖 AIがアドバイスを生成中..."):
                 from services.settings_manager import SettingsManager
@@ -664,40 +712,11 @@ def show_pre_advice_page():
                 advice = service.generate_advice(sales_input)
 
             st.success("✅ アドバイスの生成が完了しました！")
-
-            if st.session_state.get("selected_icebreaker"):
-                st.markdown("### ❄️ アイスブレイク（選択中）")
-                st.markdown(f"> {st.session_state.selected_icebreaker}")
-
-            display_advice(advice)
-
-            sources = st.session_state.get("icebreak_last_news", [])
-            if sources:
-                st.markdown("### 🔍 参考出典")
-                for item in sources:
-                    title = item.get("title") or "出典"
-                    url = item.get("url") or ""
-                    src = item.get("source") or "web"
-                    score = item.get("score")
-                    reasons = ", ".join(item.get("reasons", [])) if isinstance(item.get("reasons"), list) else None
-                    meta = []
-                    if src:
-                        meta.append(src)
-                    if score is not None:
-                        meta.append(f"score: {score}")
-                    if reasons:
-                        meta.append(reasons)
-                    meta_str = f"（{' / '.join(meta)}）" if meta else ""
-                    if url:
-                        st.markdown(f"- [{title}]({url}) {meta_str}")
-                    else:
-                        st.markdown(f"- {title} {meta_str}")
-
-            render_save_section(sales_input, advice)
+            display_result(advice, sales_input)
         except Exception as e:
             st.error(f"❌ アドバイスの生成に失敗しました: {str(e)}")
             st.info(
-                "しばらく時間をおいて再度お試しください。問題が続く場合は管理者にお問い合わせください。"
+                "しばらく時間をおいて再度お試しください。問題が続く場合は管理者にお問い合わせください。",
             )
 
 def _legacy_show_pre_advice_page():
