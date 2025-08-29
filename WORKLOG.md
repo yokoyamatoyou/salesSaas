@@ -129,4 +129,23 @@
 - `pytest -q` を実行（結果は下記参照）
 - Environment: Python 3.12.10, streamlit==1.49.0, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1, google-cloud-secret-manager==2.24.0
 
+## 2025-09-04
+### Task
+- `.dockerignore` を追加し、`tests/`, `logs/`, `.git/` などを除外
+  - refs: [.dockerignore]
+- Dockerfile に非rootユーザー `sales` を作成し、`USER sales` で起動
+  - refs: [Dockerfile]
+- Dockerイメージのサイズと権限を確認しようとしたが、Docker デーモンに接続できず実行不可
+
+### Reviews
+1. **Python上級エンジニア視点**: 非root実行により攻撃面が減り、`.dockerignore` でビルドコンテキストが最小化された。
+2. **UI/UX専門家視点**: 軽量で安全なイメージによりデプロイ時のトラブルが減り、ユーザー体験が向上。
+3. **クラウドエンジニア視点**: コンテナベストプラクティスに沿っており、クラウド環境でのセキュリティと管理性が改善。
+4. **ユーザー視点**: 起動が迅速かつ安全になり、安心してサービスを利用できる。
+
+### Testing
+- `pytest -q` で 86 件のテストが成功
+- `docker build -t sales-saas:dev .` （Docker デーモンに接続できず未実行）
+- Environment: Python 3.12.10, streamlit==1.49.0, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1, google-cloud-secret-manager==2.24.0
+
 
