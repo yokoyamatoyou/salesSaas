@@ -25,6 +25,41 @@ def test_step_progression(monkeypatch):
     assert st.session_state.pre_form_step == 2
 
 
+def test_step_titles_and_progress(monkeypatch):
+    st.session_state.clear()
+    st.session_state.pre_form_step = 1
+    monkeypatch.setattr(st, "rerun", lambda: None)
+
+    progress_calls = []
+    markdown_calls = []
+
+    monkeypatch.setattr(st, "progress", lambda v: progress_calls.append(v))
+    monkeypatch.setattr(st, "markdown", lambda text, **kwargs: markdown_calls.append(text))
+
+    responses = iter([True, False, True, False, False])
+
+    def fake_submit(label, **kwargs):
+        return next(responses)
+
+    monkeypatch.setattr(st, "form_submit_button", fake_submit)
+
+    render_form()
+    assert progress_calls[-1] == 1 / 3
+    assert any("基本情報" in m for m in markdown_calls)
+
+    progress_calls.clear()
+    markdown_calls.clear()
+    render_form()
+    assert progress_calls[-1] == 2 / 3
+    assert any("詳細" in m for m in markdown_calls)
+
+    progress_calls.clear()
+    markdown_calls.clear()
+    render_form()
+    assert progress_calls[-1] == 1
+    assert any("制約" in m for m in markdown_calls)
+
+
 def test_final_submission(monkeypatch):
     st.session_state.clear()
     st.session_state.pre_form_step = 3
