@@ -178,22 +178,29 @@ class TestOpenAIProvider:
         """スキーマ検証のテスト"""
         with patch.dict('os.environ', {'OPENAI_API_KEY': 'test-key'}):
             provider = OpenAIProvider()
-            
-            # 正常なスキーマ
             schema = {
                 "type": "object",
+                "properties": {
+                    "field1": {"type": "string"},
+                    "field2": {"type": "integer"}
+                },
                 "required": ["field1", "field2"]
             }
-            response = {"field1": "value1", "field2": "value2"}
-            assert provider.validate_schema(response, schema) == True
-            
+            response = {"field1": "value1", "field2": 123}
+            assert provider.validate_schema(response, schema) is True
+
+            # 型が不正
+            response = {"field1": "value1", "field2": "not an int"}
+            assert provider.validate_schema(response, schema) is False
+
             # 必須フィールド不足
             response = {"field1": "value1"}
-            assert provider.validate_schema(response, schema) == False
-            
+            assert provider.validate_schema(response, schema) is False
+
             # 辞書以外のレスポンス
             response = "not a dict"
-            assert provider.validate_schema(response, schema) == False
+            assert provider.validate_schema(response, schema) is False
+            
     
     def test_error_handling_rate_limit(self):
         """レート制限エラーのテスト"""

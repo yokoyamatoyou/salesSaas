@@ -5,6 +5,7 @@ from core.models import SalesInput, SalesType
 from services.pre_advisor import PreAdvisorService
 from services.post_analyzer import PostAnalyzerService
 from services.search_enhancer import SearchEnhancerService
+from services.error_handler import ServiceError
 
 def test_pre_advisor_service():
     """事前アドバイスサービスのテスト"""
@@ -102,3 +103,29 @@ def test_search_enhancer_without_api_key():
         result = service.enhance_search_query("テスト", industry="IT")
         assert "optimized_queries" in result
 
+
+def test_pre_advisor_service_invalid_schema():
+    """スキーマ不正時にServiceErrorが発生することを確認"""
+    with patch('services.settings_manager.SettingsManager') as mock_settings_manager, \
+         patch('services.pre_advisor.OpenAIProvider') as mock_provider:
+        mock_settings = Mock()
+        mock_settings.load_settings.return_value.temperature = 0.7
+        mock_settings.load_settings.return_value.max_tokens = 1000
+        mock_settings_manager.return_value = mock_settings
+
+        mock_llm = Mock()
+        mock_llm.call_llm.side_effect = ValueError("LLMの応答が期待されるスキーマに従っていません")
+        mock_provider.return_value = mock_llm
+
+        service = PreAdvisorService()
+        input_data = SalesInput(
+            sales_type=SalesType.HUNTER,
+            industry="IT",
+            product="SaaS",
+            description="テスト商品",
+            stage="初期",
+            purpose="売上向上",
+        )
+
+        with pytest.raises(ServiceError):
+            service.generate_advice(input_data)
