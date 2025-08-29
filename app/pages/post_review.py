@@ -29,14 +29,14 @@ def show_post_review_page():
             sales_type = sales_type_selectbox(key="post_review_sales_type")
             
             industry = st.text_input(
-                "業界 *", 
+                t("post_review_industry_label"),
                 placeholder="例: IT、製造業、金融業",
                 help="対象となる業界を入力してください",
                 key="post_review_industry"
             )
             
             product = st.text_input(
-                "商品・サービス *", 
+                t("post_review_product_label"),
                 placeholder="例: SaaS、コンサルティング",
                 help="提供する商品・サービスを入力してください",
                 key="post_review_product"

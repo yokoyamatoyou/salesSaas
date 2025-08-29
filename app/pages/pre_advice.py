@@ -54,7 +54,7 @@ def render_pre_advice_form():
             )
 
             industry = st.text_input(
-                "業界 *",
+                t("pre_advice_industry_label"),
                 placeholder="例: IT、製造業、金融業",
                 help="対象となる業界を入力してください（2文字以上）",
                 key="industry_input",
@@ -70,9 +70,13 @@ def render_pre_advice_form():
                 else:
                     st.success("✅ 業界名が有効です")
 
-            product_label = "商品・サービス *" if not quickstart else "商品・サービス"
+            product_label_key = (
+                "pre_advice_product_label"
+                if not quickstart
+                else "pre_advice_product_label_optional"
+            )
             product = st.text_input(
-                product_label,
+                t(product_label_key),
                 placeholder="例: SaaS、コンサルティング",
                 help="提供する商品・サービスを入力してください（2文字以上）",
                 key="product_input",
@@ -721,7 +725,7 @@ def _legacy_show_pre_advice_page():
             )
             
             industry = st.text_input(
-                "業界 *", 
+                t("pre_advice_industry_label"),
                 placeholder="例: IT、製造業、金融業",
                 help="対象となる業界を入力してください（2文字以上）",
                 key="industry_input"
@@ -737,7 +741,7 @@ def _legacy_show_pre_advice_page():
                     st.success("✅ 業界名が有効です")
             
             product = st.text_input(
-                "商品・サービス *", 
+                t("pre_advice_product_label"),
                 placeholder="例: SaaS、コンサルティング",
                 help="提供する商品・サービスを入力してください（2文字以上）",
                 key="product_input"

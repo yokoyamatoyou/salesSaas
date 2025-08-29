@@ -45,6 +45,11 @@ TRANSLATIONS = {
         "tab_import_export": "📁 インポート/エクスポート",
         "language_setting": "言語設定",
         "language_setting_help": "アプリケーションの表示言語",
+        "pre_advice_industry_label": "業界 *",
+        "pre_advice_product_label": "商品・サービス *",
+        "pre_advice_product_label_optional": "商品・サービス",
+        "post_review_industry_label": "業界 *",
+        "post_review_product_label": "商品・サービス *",
     },
     "en": {
         "app_title": "🏢 Sales SaaS",
@@ -89,6 +94,11 @@ TRANSLATIONS = {
         "tab_import_export": "📁 Import/Export",
         "language_setting": "Language",
         "language_setting_help": "Display language of the application",
+        "pre_advice_industry_label": "Industry *",
+        "pre_advice_product_label": "Product/Service *",
+        "pre_advice_product_label_optional": "Product/Service",
+        "post_review_industry_label": "Industry *",
+        "post_review_product_label": "Product/Service *",
     },
 }
 
