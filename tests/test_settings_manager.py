@@ -28,8 +28,9 @@ class TestSettingsManager:
     def test_load_settings_new_file(self):
         """新規設定ファイルの読み込みテスト"""
         settings = self.settings_manager.load_settings()
-        
+
         assert isinstance(settings, AppSettings)
+        assert settings.openai_model == "gpt-4o-mini"
         assert settings.default_llm_mode == LLMMode.SPEED
         assert settings.max_tokens == 1000
         assert settings.temperature == 0.7
@@ -44,6 +45,7 @@ class TestSettingsManager:
         """既存設定ファイルの読み込みテスト"""
         # テスト用の設定データ
         test_settings = {
+            "openai_model": "gpt-test",
             "default_llm_mode": "deep",
             "max_tokens": 2000,
             "temperature": 0.5,
@@ -60,6 +62,7 @@ class TestSettingsManager:
         # 設定を読み込み
         settings = self.settings_manager.load_settings()
         
+        assert settings.openai_model == "gpt-test"
         assert settings.default_llm_mode == LLMMode.DEEP
         assert settings.max_tokens == 2000
         assert settings.temperature == 0.5
@@ -95,7 +98,8 @@ class TestSettingsManager:
         # 保存された内容を確認
         with open(self.config_file, 'r', encoding='utf-8') as f:
             saved_data = json.load(f)
-        
+
+        assert saved_data["openai_model"] == "gpt-4o-mini"
         assert saved_data["default_llm_mode"] == "creative"
         assert saved_data["max_tokens"] == 1500
         assert saved_data["temperature"] == 0.9
@@ -168,11 +172,13 @@ class TestSettingsManager:
         assert "default_llm_mode" in exported_data
         assert "max_tokens" in exported_data
         assert "temperature" in exported_data
+        assert "openai_model" in exported_data
     
     def test_import_settings(self):
         """設定のインポートテスト"""
         # インポート用の設定データ
         import_data = {
+            "openai_model": "gpt-import",
             "default_llm_mode": "creative",
             "max_tokens": 2500,
             "temperature": 0.6,
@@ -189,6 +195,7 @@ class TestSettingsManager:
         
         # インポートされた設定を確認
         imported_settings = self.settings_manager.load_settings()
+        assert imported_settings.openai_model == "gpt-import"
         assert imported_settings.default_llm_mode == LLMMode.CREATIVE
         assert imported_settings.max_tokens == 2500
         assert imported_settings.temperature == 0.6
@@ -205,13 +212,15 @@ class TestSettingsManager:
         self.settings_manager.load_settings()
         
         llm_config = self.settings_manager.get_llm_config()
-        
+
         assert "mode" in llm_config
         assert "max_tokens" in llm_config
         assert "temperature" in llm_config
+        assert "model" in llm_config
         assert llm_config["mode"] == LLMMode.SPEED
         assert llm_config["max_tokens"] == 1000
         assert llm_config["temperature"] == 0.7
+        assert llm_config["model"] == "gpt-4o-mini"
     
     def test_get_search_config(self):
         """検索設定の取得テスト"""

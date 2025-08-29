@@ -28,6 +28,7 @@ class SearchProvider(str, Enum):
 class AppSettings(BaseModel):
     """アプリケーション設定"""
     # LLM設定
+    openai_model: str = Field(default="gpt-4o-mini", description="OpenAIモデル名")
     default_llm_mode: LLMMode = Field(default=LLMMode.SPEED, description="デフォルトのLLMモード")
     max_tokens: int = Field(default=1000, ge=100, le=4000, description="最大トークン数")
     temperature: float = Field(default=0.7, ge=0.0, le=2.0, description="創造性（温度）")
