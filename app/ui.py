@@ -24,6 +24,29 @@ def main():
         """,
         unsafe_allow_html=True,
     )
+
+    # 画面幅を取得してセッションステートに保存
+    if "screen_width" not in st.session_state:
+        st.session_state.screen_width = 1000
+    st.markdown(
+        """
+        <script>
+        function updateScreenWidth() {
+            const width = window.innerWidth;
+            const input = window.parent.document.querySelector('input[id="screen_width"]');
+            if (input) {
+                input.value = width;
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        }
+        updateScreenWidth();
+        window.addEventListener('resize', updateScreenWidth);
+        </script>
+        <style>input#screen_width{display:none;}</style>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.text_input("", key="screen_width")
     
     st.title("🏢 営業特化SaaS")
     st.markdown("---")
