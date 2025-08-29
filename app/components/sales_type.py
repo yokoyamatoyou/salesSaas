@@ -1,6 +1,7 @@
 import streamlit as st
 from core.models import SalesType
 
+# Streamlit UI component helpers
 
 def get_sales_type_emoji(sales_type: SalesType) -> str:
     """営業タイプに対応する絵文字を返す"""
