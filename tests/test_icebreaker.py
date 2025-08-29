@@ -121,6 +121,11 @@ class TestIcebreakerService:
             assert len(result) == 3
             # フォールバックでは業界名が含まれることを確認
             assert any("IT" in icebreaker for icebreaker in result)
+
+    def test_fallback_contains_polite_phrase(self):
+        """フォールバック文言の敬語を検証"""
+        result = self.service._generate_fallback_icebreakers(SalesType.CONSULTANT, "IT", "一般的")
+        assert any("お聞かせください" in icebreaker for icebreaker in result)
     
     def test_get_icebreaker_schema(self):
         """アイスブレイクスキーマの取得テスト"""
