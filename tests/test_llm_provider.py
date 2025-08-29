@@ -44,6 +44,7 @@ class TestOpenAIProvider:
                 assert call_args["temperature"] == 0.3
                 assert call_args["max_tokens"] == 1200
                 assert "top_p" in call_args
+                assert call_args["model"] == "gpt-4o-mini"
                 
                 # 結果の検証（JSONスキーマなしの場合はcontentキーで返される）
                 assert result == {"content": "プレーンテキストレスポンス"}
@@ -70,8 +71,54 @@ class TestOpenAIProvider:
                 assert call_args["temperature"] == 0.2
                 assert call_args["max_tokens"] == 2000
                 assert "top_p" not in call_args
-                
+
                 assert result == {"content": "プレーンテキストレスポンス"}
+
+    def test_call_llm_uses_env_model(self):
+        """環境変数のモデル名が使用されることを確認"""
+        with patch.dict('os.environ', {'OPENAI_API_KEY': 'test-key', 'OPENAI_MODEL': 'gpt-env'}):
+            with patch('providers.llm_openai.OpenAI') as mock_openai:
+                mock_client = Mock()
+                mock_openai.return_value = mock_client
+
+                mock_response = Mock()
+                mock_choice = Mock()
+                mock_message = Mock()
+                mock_message.content = "レスポンス"
+                mock_choice.message = mock_message
+                mock_response.choices = [mock_choice]
+                mock_client.chat.completions.create.return_value = mock_response
+
+                provider = OpenAIProvider()
+                provider.call_llm("prompt", "speed")
+
+                call_args = mock_client.chat.completions.create.call_args[1]
+                assert call_args["model"] == "gpt-env"
+
+    def test_call_llm_uses_settings_model(self):
+        """設定のモデル名が使用されることを確認"""
+        with patch.dict('os.environ', {'OPENAI_API_KEY': 'test-key'}, clear=True):
+            with patch('providers.llm_openai.OpenAI') as mock_openai:
+                mock_client = Mock()
+                mock_openai.return_value = mock_client
+
+                mock_response = Mock()
+                mock_choice = Mock()
+                mock_message = Mock()
+                mock_message.content = "レスポンス"
+                mock_choice.message = mock_message
+                mock_response.choices = [mock_choice]
+                mock_client.chat.completions.create.return_value = mock_response
+
+                fake_settings = type('S', (), {"openai_model": "gpt-settings", "temperature": 0.3, "max_tokens": 1000})()
+                settings_manager = Mock()
+                settings_manager.load_settings.return_value = fake_settings
+
+                provider = OpenAIProvider(settings_manager=settings_manager)
+                provider.call_llm("prompt", "speed")
+
+                call_args = mock_client.chat.completions.create.call_args[1]
+                assert call_args["model"] == "gpt-settings"
     
     def test_call_llm_with_json_schema(self):
         """JSONスキーマ指定でのLLM呼び出しテスト"""

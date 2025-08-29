@@ -99,7 +99,8 @@ class SettingsManager:
         return {
             "mode": settings.default_llm_mode,
             "max_tokens": settings.max_tokens,
-            "temperature": settings.temperature
+            "temperature": settings.temperature,
+            "model": settings.openai_model,
         }
     
     def get_search_config(self) -> Dict[str, Any]:

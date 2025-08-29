@@ -87,10 +87,20 @@ class OpenAIProvider:
             system_message = "あなたは日本のトップ営業コーチです。"
             if json_schema:
                 system_message += "指定されたJSONスキーマに厳密に従って回答してください。"
-            
+
             # リクエストパラメータを構築
+            model_name = os.getenv("OPENAI_MODEL")
+            if not model_name and self.settings_manager:
+                try:
+                    settings = self.settings_manager.load_settings()
+                    model_name = getattr(settings, "openai_model", None)
+                except Exception:
+                    model_name = None
+            if not model_name:
+                model_name = "gpt-4o-mini"
+
             request_params = {
-                "model": "gpt-4o-mini",
+                "model": model_name,
                 "messages": [
                     {"role": "system", "content": system_message},
                     {"role": "user", "content": prompt}
