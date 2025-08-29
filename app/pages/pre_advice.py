@@ -14,6 +14,7 @@ from core.validation import (
 )
 from services.icebreaker import IcebreakerService
 from services.pre_advisor import PreAdvisorService
+from services.storage_service import get_storage_provider
 
 
 def update_form_data(src_key: str, dest_key: str) -> None:
@@ -535,6 +536,15 @@ def show_pre_advice_page():
     """事前アドバイスページを表示"""
     st.header("事前アドバイス生成")
     st.write("商談前の準備をサポートします。営業タイプ、業界、商品情報を入力してください。")
+
+    provider = get_storage_provider()
+    csv_data = provider.export_sessions_to_csv()
+    st.download_button(
+        "📄 CSVエクスポート",
+        data=csv_data.encode("utf-8"),
+        file_name="sessions.csv",
+        mime="text/csv",
+    )
 
     if "pre_advice_form_data" not in st.session_state:
         st.session_state.pre_advice_form_data = {}
