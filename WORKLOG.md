@@ -178,3 +178,19 @@
 ### Testing
 - `pytest -q`
 - Environment: Python 3.12.10, streamlit==1.49.0, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1, google-cloud-secret-manager==2.24.0
+
+## 2025-08-29
+### Task
+- フィールドラベルのハードコードを翻訳キーに置き換え、辞書とREADMEに命名規則を追加
+  - refs: [app/pages/pre_advice.py, app/pages/post_review.py, app/translations.py, README.md]
+
+### Reviews
+1. **Python上級エンジニア視点**: テキスト定数を一元管理することで保守性と再利用性が向上した。
+2. **UI/UX専門家視点**: ラベルが翻訳可能になり、将来的な多言語展開への準備が整った。
+3. **クラウドエンジニア視点**: キー命名規則の明文化で衝突を防ぎ、環境ごとの整合性が保たれる。
+4. **ユーザー視点**: 選択した言語でUIが統一され、利用体験が向上した。
+
+### Testing
+- `pytest -q`
+- Environment: Python 3.12.10, streamlit==1.49.0, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1, google-cloud-secret-manager==2.24.0
+

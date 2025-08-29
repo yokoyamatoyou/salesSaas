@@ -85,6 +85,11 @@ pytest tests/test_icebreaker.py -q
 pytest tests/test_storage_local.py -q
 ```
 
+## 翻訳キーの命名規則
+
+- 重複を避けるため、翻訳キーは `page_element_name` 形式で命名する
+  - 例: `pre_advice_industry_label`, `post_review_product_label`
+
 ## プロジェクト構造
 
 ```
