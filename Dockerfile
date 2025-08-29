@@ -10,7 +10,8 @@ WORKDIR /app
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PIP_NO_CACHE_DIR=1
+    PIP_NO_CACHE_DIR=1 \
+    PORT=8080
 
 COPY requirements.txt .
 RUN pip install -r requirements.txt
@@ -21,7 +22,7 @@ COPY . .
 RUN chown -R sales:sales /app
 USER sales
 
-EXPOSE 8080
-HEALTHCHECK CMD curl -fsS http://localhost:8080/_stcore/health || exit 1
-ENTRYPOINT ["streamlit", "run", "app/ui.py", "--server.port=8080", "--server.address=0.0.0.0"]
+EXPOSE ${PORT}
+HEALTHCHECK CMD curl -fsS http://localhost:${PORT}/_stcore/health || exit 1
+ENTRYPOINT ["sh", "-c", "streamlit run app/ui.py --server.port=${PORT} --server.address=0.0.0.0"]
 
