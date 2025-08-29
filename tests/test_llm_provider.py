@@ -339,3 +339,47 @@ class TestOpenAIProvider:
                 assert modes['creative']['temperature'] == 2.0
                 assert modes['deep']['temperature'] == pytest.approx(1.6)
                 assert modes['speed']['max_tokens'] == 500
+
+    def test_call_llm_retry_success(self):
+        """リトライ後に成功するケース"""
+        with patch.dict('os.environ', {'OPENAI_API_KEY': 'test-key'}):
+            with patch('providers.llm_openai.OpenAI') as mock_openai, \
+                 patch('tenacity.nap.time.sleep', return_value=None):
+                mock_client = Mock()
+                mock_openai.return_value = mock_client
+
+                mock_response = Mock()
+                mock_choice = Mock()
+                mock_message = Mock()
+                mock_message.content = "レスポンス"
+                mock_choice.message = mock_message
+                mock_response.choices = [mock_choice]
+
+                mock_client.chat.completions.create.side_effect = [
+                    RateLimitError("rate_limit", response=MagicMock(), body=None),
+                    mock_response,
+                ]
+
+                provider = OpenAIProvider()
+                result = provider.call_llm("プロンプト", "speed")
+
+                assert result == {"content": "レスポンス"}
+                assert mock_client.chat.completions.create.call_count == 2
+
+    def test_call_llm_retry_failure(self):
+        """リトライが全て失敗するケース"""
+        with patch.dict('os.environ', {'OPENAI_API_KEY': 'test-key'}):
+            with patch('providers.llm_openai.OpenAI') as mock_openai, \
+                 patch('tenacity.nap.time.sleep', return_value=None):
+                mock_client = Mock()
+                mock_openai.return_value = mock_client
+
+                error = RateLimitError("rate_limit", response=MagicMock(), body=None)
+                mock_client.chat.completions.create.side_effect = [error, error, error]
+
+                provider = OpenAIProvider()
+
+                with pytest.raises(LLMError, match="APIレート制限に達しました"):
+                    provider.call_llm("プロンプト", "speed")
+
+                assert mock_client.chat.completions.create.call_count == 3
