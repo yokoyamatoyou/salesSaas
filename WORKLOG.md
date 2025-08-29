@@ -163,3 +163,18 @@
 ### Testing
 - `pytest -q`
 - Environment: Python 3.12.10, streamlit==1.49.0, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1, google-cloud-secret-manager==2.24.0
+
+## 2025-08-29
+### Task
+- クイックスタートモード時に最小必須項目のみで事前アドバイスを開始できるよう入力フォームを改修
+  - refs: [app/pages/pre_advice.py, app/translations.py]
+
+### Reviews
+1. **Python上級エンジニア視点**: optionalフィールドを後から編集可能にしつつセッション管理を維持できている。
+2. **UI/UX専門家視点**: 各ステップにヘルプと「後で入力する」ボタンを追加したことでユーザーの負担が軽減。
+3. **クラウドエンジニア視点**: バリデーションのデフォルト値により欠損入力でも処理が継続できる。
+4. **ユーザー視点**: 最小入力で素早くアドバイス生成に進めるようになった。
+
+### Testing
+- `pytest -q`
+- Environment: Python 3.12.10, streamlit==1.49.0, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1, google-cloud-secret-manager==2.24.0

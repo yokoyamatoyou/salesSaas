@@ -14,6 +14,8 @@ TRANSLATIONS = {
         "search_enhancement": "検索機能の高度化",
         "quickstart_mode": "クイックスタートモード",
         "quickstart_help": "必要最小限の入力項目のみ表示",
+        "fill_later": "後で入力する",
+        "later_help": "必須項目以外は後から編集できます",
 
         "pre_advice_header": "事前アドバイス生成",
         "pre_advice_desc": "商談前の準備をサポートします。営業タイプ、業界、商品情報を入力してください。",
@@ -56,6 +58,8 @@ TRANSLATIONS = {
         "search_enhancement": "Advanced Search",
         "quickstart_mode": "Quick Start Mode",
         "quickstart_help": "Display only essential inputs",
+        "fill_later": "Fill later",
+        "later_help": "Optional fields can be edited later",
 
         "pre_advice_header": "Pre-Advice",
         "pre_advice_desc": "Support your preparation before meetings. Provide sales type, industry and product info.",
