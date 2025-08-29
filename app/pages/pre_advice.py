@@ -15,11 +15,40 @@ from core.validation import (
 )
 from services.icebreaker import IcebreakerService
 from services.pre_advisor import PreAdvisorService
+from services.crm_importer import CRMImporter
+from services.settings_manager import SettingsManager
 
 
 def update_form_data(src_key: str, dest_key: str) -> None:
     """セッションに入力値を保存"""
     st.session_state.pre_advice_form_data[dest_key] = st.session_state.get(src_key)
+
+
+def apply_crm_data(data: dict) -> None:
+    """CRMから取得したデータをフォームへ反映"""
+    mapping = {
+        "sales_type": "sales_type_select",
+        "industry": "industry_input",
+        "product": "product_input",
+        "description": "description_text",
+        "stage": "stage_select",
+        "purpose": "purpose_input",
+        "competitor": "competitor_text",
+        "constraints": "constraints_input",
+    }
+    st.session_state.pre_advice_form_data.update(data)
+    for key, widget_key in mapping.items():
+        if key in data and data[key] is not None:
+            value = data[key]
+            if key == "sales_type" and not isinstance(value, SalesType):
+                try:
+                    value = SalesType(value)
+                except Exception:
+                    continue
+            if key == "constraints" and isinstance(value, list):
+                st.session_state[widget_key] = "\n".join(value)
+            else:
+                st.session_state[widget_key] = value
 
 
 def render_form():
@@ -392,8 +421,6 @@ def render_icebreaker_section():
 
     if sales_type_val and industry_val and generate_icebreak:
         try:
-            from services.settings_manager import SettingsManager
-
             settings_manager = SettingsManager()
             ice_service = IcebreakerService(settings_manager)
             with st.spinner("❄️ アイスブレイク生成中..."):
@@ -681,6 +708,24 @@ def show_pre_advice_page():
     st.header(t("pre_advice_header"))
     st.write(t("pre_advice_desc"))
 
+    settings_manager = SettingsManager()
+    settings = settings_manager.load_settings()
+    if settings.crm_enabled:
+        st.markdown(f"### {t('crm_section_title')}")
+        crm_id = st.text_input(t("crm_customer_id"), key="crm_customer_id")
+        if st.button(t("import_from_crm")):
+            try:
+                importer = CRMImporter()
+                data = importer.fetch_customer(crm_id)
+                if data:
+                    apply_crm_data(data)
+                    st.success(t("crm_import_success"))
+                    st.rerun()
+                else:
+                    st.warning(t("crm_import_failed"))
+            except Exception as e:
+                st.error(f"{t('crm_import_failed')}: {e}")
+
     is_mobile = st.session_state.get("screen_width", 1000) < 700
 
     if "pre_advice_form_data" not in st.session_state:
@@ -706,8 +751,6 @@ def show_pre_advice_page():
             return
         try:
             with st.spinner("🤖 AIがアドバイスを生成中..."):
-                from services.settings_manager import SettingsManager
-
                 settings_manager = SettingsManager()
                 service = PreAdvisorService(settings_manager)
                 advice = service.generate_advice(sales_input)
@@ -907,7 +950,6 @@ def _legacy_show_pre_advice_page():
     if sales_type_val and industry_val:
         if generate_icebreak:
             try:
-                from services.settings_manager import SettingsManager
                 settings_manager = SettingsManager()
                 ice_service = IcebreakerService(settings_manager)
                 with st.spinner("❄️ アイスブレイク生成中..."):
@@ -1060,9 +1102,8 @@ def _legacy_show_pre_advice_page():
         try:
             with st.spinner("🤖 AIがアドバイスを生成中..."):
                 # 設定マネージャーを初期化
-                from services.settings_manager import SettingsManager
                 settings_manager = SettingsManager()
-                
+
                 service = PreAdvisorService(settings_manager)
                 advice = service.generate_advice(sales_input)
             

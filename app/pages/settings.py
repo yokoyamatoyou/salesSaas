@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 import json
 from pathlib import Path
@@ -14,8 +15,13 @@ def show_settings_page():
     settings_manager = SettingsManager()
     
     # タブで設定を分類
-    tab1, tab2, tab3, tab4, tab5 = st.tabs([
-        t("tab_llm"), t("tab_search"), t("tab_ui"), t("tab_data"), t("tab_import_export")
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+        t("tab_llm"),
+        t("tab_search"),
+        t("tab_ui"),
+        t("tab_data"),
+        t("tab_import_export"),
+        t("tab_crm"),
     ])
     
     with tab1:
@@ -32,6 +38,9 @@ def show_settings_page():
     
     with tab5:
         show_import_export(settings_manager)
+
+    with tab6:
+        show_crm_settings(settings_manager)
 
 def show_llm_settings(settings_manager: SettingsManager):
     """LLM設定を表示"""
@@ -426,3 +435,26 @@ def show_import_export(settings_manager: SettingsManager):
             st.rerun()  # ページを再読み込み
         else:
             st.error("設定のリセットに失敗しました。")
+
+
+def show_crm_settings(settings_manager: SettingsManager):
+    """CRM連携設定を表示"""
+    st.header(t("tab_crm"))
+
+    settings = settings_manager.load_settings()
+    crm_enabled = st.checkbox(
+        t("crm_enable"),
+        value=getattr(settings, "crm_enabled", False),
+        help=t("crm_enable_help"),
+    )
+
+    api_key = os.getenv("CRM_API_KEY")
+    if not api_key:
+        st.warning(t("crm_api_key_missing"))
+
+    if st.button("CRM設定を保存", type="primary"):
+        settings.crm_enabled = crm_enabled
+        if settings_manager.save_settings(settings):
+            st.success("CRM設定を保存しました！")
+        else:
+            st.error("設定の保存に失敗しました。")

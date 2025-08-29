@@ -244,3 +244,21 @@
 - `pytest -q`
 - `make docker-build` （Docker デーモンに接続できず失敗）
 - Environment: Python 3.12.10, streamlit==1.49.0, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1, google-cloud-secret-manager==2.24.0
+
+## 2025-09-09
+### Task
+- CRM API クライアントを実装し、事前アドバイスページに「CRMから読み込む」ボタンを追加
+  - refs: [services/crm_importer.py, app/pages/pre_advice.py]
+- CRM連携設定を追加し、環境変数 `CRM_API_KEY` に対応
+  - refs: [app/pages/settings.py, app/translations.py, core/models.py, env.example, tests/test_settings_manager.py, tests/test_crm_importer.py]
+
+### Reviews
+1. **Python上級エンジニア視点**: サービス層とUIが疎結合で実装され、テスト容易性が高い。
+2. **UI/UX専門家視点**: CRM読み込みボタンと設定タブが明確で、ユーザーが迷わず連携を有効化できる。
+3. **クラウドエンジニア視点**: APIキーを環境変数で扱い、設定フラグで制御する構成がクラウド移行に適している。
+4. **ユーザー視点**: CRMからの自動入力で手入力の手間が減り、利用体験が向上した。
+
+### Testing
+- `pytest` で 100 件のテストが成功
+- Environment: Python 3.12.10, streamlit==1.49.0, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1
+

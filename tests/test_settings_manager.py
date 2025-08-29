@@ -264,6 +264,13 @@ class TestSettingsManager:
         assert ui_config["language"] == "ja"
         assert ui_config["theme"] == "light"
         assert ui_config["auto_save"] is True
+
+    def test_crm_setting(self):
+        """CRM設定の永続化テスト"""
+        self.settings_manager.load_settings()
+        result = self.settings_manager.update_setting("crm_enabled", True)
+        assert result is True
+        assert self.settings_manager.get_setting("crm_enabled") is True
     
     def test_settings_persistence(self):
         """設定の永続化テスト"""

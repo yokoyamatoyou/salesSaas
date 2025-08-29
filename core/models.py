@@ -49,6 +49,9 @@ class AppSettings(BaseModel):
     # データ設定
     data_dir: str = Field(default="./data", description="データ保存ディレクトリ")
     auto_save: bool = Field(default=True, description="自動保存の有効/無効")
+
+    # CRM設定
+    crm_enabled: bool = Field(default=False, description="CRM連携の有効/無効")
     
     # カスタマイズ設定
     custom_prompts: Dict[str, str] = Field(default_factory=dict, description="カスタムプロンプト")
