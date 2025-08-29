@@ -114,3 +114,19 @@
 - `pytest -q` で 82 件のテストが成功
 - Environment: Python 3.12.10, streamlit==1.49.0, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1, google-cloud-secret-manager==2.24.0
 
+## 2025-09-03
+### Task
+- ローカル保存セッションに `user_id` と `success` を付与し、履歴ページにユーザー別フィルタと集計ダッシュボードを追加
+  - refs: [providers/storage_local.py, app/pages/history.py]
+
+### Reviews
+1. **Python上級エンジニア視点**: メタデータ付与とフィルタ処理が関数化され、拡張に耐える設計になった。
+2. **UI/UX専門家視点**: ユーザー別に履歴を見分けられるようになり、簡易メトリクスで進捗が即座に把握できる。
+3. **クラウドエンジニア視点**: `user_id` の保存で将来のマルチテナント移行時の分離基盤が整った。
+4. **ユーザー視点**: 自分の履歴を素早く確認でき、成功率の可視化で成果が実感しやすい。
+
+### Testing
+- `pytest -q` を実行（結果は下記参照）
+- Environment: Python 3.12.10, streamlit==1.49.0, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1, google-cloud-secret-manager==2.24.0
+
+
