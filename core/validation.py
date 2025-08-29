@@ -1,23 +1,5 @@
-from typing import Optional, List
-from urllib.parse import urlparse
-import validators
-from .models import SalesInput, SalesType
-
-def validate_url(url: str) -> bool:
-    """URLの形式を検証"""
-    if not url:
-        return False
-    try:
-        parsed = urlparse(url)
-        # スキームは http/https のみ許可
-        if parsed.scheme not in {"http", "https"}:
-            return False
-        if not parsed.netloc:
-            return False
-        # validators.url は True か ValidationError を返す
-        return validators.url(url) is True
-    except Exception:
-        return False
+from typing import List
+from .models import SalesInput
 
 def validate_sales_input(input_data: SalesInput) -> List[str]:
     """SalesInputの包括的な検証"""
@@ -62,24 +44,17 @@ def validate_xor_fields(input_data: SalesInput) -> List[str]:
     
     # 説明フィールドのXOR検証（入力された場合のみ）
     has_description = bool(input_data.description and input_data.description.strip())
-    has_description_url = bool(input_data.description_url and input_data.description_url.strip())
+    has_description_url = bool(input_data.description_url)
     
     if has_description and has_description_url:
         errors.append("説明はテキストまたはURLのいずれか一方を入力してください")
     
     # 競合フィールドのXOR検証（入力された場合のみ）
     has_competitor = bool(input_data.competitor and input_data.competitor.strip())
-    has_competitor_url = bool(input_data.competitor_url and input_data.competitor_url.strip())
+    has_competitor_url = bool(input_data.competitor_url)
     
     if has_competitor and has_competitor_url:
         errors.append("競合はテキストまたはURLのいずれか一方を入力してください")
-    
-    # URL形式の検証
-    if input_data.description_url and not validate_url(input_data.description_url):
-        errors.append("説明URLの形式が正しくありません")
-    
-    if input_data.competitor_url and not validate_url(input_data.competitor_url):
-        errors.append("競合URLの形式が正しくありません")
     
     return errors
 
