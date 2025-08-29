@@ -1,5 +1,6 @@
 # Work Log
 
+テスト環境の Python および主要ライブラリのバージョンは各 `### Testing` セクションに記載し、バージョンが変化した場合は次回ログで更新する。
 ## 2024-04-27
 ### Task
 - Set up work logging files: added WORKLOG.md and updated AGENT.md to document the new logging rule requiring four perspective reviews per task.
@@ -13,6 +14,7 @@
 
 ### Testing
 - `pytest -q` で 74 件のテストが成功
+- Environment: Python 3.12.10, streamlit==1.49.0, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1
 
 ## 2025-08-28
 ### Task
@@ -29,6 +31,7 @@
 
 ### Testing
 - `pytest -q` が 75 件成功
+- Environment: Python 3.12.10, streamlit==1.49.0, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1
 
 ## 2025-08-29
 ### Task
@@ -43,6 +46,7 @@
 
 ### Testing
 - `pytest -q` で 75 件のテストが成功
+- Environment: Python 3.12.10, streamlit==1.49.0, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1
 
 ## 2025-08-30
 ### Task
@@ -59,3 +63,4 @@
 
 ### Testing
 - `pytest -q` で 75 件のテストが成功
+- Environment: Python 3.12.10, streamlit==1.49.0, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1
