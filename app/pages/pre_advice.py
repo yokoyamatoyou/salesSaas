@@ -270,6 +270,57 @@ def render_pre_advice_form():
     return submitted, form_data
 
 
+def render_quickstart_form():
+    """クイックスタート用の簡易フォーム"""
+    templates = {
+        "IT企業へのSaaS提案": {
+            "industry": "IT",
+            "product": "SaaS",
+            "purpose": "新規顧客獲得",
+        },
+        "製造業向けコスト削減": {
+            "industry": "製造業",
+            "product": "設備保守サービス",
+            "purpose": "コスト削減",
+        },
+        "金融向けコンサル提案": {
+            "industry": "金融",
+            "product": "コンサルティング",
+            "purpose": "既存顧客拡大",
+        },
+    }
+
+    with st.form("quickstart_form"):
+        template_name = st.selectbox("テンプレート例", list(templates.keys()))
+        preset = templates[template_name]
+        sales_type = st.selectbox(
+            "営業タイプ *",
+            options=list(SalesType),
+            format_func=lambda x: f"{x.value} ({get_sales_type_emoji(x)})",
+            key="qs_sales_type",
+        )
+        industry = st.text_input("業界 *", value=preset["industry"], key="qs_industry")
+        product = st.text_input("商品・サービス *", value=preset["product"], key="qs_product")
+        purpose = st.text_input("目的 *", value=preset["purpose"], key="qs_purpose")
+        submitted = st.form_submit_button(
+            "🚀 アドバイスを生成", type="primary", use_container_width=True
+        )
+
+    form_data = {
+        "sales_type": sales_type,
+        "industry": industry,
+        "product": product,
+        "description": None,
+        "description_url": None,
+        "competitor": None,
+        "competitor_url": None,
+        "stage": "初期接触",
+        "purpose": purpose,
+        "constraints_input": None,
+    }
+    return submitted, form_data
+
+
 def render_icebreaker_section():
     """アイスブレイク生成セクションを表示"""
     st.markdown("---")
@@ -536,11 +587,13 @@ def show_pre_advice_page():
     st.header("事前アドバイス生成")
     st.write("商談前の準備をサポートします。営業タイプ、業界、商品情報を入力してください。")
 
-    if "pre_advice_form_data" not in st.session_state:
-        st.session_state.pre_advice_form_data = {}
-
-    submitted, form_data = render_pre_advice_form()
-    render_icebreaker_section()
+    if st.session_state.get("quickstart_mode"):
+        submitted, form_data = render_quickstart_form()
+    else:
+        if "pre_advice_form_data" not in st.session_state:
+            st.session_state.pre_advice_form_data = {}
+        submitted, form_data = render_pre_advice_form()
+        render_icebreaker_section()
 
     autorun = st.session_state.pop("pre_advice_autorun", False)
     if submitted or autorun:
@@ -577,7 +630,7 @@ def show_pre_advice_page():
 
             st.success("✅ アドバイスの生成が完了しました！")
 
-            if st.session_state.selected_icebreaker:
+            if st.session_state.get("selected_icebreaker"):
                 st.markdown("### ❄️ アイスブレイク（選択中）")
                 st.markdown(f"> {st.session_state.selected_icebreaker}")
 

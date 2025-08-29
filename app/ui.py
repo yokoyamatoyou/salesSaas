@@ -62,6 +62,13 @@ def main():
         ["事前アドバイス生成", "商談後ふりかえり解析", "アイスブレイク生成", "履歴", "設定・カスタマイズ", "検索機能の高度化"],
         key="page_select"
     )
+
+    # クイックスタートモードの切り替え
+    st.sidebar.checkbox(
+        "クイックスタートモード",
+        help="必要最小限の入力項目のみ表示",
+        key="quickstart_mode",
+    )
     
     # 環境変数の確認
     if not os.getenv("OPENAI_API_KEY"):
