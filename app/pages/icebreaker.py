@@ -275,37 +275,30 @@ def save_icebreakers(sales_type: SalesType, industry: str, icebreakers: list, co
         # 成功メッセージ
         st.success(f"アイスブレイクをセッションに保存しました！セッションID: {session_id[:8]}...")
         
-        # 履歴ページで表示できるように、LocalStorageProviderにも保存
+        # 履歴ページで表示できるように保存
         try:
-            from providers.storage_local import LocalStorageProvider
-            provider = LocalStorageProvider(data_dir="./data")
-            
-            # 入力データと出力データを分けて保存
-            input_data = {
-                "sales_type": sales_type.value,
-                "industry": industry,
-                "company_hint": company_hint,
-                "search_enabled": search_enabled
-            }
-            
-            output_data = {
+            from services.storage_service import get_storage_provider
+
+            provider = get_storage_provider()
+            payload = {
                 "type": "icebreaker",
-                "icebreakers": icebreakers,
-                "emoji": get_sales_type_emoji(sales_type),
-                "sales_type": sales_type.value,
-                "industry": industry
+                "input": {
+                    "sales_type": sales_type.value,
+                    "industry": industry,
+                    "company_hint": company_hint,
+                    "search_enabled": search_enabled,
+                },
+                "output": {
+                    "icebreakers": icebreakers,
+                    "emoji": get_sales_type_emoji(sales_type),
+                    "sales_type": sales_type.value,
+                    "industry": industry,
+                },
             }
-            
-            # セッションを保存
-            provider.save_session(
-                session_id=session_id,
-                input_data=input_data,
-                output_data=output_data,
-                tags=[f"{sales_type.value}", f"{industry}業界"]
-            )
-            
+            provider.save_session(payload, session_id=session_id)
+            provider.update_tags(session_id, [f"{sales_type.value}", f"{industry}業界"])
             st.success("履歴にも保存しました！履歴ページで確認できます。")
-            
+
         except Exception as storage_error:
             st.warning(f"履歴への保存に失敗しました: {storage_error}")
         

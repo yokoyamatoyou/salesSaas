@@ -116,3 +116,11 @@ class LocalStorageProvider:
         except Exception:
             return False
 
+    def save_data(self, filename: str, data: Dict[str, Any]) -> str:
+        """任意データをファイルに保存"""
+        file_path = self.data_dir / filename
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(file_path, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        return filename
+

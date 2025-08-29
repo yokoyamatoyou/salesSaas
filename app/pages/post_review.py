@@ -7,7 +7,7 @@ from typing import List
 from core.models import SalesType
 from services.post_analyzer import PostAnalyzerService
 from services.settings_manager import SettingsManager
-from providers.storage_local import LocalStorageProvider
+from services.storage_service import get_storage_provider
 from datetime import datetime
 from components.sales_type import sales_type_selectbox
 from components.copy_button import copy_button
@@ -328,7 +328,7 @@ def display_analysis_result(analysis: dict):
 def save_post_review(**kwargs) -> str:
     """商談後ふりかえり解析の結果をセッション形式で保存し、Session IDを返す"""
     try:
-        provider = LocalStorageProvider(data_dir="./data")
+        provider = get_storage_provider()
         payload = {
             "type": "post_review",
             "input": {

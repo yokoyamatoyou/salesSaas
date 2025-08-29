@@ -12,7 +12,6 @@ from core.validation import (
     validate_purpose,
     validate_sales_input,
 )
-from providers.storage_local import LocalStorageProvider
 from services.icebreaker import IcebreakerService
 from services.pre_advisor import PreAdvisorService
 
@@ -1548,7 +1547,9 @@ def display_advice(advice: dict):
 def save_pre_advice(*, sales_input: SalesInput, advice: dict, selected_icebreaker: str | None) -> str:
     """事前アドバイスの結果をセッション形式で保存し、Session IDを返す"""
     try:
-        provider = LocalStorageProvider(data_dir="./data")
+        from services.storage_service import get_storage_provider
+
+        provider = get_storage_provider()
         payload = {
             "type": "pre_advice",
             "input": sales_input.dict(),

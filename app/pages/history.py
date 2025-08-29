@@ -3,7 +3,7 @@ import math
 import streamlit as st
 from typing import Any, Dict, List
 from urllib.parse import urlparse
-from providers.storage_local import LocalStorageProvider
+from services.storage_service import get_storage_provider
 from core.models import SalesType
 from streamlit_sortables import sort_items
 
@@ -12,7 +12,7 @@ def show_history_page() -> None:
     st.header("履歴（セッション一覧）")
     st.write("保存された生成結果を参照・再利用できます。")
 
-    provider = LocalStorageProvider(data_dir="./data")
+    provider = get_storage_provider()
 
     # フィルタUI
     with st.expander("フィルタ", expanded=True):
@@ -41,7 +41,7 @@ def show_history_page() -> None:
             page_size = st.selectbox("表示件数", options=[5, 10, 20, 50], index=[5,10,20,50].index(default_size), key="history_page_size")
         with s3:
             # 既存タグ/ドメインを収集してサジェスト
-            provider_tmp = LocalStorageProvider(data_dir="./data")
+            provider_tmp = get_storage_provider()
             sessions_for_tags: List[Dict[str, Any]] = provider_tmp.list_sessions()
             all_tags: set[str] = set()
             all_domains: set[str] = set()
@@ -193,14 +193,14 @@ def show_history_page() -> None:
             st.experimental_rerun()
     with top_c4:
         if st.button("📌 選択をピン留め", key="pin_sel_top") and selected_ids:
-            provider = LocalStorageProvider(data_dir="./data")
+            provider = get_storage_provider()
             for sid in selected_ids:
                 provider.set_pinned(sid, True)
             st.success("ピン留めを更新しました")
             st.experimental_rerun()
     with top_c5:
         if st.button("📌 選択のピン解除", key="unpin_sel_top") and selected_ids:
-            provider = LocalStorageProvider(data_dir="./data")
+            provider = get_storage_provider()
             for sid in selected_ids:
                 provider.set_pinned(sid, False)
             st.success("ピン解除を更新しました")
@@ -292,7 +292,7 @@ def show_history_page() -> None:
             reordered_tags = [it["header"] for it in reordered] if reordered else current_tags
             tag_cols = st.columns([2, 1])
             # 最新の全タグ候補を取得
-            provider_tags = LocalStorageProvider(data_dir="./data")
+            provider_tags = get_storage_provider()
             sessions_tags: List[Dict[str, Any]] = provider_tags.list_sessions()
             all_tags_now: set[str] = set()
             for s2 in sessions_tags:
@@ -313,7 +313,7 @@ def show_history_page() -> None:
                     key=f"tag_new_{sess_id}"
                 )
             if st.button("💾 タグを更新", key=f"save_tags_{sess_id}"):
-                provider_save = LocalStorageProvider(data_dir="./data")
+                provider_save = get_storage_provider()
                 new_tags = [t.strip() for t in (new_tags_str or "").split(",") if t.strip()]
                 merged = list(dict.fromkeys([*reordered_tags, *selected_existing, *new_tags]))
                 ok = provider_save.update_tags(sess_id, merged)
@@ -370,7 +370,7 @@ def show_history_page() -> None:
                 pinned = bool(meta.get("pinned", False))
                 pin_label = "📌 ピン解除" if pinned else "📌 ピン留め"
                 if st.button(pin_label, key=f"pin_{sess_id}"):
-                    provider = LocalStorageProvider(data_dir="./data")
+                    provider = get_storage_provider()
                     provider.set_pinned(sess_id, not pinned)
                     st.experimental_rerun()
             with a_col4:
@@ -390,7 +390,7 @@ def show_history_page() -> None:
                     c1, c2 = st.columns(2)
                     with c1:
                         if st.button("はい、削除する", key=f"confirm_yes_{sess_id}"):
-                            provider = LocalStorageProvider(data_dir="./data")
+                            provider = get_storage_provider()
                             ok = provider.delete_session(sess_id)
                             st.session_state["confirm_delete"] = None
                             if ok:
@@ -426,14 +426,14 @@ def show_history_page() -> None:
             st.experimental_rerun()
     with bot_c4:
         if st.button("📌 選択をピン留め", key="pin_sel_bottom") and selected_ids:
-            provider = LocalStorageProvider(data_dir="./data")
+            provider = get_storage_provider()
             for sid in selected_ids:
                 provider.set_pinned(sid, True)
             st.success("ピン留めを更新しました")
             st.experimental_rerun()
     with bot_c5:
         if st.button("📌 選択のピン解除", key="unpin_sel_bottom") and selected_ids:
-            provider = LocalStorageProvider(data_dir="./data")
+            provider = get_storage_provider()
             for sid in selected_ids:
                 provider.set_pinned(sid, False)
             st.success("ピン解除を更新しました")
@@ -448,7 +448,7 @@ def show_history_page() -> None:
         bc1, bc2 = st.columns(2)
         with bc1:
             if st.button("はい、削除する", key="batch_del_yes"):
-                provider = LocalStorageProvider(data_dir="./data")
+                provider = get_storage_provider()
                 ok_count = 0
                 for sid in list(selected_ids):
                     if provider.delete_session(sid):
