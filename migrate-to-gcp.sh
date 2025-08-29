@@ -1,6 +1,6 @@
 #!/bin/bash
 # 🚀 Google Cloud移行スクリプト（営業特化SaaS用）
-# 使用方法: ./migrate-to-gcp.sh
+# 使用方法: ./migrate-to-gcp.sh [-p PROJECT_ID] [-r REGION] [-s SERVICE_NAME] [-n REPOSITORY_NAME]
 
 set -e
 
@@ -9,6 +9,20 @@ PROJECT_ID="sales-saas-[YOUR-UNIQUE-ID]"
 REGION="asia-northeast1"
 SERVICE_NAME="sales-saas"
 REPOSITORY_NAME="sales-saas-repo"
+
+# 引数の取得
+while getopts ":p:r:s:n:" opt; do
+    case "$opt" in
+        p) PROJECT_ID="$OPTARG" ;;
+        r) REGION="$OPTARG" ;;
+        s) SERVICE_NAME="$OPTARG" ;;
+        n) REPOSITORY_NAME="$OPTARG" ;;
+        *)
+            echo "Usage: $0 [-p PROJECT_ID] [-r REGION] [-s SERVICE_NAME] [-n REPOSITORY_NAME]" >&2
+            exit 1
+            ;;
+    esac
+done
 
 # 色付きのログ出力
 log_info() {
@@ -157,8 +171,11 @@ deploy_to_cloud_run() {
 setup_secrets() {
     log_info "シークレットの設定中..."
 
-    # OpenAI APIキーの入力
-    read -p "OpenAI APIキーを入力してください: " OPENAI_API_KEY
+    # OpenAI APIキーの取得（環境変数がなければプロンプト）
+    OPENAI_API_KEY="${OPENAI_API_KEY:-}"
+    if [[ -z "$OPENAI_API_KEY" ]]; then
+        read -p "OpenAI APIキーを入力してください: " OPENAI_API_KEY
+    fi
 
     if [[ -n "$OPENAI_API_KEY" ]]; then
         # シークレットの作成または新バージョンの追加

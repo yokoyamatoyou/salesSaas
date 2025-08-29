@@ -65,6 +65,16 @@ CSE_CX=
 
 `STORAGE_PROVIDER` を `gcs` に設定する場合は、`GCS_BUCKET_NAME`（必須）と必要に応じて `GCS_PREFIX` を指定してください。ローカルからGCSにアクセスする際は `GOOGLE_APPLICATION_CREDENTIALS` にサービスアカウントJSONのパスを設定します。
 
+## GCPへの移行
+
+`migrate-to-gcp.sh` を使うとアプリを Google Cloud にデプロイできます。非対話モードでの実行例:
+
+```bash
+./migrate-to-gcp.sh -p my-proj -r asia-northeast1
+```
+
+`OPENAI_API_KEY` は環境変数から取得され、未設定の場合のみ実行時にプロンプトが表示されます。
+
 ## LLMプロバイダのJSONスキーマ対応
 
 `OpenAIProvider.call_llm` に `json_schema` を渡すと、OpenAI API は
