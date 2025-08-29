@@ -8,7 +8,7 @@ import json
 from datetime import datetime
 from services.search_enhancer import SearchEnhancerService
 from services.settings_manager import SettingsManager
-from providers.storage_local import LocalStorageProvider
+from services.storage_service import get_storage_provider
 
 def main():
     st.set_page_config(
@@ -24,7 +24,7 @@ def main():
     try:
         settings_manager = SettingsManager()
         search_enhancer = SearchEnhancerService(settings_manager)
-        storage_provider = LocalStorageProvider()
+        storage_provider = get_storage_provider()
     except Exception as e:
         st.error(f"サービスの初期化に失敗しました: {e}")
         return
@@ -587,7 +587,7 @@ def show_enhanced_search(search_enhancer, industry, purpose, num_results):
 def save_optimization_result(original_query, result, industry, purpose):
     """最適化結果の保存"""
     try:
-        storage_provider = LocalStorageProvider()
+        storage_provider = get_storage_provider()
         
         session_data = {
             "type": "query_optimization",
@@ -610,7 +610,7 @@ def save_optimization_result(original_query, result, industry, purpose):
 def save_enhanced_search_result(result, industry, purpose):
     """高度化検索結果の保存"""
     try:
-        storage_provider = LocalStorageProvider()
+        storage_provider = get_storage_provider()
         
         # 保存データの作成
         data = {
