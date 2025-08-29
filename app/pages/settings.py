@@ -195,10 +195,11 @@ def show_ui_settings(settings_manager: SettingsManager):
 
     with col1:
         # 言語設定
+        language_options = ["ja", "en", "es"]
         language = st.selectbox(
             t("language_setting"),
-            options=["ja", "en"],
-            index=0 if settings.language == "ja" else 1,
+            options=language_options,
+            index=language_options.index(settings.language) if settings.language in language_options else 0,
             help=t("language_setting_help"),
             key="language_select",
         )
