@@ -1,6 +1,7 @@
 import pytest
 from unittest.mock import Mock, patch, MagicMock
-from providers.llm_openai import OpenAIProvider
+from openai import RateLimitError, BadRequestError, AuthenticationError, APIError
+from providers.llm_openai import OpenAIProvider, LLMError
 
 class TestOpenAIProvider:
     """OpenAIプロバイダーのテスト"""
@@ -255,12 +256,13 @@ class TestOpenAIProvider:
             with patch('providers.llm_openai.OpenAI') as mock_openai:
                 mock_client = Mock()
                 mock_openai.return_value = mock_client
-                
-                mock_client.chat.completions.create.side_effect = Exception("rate_limit exceeded")
-                
+                mock_client.chat.completions.create.side_effect = RateLimitError(
+                    "rate_limit", response=MagicMock(), body=None
+                )
+
                 provider = OpenAIProvider()
-                
-                with pytest.raises(Exception, match="APIレート制限に達しました"):
+
+                with pytest.raises(LLMError, match="APIレート制限に達しました"):
                     provider.call_llm("プロンプト", "speed")
     
     def test_error_handling_quota(self):
@@ -269,12 +271,13 @@ class TestOpenAIProvider:
             with patch('providers.llm_openai.OpenAI') as mock_openai:
                 mock_client = Mock()
                 mock_openai.return_value = mock_client
-                
-                mock_client.chat.completions.create.side_effect = Exception("quota exceeded")
-                
+                mock_client.chat.completions.create.side_effect = BadRequestError(
+                    "quota", response=MagicMock(), body=None
+                )
+
                 provider = OpenAIProvider()
-                
-                with pytest.raises(Exception, match="APIクォータが不足しています"):
+
+                with pytest.raises(LLMError, match="APIクォータが不足しています"):
                     provider.call_llm("プロンプト", "speed")
     
     def test_error_handling_invalid_api_key(self):
@@ -283,12 +286,13 @@ class TestOpenAIProvider:
             with patch('providers.llm_openai.OpenAI') as mock_openai:
                 mock_client = Mock()
                 mock_openai.return_value = mock_client
-                
-                mock_client.chat.completions.create.side_effect = Exception("invalid_api_key")
-                
+                mock_client.chat.completions.create.side_effect = AuthenticationError(
+                    "invalid", response=MagicMock(), body=None
+                )
+
                 provider = OpenAIProvider()
-                
-                with pytest.raises(Exception, match="無効なAPIキーです"):
+
+                with pytest.raises(LLMError, match="無効なAPIキーです"):
                     provider.call_llm("プロンプト", "speed")
     
     def test_error_handling_generic(self):
@@ -297,12 +301,13 @@ class TestOpenAIProvider:
             with patch('providers.llm_openai.OpenAI') as mock_openai:
                 mock_client = Mock()
                 mock_openai.return_value = mock_client
-
-                mock_client.chat.completions.create.side_effect = Exception("network error")
+                mock_client.chat.completions.create.side_effect = APIError(
+                    "network error", request=MagicMock(), body=None
+                )
 
                 provider = OpenAIProvider()
 
-                with pytest.raises(Exception, match="LLM呼び出しでエラーが発生しました"):
+                with pytest.raises(LLMError, match="LLM呼び出しでエラーが発生しました"):
                     provider.call_llm("プロンプト", "speed")
 
     def test_get_default_modes_clamps_low_values(self):
