@@ -12,23 +12,36 @@ class LocalStorageProvider:
         self.sessions_dir = self.data_dir / "sessions"
         self.sessions_dir.mkdir(exist_ok=True)
     
-    def save_session(self, data: Dict[str, Any], session_id: str = None) -> str:
+    def save_session(
+        self,
+        data: Dict[str, Any],
+        session_id: str | None = None,
+        user_id: str | None = None,
+        success: bool | None = None,
+    ) -> str:
         """セッションデータを保存"""
         if session_id is None:
             session_id = str(uuid.uuid4())
-        
+
+        if user_id is None:
+            user_id = os.getenv("USER_ID", "anonymous")
+        if success is None:
+            success = data.get("success", True)
+
         file_path = self.sessions_dir / f"{session_id}.json"
         data_with_metadata = {
             "session_id": session_id,
+            "user_id": user_id,
             "created_at": datetime.now().isoformat(),
+            "success": bool(success),
             "pinned": False,
             "tags": [],
-            "data": data
+            "data": data,
         }
-        
-        with open(file_path, 'w', encoding='utf-8') as f:
+
+        with open(file_path, "w", encoding="utf-8") as f:
             json.dump(data_with_metadata, f, ensure_ascii=False, indent=2)
-        
+
         return session_id
     
     def load_session(self, session_id: str) -> Dict[str, Any]:

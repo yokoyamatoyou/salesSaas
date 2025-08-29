@@ -12,20 +12,30 @@ def show_history_page() -> None:
     st.header("履歴（セッション一覧）")
     st.write("保存された生成結果を参照・再利用できます。")
 
+    
     provider = get_storage_provider()
+    all_sessions: List[Dict[str, Any]] = provider.list_sessions()
 
     # フィルタUI
     with st.expander("フィルタ", expanded=True):
-        col1, col2 = st.columns([1, 2])
+        col1, col2, col3 = st.columns([1, 1, 2])
         with col1:
             type_filter = st.selectbox(
                 "種類",
                 options=["すべて", "pre_advice", "post_review", "icebreaker"],
                 index=0,
                 help="表示するセッションの種類を選択",
-                key="history_type_filter"
+                key="history_type_filter",
             )
         with col2:
+            user_ids = sorted({s.get("user_id", "unknown") for s in all_sessions})
+            user_filter = st.selectbox(
+                "ユーザー",
+                options=["すべて"] + user_ids,
+                index=0,
+                key="history_user_filter",
+            )
+        with col3:
             query = st.text_input("キーワード検索", placeholder="業界名・目的など", key="history_query")
 
         s1, s2, s3 = st.columns([1, 1, 1])
@@ -34,18 +44,16 @@ def show_history_page() -> None:
                 "並び替え",
                 options=["最新順 (ピン優先)", "古い順 (ピン優先)", "タイプ順 (ピン優先)", "ピンのみ"],
                 index=0,
-                key="history_sort_mode"
+                key="history_sort_mode",
             )
         with s2:
             default_size = st.session_state.get("history_page_size", 10)
-            page_size = st.selectbox("表示件数", options=[5, 10, 20, 50], index=[5,10,20,50].index(default_size), key="history_page_size")
+            page_size = st.selectbox("表示件数", options=[5, 10, 20, 50], index=[5, 10, 20, 50].index(default_size), key="history_page_size")
         with s3:
             # 既存タグ/ドメインを収集してサジェスト
-            provider_tmp = get_storage_provider()
-            sessions_for_tags: List[Dict[str, Any]] = provider_tmp.list_sessions()
             all_tags: set[str] = set()
             all_domains: set[str] = set()
-            for s in sessions_for_tags:
+            for s in all_sessions:
                 for t in (s.get("tags", []) or []):
                     if isinstance(t, str) and t.strip():
                         all_tags.add(t.strip())
@@ -65,20 +73,23 @@ def show_history_page() -> None:
                 "タグで絞り込み",
                 options=sorted(all_tags),
                 default=[],
-                key="history_tag_filter_multi"
+                key="history_tag_filter_multi",
             )
             domain_filter_multi = st.multiselect(
                 "出典ドメインで絞り込み",
                 options=sorted(all_domains),
                 default=[],
-                key="history_domain_filter_multi"
+                key="history_domain_filter_multi",
             )
 
-    sessions: List[Dict[str, Any]] = provider.list_sessions()
+    sessions: List[Dict[str, Any]] = all_sessions
+
 
     # フィルタ適用
     def match(session: Dict[str, Any]) -> bool:
         if type_filter != "すべて" and session["data"].get("type") != type_filter:
+            return False
+        if user_filter != "すべて" and session.get("user_id", "unknown") != user_filter:
             return False
         if query:
             blob = json.dumps(session["data"], ensure_ascii=False)
@@ -110,6 +121,16 @@ def show_history_page() -> None:
         return True
 
     filtered = [s for s in sessions if match(s)]
+
+    # 集計ダッシュボード
+    total_count = len(filtered)
+    success_count = len([s for s in filtered if s.get("success", True)])
+    success_rate = (success_count / total_count * 100) if total_count else 0.0
+    d1, d2 = st.columns(2)
+    with d1:
+        st.metric("件数", total_count)
+    with d2:
+        st.metric("成功率", f"{success_rate:.1f}%")
 
     # 並び替え
     def sort_key_latest(x):
