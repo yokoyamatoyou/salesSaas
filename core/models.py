@@ -45,6 +45,7 @@ class AppSettings(BaseModel):
     # UI設定
     language: str = Field(default="ja", description="言語設定")
     theme: str = Field(default="light", description="テーマ設定")
+    show_tutorial_on_start: bool = Field(default=True, description="起動時にチュートリアルを表示")
     
     # データ設定
     data_dir: str = Field(default="./data", description="データ保存ディレクトリ")

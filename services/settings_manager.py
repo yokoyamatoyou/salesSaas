@@ -117,5 +117,6 @@ class SettingsManager:
         return {
             "language": settings.language,
             "theme": settings.theme,
-            "auto_save": settings.auto_save
+            "auto_save": settings.auto_save,
+            "show_tutorial_on_start": settings.show_tutorial_on_start
         }

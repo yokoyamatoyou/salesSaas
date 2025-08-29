@@ -3,6 +3,7 @@ import streamlit as st
 from dotenv import load_dotenv
 from streamlit_javascript import st_javascript
 from translations import t
+from services.settings_manager import SettingsManager
 
 # 環境変数を読み込み
 load_dotenv()
@@ -20,6 +21,26 @@ def main():
     if os.path.exists(css_path):
         with open(css_path) as f:
             st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+    settings_manager = SettingsManager()
+    settings = settings_manager.load_settings()
+
+    # 初回アクセス時にチュートリアルを表示
+    if settings.show_tutorial_on_start and not st.session_state.get("tutorial_shown"):
+        st.session_state["show_tutorial_modal"] = True
+
+    if st.session_state.get("force_show_tutorial"):
+        st.session_state["show_tutorial_modal"] = True
+        st.session_state["force_show_tutorial"] = False
+
+    if st.session_state.get("show_tutorial_modal"):
+        with st.modal(t("tutorial_title")):
+            st.write(t("tutorial_message"))
+            if st.button(t("tutorial_close"), key="tutorial_close_button"):
+                st.session_state["show_tutorial_modal"] = False
+                st.session_state["tutorial_shown"] = True
+                if settings.show_tutorial_on_start:
+                    settings_manager.update_setting("show_tutorial_on_start", False)
 
     # 画面幅を取得してセッションステートに保存
     if "screen_width" not in st.session_state:
