@@ -1,11 +1,22 @@
 import os
 import json
 from typing import Literal, Dict, Any, Optional
-from openai import OpenAI
+from openai import (
+    OpenAI,
+    RateLimitError,
+    BadRequestError,
+    AuthenticationError,
+    APIError,
+)
 from tenacity import retry, stop_after_attempt, wait_exponential
 from jsonschema import validate as jsonschema_validate, ValidationError
 
 MODEL_TOKEN_LIMIT = 4000
+
+
+class LLMError(Exception):
+    """カスタムLLM例外"""
+    pass
 
 class OpenAIProvider:
     def __init__(self, settings_manager=None):
@@ -143,15 +154,16 @@ class OpenAIProvider:
         except ValueError as e:
             # バリデーションエラーはそのまま再発生
             raise e
+        except RateLimitError as e:
+            raise LLMError("APIレート制限に達しました。しばらく待ってから再試行してください。") from e
+        except BadRequestError as e:
+            raise LLMError("APIクォータが不足しています。") from e
+        except AuthenticationError as e:
+            raise LLMError("無効なAPIキーです。OPENAI_API_KEYを確認してください。") from e
+        except APIError as e:
+            raise LLMError(f"LLM呼び出しでエラーが発生しました: {e}") from e
         except Exception as e:
-            if "rate_limit" in str(e).lower():
-                raise Exception("APIレート制限に達しました。しばらく待ってから再試行してください。")
-            elif "quota" in str(e).lower():
-                raise Exception("APIクォータが不足しています。")
-            elif "invalid_api_key" in str(e).lower():
-                raise Exception("無効なAPIキーです。OPENAI_API_KEYを確認してください。")
-            else:
-                raise Exception(f"LLM呼び出しでエラーが発生しました: {e}")
+            raise LLMError(f"LLM呼び出しでエラーが発生しました: {e}") from e
     
     def validate_schema(self, response: Dict[str, Any], expected_schema: Dict[str, Any]) -> bool:
         """レスポンスが期待されるスキーマに従っているかを検証"""
