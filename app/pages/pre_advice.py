@@ -1,14 +1,21 @@
-import streamlit as st
 import json
-from typing import List
-from core.models import SalesType, SalesInput
-from core.validation import validate_sales_input, validate_industry, validate_product, validate_purpose
-from services.pre_advisor import PreAdvisorService
-from services.icebreaker import IcebreakerService
-from providers.storage_local import LocalStorageProvider
 from datetime import datetime
-from components.sales_type import sales_type_selectbox
+from typing import List
+
+import streamlit as st
+
 from components.copy_button import copy_button
+from components.sales_type import sales_type_selectbox
+from core.models import SalesInput, SalesType
+from core.validation import (
+    validate_industry,
+    validate_product,
+    validate_purpose,
+    validate_sales_input,
+)
+from providers.storage_local import LocalStorageProvider
+from services.icebreaker import IcebreakerService
+from services.pre_advisor import PreAdvisorService
 
 
 def render_pre_advice_form():
