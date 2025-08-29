@@ -157,14 +157,25 @@ gcloud secrets list
 
 ### 5.2 Cloud Runサービスにシークレットを追加
 
+GCSにセッションを保存するため、以下の環境変数を設定します：
+
+- `STORAGE_PROVIDER=gcs`
+- `GCS_BUCKET_NAME`（必須）
+- `GCS_PREFIX`（任意、デフォルトは `sessions`）
+
 ```bash
 # 環境変数としてシークレットを追加
 gcloud run services update sales-saas \
   --region=asia-northeast1 \
   --set-env-vars="OPENAI_API_KEY=projects/sales-saas-[YOUR-UNIQUE-ID]/secrets/openai-api-key/versions/latest" \
   --set-env-vars="APP_ENV=production" \
+  --set-env-vars="STORAGE_PROVIDER=gcs" \
+  --set-env-vars="GCS_BUCKET_NAME=your-bucket-name" \
+  --set-env-vars="GCS_PREFIX=sessions" \
   --set-env-vars="DATA_DIR=/tmp"
 ```
+
+ローカル環境からGCSへアクセスする場合は `GOOGLE_APPLICATION_CREDENTIALS` にサービスアカウントJSONのパスを設定してください。
 
 ---
 

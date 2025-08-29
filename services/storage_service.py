@@ -22,7 +22,11 @@ def get_storage_provider():
         if GCSStorageProvider is None:
             raise RuntimeError("GCSStorageProvider not available")
         bucket = os.getenv("GCS_BUCKET_NAME")
+        if not bucket:
+            raise RuntimeError("GCS_BUCKET_NAME environment variable is required for GCS storage")
         prefix = os.getenv("GCS_PREFIX", "sessions")
+        if not prefix:
+            raise RuntimeError("GCS_PREFIX environment variable is required for GCS storage")
         return GCSStorageProvider(bucket_name=bucket, prefix=prefix)
 
     data_dir = os.getenv("DATA_DIR", "./data")
