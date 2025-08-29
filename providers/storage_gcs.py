@@ -27,6 +27,7 @@ class GCSStorageProvider:
         data: Dict[str, Any],
         session_id: str | None = None,
         user_id: str | None = None,
+        team_id: str | None = None,
         success: bool | None = None,
     ) -> str:
         """Save session data to GCS"""
@@ -35,6 +36,8 @@ class GCSStorageProvider:
 
         if user_id is None:
             user_id = os.getenv("USER_ID", "anonymous")
+        if team_id is None:
+            team_id = os.getenv("TEAM_ID", "unknown")
         if success is None:
             success = data.get("success", True)
 
@@ -42,6 +45,7 @@ class GCSStorageProvider:
         data_with_metadata = {
             "session_id": session_id,
             "user_id": user_id,
+            "team_id": team_id,
             "created_at": datetime.now().isoformat(),
             "success": bool(success),
             "pinned": False,
@@ -97,6 +101,7 @@ class GCSStorageProvider:
             fieldnames = [
                 "session_id",
                 "user_id",
+                "team_id",
                 "created_at",
                 "success",
                 "pinned",
@@ -110,6 +115,7 @@ class GCSStorageProvider:
                     {
                         "session_id": s.get("session_id"),
                         "user_id": s.get("user_id"),
+                        "team_id": s.get("team_id"),
                         "created_at": s.get("created_at"),
                         "success": s.get("success"),
                         "pinned": s.get("pinned"),

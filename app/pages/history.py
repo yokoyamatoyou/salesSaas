@@ -1,5 +1,7 @@
 import json
 import math
+from collections import Counter
+import altair as alt
 import streamlit as st
 from typing import Any, Dict, List
 from urllib.parse import urlparse
@@ -16,6 +18,15 @@ def show_history_page() -> None:
 
     provider = get_storage_provider()
     all_sessions: List[Dict[str, Any]] = provider.list_sessions()
+
+    # チーム別集計
+    team_counts = Counter(s.get("team_id", "unknown") for s in all_sessions)
+    if team_counts:
+        st.subheader("チーム別セッション数")
+        agg_data = [{"team_id": k, "count": v} for k, v in team_counts.items()]
+        st.table(agg_data)
+        chart = alt.Chart(agg_data).mark_bar().encode(x="team_id:N", y="count:Q")
+        st.altair_chart(chart, use_container_width=True)
 
     col_exp1, col_exp2 = st.columns(2)
     with col_exp1:
@@ -39,7 +50,7 @@ def show_history_page() -> None:
 
     # フィルタUI
     with st.expander("フィルタ", expanded=True):
-        col1, col2, col3 = st.columns([1, 1, 2])
+        col1, col2, col3, col4 = st.columns([1, 1, 1, 2])
         with col1:
             type_filter = st.selectbox(
                 "種類",
@@ -57,6 +68,14 @@ def show_history_page() -> None:
                 key="history_user_filter",
             )
         with col3:
+            team_ids = sorted({s.get("team_id", "unknown") for s in all_sessions})
+            team_filter = st.selectbox(
+                "チーム",
+                options=["すべて"] + team_ids,
+                index=0,
+                key="history_team_filter",
+            )
+        with col4:
             query = st.text_input("キーワード検索", placeholder="業界名・目的など", key="history_query")
 
         s1, s2, s3 = st.columns([1, 1, 1])
@@ -111,6 +130,8 @@ def show_history_page() -> None:
         if type_filter != "すべて" and session["data"].get("type") != type_filter:
             return False
         if user_filter != "すべて" and session.get("user_id", "unknown") != user_filter:
+            return False
+        if team_filter != "すべて" and session.get("team_id", "unknown") != team_filter:
             return False
         if query:
             blob = json.dumps(session["data"], ensure_ascii=False)
