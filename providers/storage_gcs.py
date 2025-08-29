@@ -1,3 +1,5 @@
+import csv
+import io
 import json
 import uuid
 from datetime import datetime
@@ -20,15 +22,28 @@ class GCSStorageProvider:
     def _blob(self, session_id: str):
         return self.bucket.blob(f"{self.prefix}{session_id}.json")
 
-    def save_session(self, data: Dict[str, Any], session_id: str | None = None) -> str:
+    def save_session(
+        self,
+        data: Dict[str, Any],
+        session_id: str | None = None,
+        user_id: str | None = None,
+        success: bool | None = None,
+    ) -> str:
         """Save session data to GCS"""
         if session_id is None:
             session_id = str(uuid.uuid4())
 
+        if user_id is None:
+            user_id = os.getenv("USER_ID", "anonymous")
+        if success is None:
+            success = data.get("success", True)
+
         blob = self._blob(session_id)
         data_with_metadata = {
             "session_id": session_id,
+            "user_id": user_id,
             "created_at": datetime.now().isoformat(),
+            "success": bool(success),
             "pinned": False,
             "tags": [],
             "data": data,
@@ -66,6 +81,44 @@ class GCSStorageProvider:
             ),
             reverse=True,
         )
+
+    def export_sessions(
+        self,
+        fmt: str = "json",
+        sessions: List[Dict[str, Any]] | None = None,
+    ) -> str:
+        """Export stored sessions in requested format"""
+        if sessions is None:
+            sessions = self.list_sessions()
+        if fmt == "json":
+            return json.dumps(sessions, ensure_ascii=False, indent=2)
+        if fmt == "csv":
+            output = io.StringIO()
+            fieldnames = [
+                "session_id",
+                "user_id",
+                "created_at",
+                "success",
+                "pinned",
+                "tags",
+                "type",
+            ]
+            writer = csv.DictWriter(output, fieldnames=fieldnames)
+            writer.writeheader()
+            for s in sessions:
+                writer.writerow(
+                    {
+                        "session_id": s.get("session_id"),
+                        "user_id": s.get("user_id"),
+                        "created_at": s.get("created_at"),
+                        "success": s.get("success"),
+                        "pinned": s.get("pinned"),
+                        "tags": ",".join(s.get("tags", [])),
+                        "type": (s.get("data") or {}).get("type"),
+                    }
+                )
+            return output.getvalue()
+        raise ValueError("Unsupported format")
 
     def delete_session(self, session_id: str) -> bool:
         """Delete a session"""

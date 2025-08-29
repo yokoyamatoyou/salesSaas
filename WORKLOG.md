@@ -149,3 +149,17 @@
 - Environment: Python 3.12.10, streamlit==1.49.0, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1, google-cloud-secret-manager==2.24.0
 
 
+## 2025-09-05
+### Task
+- ストレージプロバイダにCSV/JSONエクスポート機能を追加し、履歴ページからダウンロード可能にした
+  - refs: [providers/storage_local.py, providers/storage_gcs.py, app/pages/history.py, app/translations.py, tests/test_storage_local.py]
+
+### Reviews
+1. **Python上級エンジニア視点**: exportメソッドを共通インタフェース化し、メタデータも含めた変換で拡張性が確保された。
+2. **UI/UX専門家視点**: 履歴ページにダウンロードボタンを配置し、ワンクリックでデータ取得できるため操作性が向上した。
+3. **クラウドエンジニア視点**: GCSプロバイダにも同機能を実装し、ローカルとクラウドで一貫したデータエクスポートが可能になった。
+4. **ユーザー視点**: セッション結果を外部で再利用できるようになり、分析や共有がしやすくなった。
+
+### Testing
+- `pytest -q`
+- Environment: Python 3.12.10, streamlit==1.49.0, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1, google-cloud-secret-manager==2.24.0

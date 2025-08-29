@@ -28,6 +28,8 @@ TRANSLATIONS = {
 
         "history_header": "履歴（セッション一覧）",
         "history_desc": "保存された生成結果を参照・再利用できます。",
+        "history_export_json": "JSONでダウンロード",
+        "history_export_csv": "CSVでダウンロード",
 
         "search_enhancement_title": "🔍 検索機能の高度化",
         "search_enhancement_desc": "LLMの知識を活用して検索結果の品質向上とスコアリングアルゴリズムを改善します",
@@ -68,6 +70,8 @@ TRANSLATIONS = {
 
         "history_header": "History (Sessions)",
         "history_desc": "Browse and reuse saved outputs.",
+        "history_export_json": "Download JSON",
+        "history_export_csv": "Download CSV",
 
         "search_enhancement_title": "🔍 Search Enhancement",
         "search_enhancement_desc": "Leverage LLM knowledge to improve search quality and scoring.",

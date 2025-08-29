@@ -1,3 +1,5 @@
+import csv
+import io
 import json
 import os
 from pathlib import Path
@@ -74,6 +76,44 @@ class LocalStorageProvider:
             ),
             reverse=True,
         )
+
+    def export_sessions(
+        self,
+        fmt: str = "json",
+        sessions: List[Dict[str, Any]] | None = None,
+    ) -> str:
+        """保存済みセッションを指定フォーマットでエクスポート"""
+        if sessions is None:
+            sessions = self.list_sessions()
+        if fmt == "json":
+            return json.dumps(sessions, ensure_ascii=False, indent=2)
+        if fmt == "csv":
+            output = io.StringIO()
+            fieldnames = [
+                "session_id",
+                "user_id",
+                "created_at",
+                "success",
+                "pinned",
+                "tags",
+                "type",
+            ]
+            writer = csv.DictWriter(output, fieldnames=fieldnames)
+            writer.writeheader()
+            for s in sessions:
+                writer.writerow(
+                    {
+                        "session_id": s.get("session_id"),
+                        "user_id": s.get("user_id"),
+                        "created_at": s.get("created_at"),
+                        "success": s.get("success"),
+                        "pinned": s.get("pinned"),
+                        "tags": ",".join(s.get("tags", [])),
+                        "type": (s.get("data") or {}).get("type"),
+                    }
+                )
+            return output.getvalue()
+        raise ValueError("Unsupported format")
 
     def delete_session(self, session_id: str) -> bool:
         """セッションファイルを削除"""
