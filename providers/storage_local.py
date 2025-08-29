@@ -9,7 +9,7 @@ from datetime import datetime
 
 class LocalStorageProvider:
     def __init__(self, data_dir: str = "./data"):
-        self.data_dir = Path(data_dir)
+        self.data_dir = Path(data_dir).resolve()
         self.data_dir.mkdir(exist_ok=True)
         self.sessions_dir = self.data_dir / "sessions"
         self.sessions_dir.mkdir(exist_ok=True)
@@ -24,13 +24,18 @@ class LocalStorageProvider:
         """セッションデータを保存"""
         if session_id is None:
             session_id = str(uuid.uuid4())
+        else:
+            if ".." in session_id or "/" in session_id:
+                raise ValueError("Invalid session_id")
 
         if user_id is None:
             user_id = os.getenv("USER_ID", "anonymous")
         if success is None:
             success = data.get("success", True)
 
-        file_path = self.sessions_dir / f"{session_id}.json"
+        file_path = (self.sessions_dir / f"{session_id}.json").resolve()
+        if not file_path.is_relative_to(self.data_dir):
+            raise ValueError("Invalid session_id")
         data_with_metadata = {
             "session_id": session_id,
             "user_id": user_id,
@@ -171,7 +176,12 @@ class LocalStorageProvider:
 
     def save_data(self, filename: str, data: Dict[str, Any]) -> str:
         """任意データをファイルに保存"""
-        file_path = self.data_dir / filename
+        if ".." in filename or "/" in filename:
+            raise ValueError("Invalid filename")
+
+        file_path = (self.data_dir / filename).resolve()
+        if not file_path.is_relative_to(self.data_dir):
+            raise ValueError("Invalid filename")
         file_path.parent.mkdir(parents=True, exist_ok=True)
         with open(file_path, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
