@@ -1,3 +1,4 @@
+import csv
 import json
 from pathlib import Path
 from typing import Any, Dict
@@ -74,5 +75,22 @@ def test_delete_session(tmp_path: Path):
 
     with pytest.raises(FileNotFoundError):
         provider.load_session(session_id)
+
+
+def test_export_sessions(tmp_path: Path):
+    provider = LocalStorageProvider(data_dir=str(tmp_path))
+    provider.save_session({"type": "pre_advice", "input": {}, "output": {}}, user_id="u1", success=True)
+    provider.save_session({"type": "post_review", "input": {}, "output": {}}, user_id="u2", success=False)
+
+    json_data = provider.export_sessions("json")
+    parsed = json.loads(json_data)
+    assert len(parsed) == 2
+    assert {"session_id", "user_id", "success"}.issubset(parsed[0].keys())
+
+    csv_data = provider.export_sessions("csv")
+    reader = csv.DictReader(csv_data.splitlines())
+    rows = list(reader)
+    assert len(rows) == 2
+    assert {"session_id", "user_id", "success"}.issubset(rows[0].keys())
 
 

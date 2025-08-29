@@ -13,9 +13,29 @@ def show_history_page() -> None:
     st.header(t("history_header"))
     st.write(t("history_desc"))
 
-    
+
     provider = get_storage_provider()
     all_sessions: List[Dict[str, Any]] = provider.list_sessions()
+
+    col_exp1, col_exp2 = st.columns(2)
+    with col_exp1:
+        json_data = provider.export_sessions("json", all_sessions)
+        st.download_button(
+            t("history_export_json"),
+            data=json_data,
+            file_name="sessions.json",
+            mime="application/json",
+            key="history_dl_json",
+        )
+    with col_exp2:
+        csv_data = provider.export_sessions("csv", all_sessions)
+        st.download_button(
+            t("history_export_csv"),
+            data=csv_data,
+            file_name="sessions.csv",
+            mime="text/csv",
+            key="history_dl_csv",
+        )
 
     # フィルタUI
     with st.expander("フィルタ", expanded=True):
