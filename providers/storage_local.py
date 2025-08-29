@@ -1,9 +1,11 @@
 import json
 import os
+import csv
 from pathlib import Path
 from typing import Dict, Any, List
 import uuid
 from datetime import datetime
+from io import StringIO
 
 class LocalStorageProvider:
     def __init__(self, data_dir: str = "./data"):
@@ -50,7 +52,7 @@ class LocalStorageProvider:
                     sessions.append(session_data)
             except Exception as e:
                 print(f"セッションファイル {file_path} の読み込みに失敗: {e}")
-        
+
         # ピン留めを上位、次に作成日時で降順
         # ピン留めを優先し、作成日時は降順（新しいものが上）
         return sorted(
@@ -61,6 +63,40 @@ class LocalStorageProvider:
             ),
             reverse=True,
         )
+
+    def export_sessions_to_csv(self) -> str:
+        """保存されたセッションをCSV文字列で出力"""
+        sessions = self.list_sessions()
+        output = StringIO()
+        fieldnames = [
+            "session_id",
+            "created_at",
+            "type",
+            "input",
+            "output",
+            "pinned",
+            "tags",
+        ]
+        writer = csv.DictWriter(output, fieldnames=fieldnames)
+        writer.writeheader()
+        for s in sessions:
+            data = s.get("data", {}) or {}
+            writer.writerow(
+                {
+                    "session_id": s.get("session_id"),
+                    "created_at": s.get("created_at"),
+                    "type": data.get("type"),
+                    "input": json.dumps(
+                        data.get("input", {}), ensure_ascii=False
+                    ),
+                    "output": json.dumps(
+                        data.get("output", {}), ensure_ascii=False
+                    ),
+                    "pinned": s.get("pinned", False),
+                    "tags": ";".join(s.get("tags", [])),
+                }
+            )
+        return output.getvalue()
 
     def delete_session(self, session_id: str) -> bool:
         """セッションファイルを削除"""
