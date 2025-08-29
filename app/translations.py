@@ -14,6 +14,8 @@ TRANSLATIONS = {
         "search_enhancement": "検索機能の高度化",
         "quickstart_mode": "クイックスタートモード",
         "quickstart_help": "必要最小限の入力項目のみ表示",
+        "sidebar_toggle_help": "サイドバーを表示/非表示",
+        "tab_navigation_hint": "ページ切替は下のタブから行えます",
         "fill_later": "後で入力する",
         "later_help": "必須項目以外は後から編集できます",
 
@@ -63,6 +65,8 @@ TRANSLATIONS = {
         "search_enhancement": "Advanced Search",
         "quickstart_mode": "Quick Start Mode",
         "quickstart_help": "Display only essential inputs",
+        "sidebar_toggle_help": "Show or hide sidebar",
+        "tab_navigation_hint": "Use the tabs below to switch pages",
         "fill_later": "Fill later",
         "later_help": "Optional fields can be edited later",
 
