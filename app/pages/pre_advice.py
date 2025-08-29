@@ -34,10 +34,15 @@ def render_pre_advice_form():
     st.progress(step / total_steps)
     st.markdown(f"### ステップ {step}/{total_steps}")
 
+    quickstart = st.session_state.get("quickstart_mode", False)
     submitted = False
+    skip_clicked = False
 
     if step == 1:
         with st.form("pre_advice_step1"):
+            if quickstart:
+                st.caption(t("later_help"))
+
             st.selectbox(
                 "営業タイプ *",
                 options=list(SalesType),
@@ -65,8 +70,9 @@ def render_pre_advice_form():
                 else:
                     st.success("✅ 業界名が有効です")
 
+            product_label = "商品・サービス *" if not quickstart else "商品・サービス"
             product = st.text_input(
-                "商品・サービス *",
+                product_label,
                 placeholder="例: SaaS、コンサルティング",
                 help="提供する商品・サービスを入力してください（2文字以上）",
                 key="product_input",
@@ -82,16 +88,29 @@ def render_pre_advice_form():
                 else:
                     st.success("✅ 商品名が有効です")
 
-            next_clicked = st.form_submit_button(
-                "次へ", type="primary", use_container_width=True
-            )
+            if quickstart:
+                col1, col2 = st.columns(2)
+                with col1:
+                    skip_clicked = st.form_submit_button(
+                        t("fill_later"), use_container_width=True
+                    )
+                with col2:
+                    next_clicked = st.form_submit_button(
+                        "次へ", type="primary", use_container_width=True
+                    )
+            else:
+                next_clicked = st.form_submit_button(
+                    "次へ", type="primary", use_container_width=True
+                )
 
-        if next_clicked:
+        if skip_clicked or next_clicked:
             st.session_state.pre_form_step = 2
             st.rerun()
 
     elif step == 2:
         with st.form("pre_advice_step2"):
+            if quickstart:
+                st.caption(t("later_help"))
             description_type = st.radio(
                 "説明の入力方法",
                 ["テキスト", "URL"],
@@ -156,34 +175,61 @@ def render_pre_advice_form():
 
             is_mobile = st.session_state.get("screen_width", 1000) < 600
             if is_mobile:
-                back_clicked = st.form_submit_button(
-                    "戻る", use_container_width=True
-                )
-                next_clicked = st.form_submit_button(
-                    "次へ", type="primary", use_container_width=True
-                )
-            else:
-                back_col, next_col = st.columns(2)
-                with back_col:
-                    back_clicked = st.form_submit_button(
-                        "戻る", use_container_width=True
+                if quickstart:
+                    back_clicked = st.form_submit_button("戻る", use_container_width=True)
+                    skip_clicked = st.form_submit_button(
+                        t("fill_later"), use_container_width=True
                     )
-                with next_col:
                     next_clicked = st.form_submit_button(
                         "次へ", type="primary", use_container_width=True
                     )
+                else:
+                    back_clicked = st.form_submit_button(
+                        "戻る", use_container_width=True
+                    )
+                    next_clicked = st.form_submit_button(
+                        "次へ", type="primary", use_container_width=True
+                    )
+            else:
+                if quickstart:
+                    back_col, skip_col, next_col = st.columns(3)
+                    with back_col:
+                        back_clicked = st.form_submit_button(
+                            "戻る", use_container_width=True
+                        )
+                    with skip_col:
+                        skip_clicked = st.form_submit_button(
+                            t("fill_later"), use_container_width=True
+                        )
+                    with next_col:
+                        next_clicked = st.form_submit_button(
+                            "次へ", type="primary", use_container_width=True
+                        )
+                else:
+                    back_col, next_col = st.columns(2)
+                    with back_col:
+                        back_clicked = st.form_submit_button(
+                            "戻る", use_container_width=True
+                        )
+                    with next_col:
+                        next_clicked = st.form_submit_button(
+                            "次へ", type="primary", use_container_width=True
+                        )
 
         if back_clicked:
             st.session_state.pre_form_step = 1
             st.rerun()
-        elif next_clicked:
+        elif skip_clicked or next_clicked:
             st.session_state.pre_form_step = 3
             st.rerun()
 
     else:  # step == 3
         with st.form("pre_advice_step3"):
+            if quickstart:
+                st.caption(t("later_help"))
+            stage_label = "商談ステージ *" if not quickstart else "商談ステージ"
             st.selectbox(
-                "商談ステージ *",
+                stage_label,
                 ["初期接触", "ニーズ発掘", "提案", "商談", "クロージング"],
                 help="現在の商談の進行段階を選択してください",
                 key="stage_select",
@@ -219,26 +265,54 @@ def render_pre_advice_form():
 
             is_mobile = st.session_state.get("screen_width", 1000) < 600
             if is_mobile:
-                back_clicked = st.form_submit_button(
-                    "戻る", use_container_width=True
-                )
-                submitted = st.form_submit_button(
-                    "🚀 アドバイスを生成",
-                    type="primary",
-                    use_container_width=True,
-                )
-            else:
-                back_col, submit_col = st.columns(2)
-                with back_col:
-                    back_clicked = st.form_submit_button(
-                        "戻る", use_container_width=True
+                if quickstart:
+                    back_clicked = st.form_submit_button("戻る", use_container_width=True)
+                    skip_clicked = st.form_submit_button(
+                        t("fill_later"), use_container_width=True
                     )
-                with submit_col:
                     submitted = st.form_submit_button(
                         "🚀 アドバイスを生成",
                         type="primary",
                         use_container_width=True,
                     )
+                else:
+                    back_clicked = st.form_submit_button(
+                        "戻る", use_container_width=True
+                    )
+                    submitted = st.form_submit_button(
+                        "🚀 アドバイスを生成",
+                        type="primary",
+                        use_container_width=True,
+                    )
+            else:
+                if quickstart:
+                    back_col, skip_col, submit_col = st.columns(3)
+                    with back_col:
+                        back_clicked = st.form_submit_button(
+                            "戻る", use_container_width=True
+                        )
+                    with skip_col:
+                        skip_clicked = st.form_submit_button(
+                            t("fill_later"), use_container_width=True
+                        )
+                    with submit_col:
+                        submitted = st.form_submit_button(
+                            "🚀 アドバイスを生成",
+                            type="primary",
+                            use_container_width=True,
+                        )
+                else:
+                    back_col, submit_col = st.columns(2)
+                    with back_col:
+                        back_clicked = st.form_submit_button(
+                            "戻る", use_container_width=True
+                        )
+                    with submit_col:
+                        submitted = st.form_submit_button(
+                            "🚀 アドバイスを生成",
+                            type="primary",
+                            use_container_width=True,
+                        )
 
         if back_clicked:
             st.session_state.pre_form_step = 2
@@ -268,58 +342,7 @@ def render_pre_advice_form():
         )
         or st.session_state.get("constraints_input"),
     }
-    return submitted, form_data
-
-
-def render_quickstart_form():
-    """クイックスタート用の簡易フォーム"""
-    templates = {
-        "IT企業へのSaaS提案": {
-            "industry": "IT",
-            "product": "SaaS",
-            "purpose": "新規顧客獲得",
-        },
-        "製造業向けコスト削減": {
-            "industry": "製造業",
-            "product": "設備保守サービス",
-            "purpose": "コスト削減",
-        },
-        "金融向けコンサル提案": {
-            "industry": "金融",
-            "product": "コンサルティング",
-            "purpose": "既存顧客拡大",
-        },
-    }
-
-    with st.form("quickstart_form"):
-        template_name = st.selectbox("テンプレート例", list(templates.keys()))
-        preset = templates[template_name]
-        sales_type = st.selectbox(
-            "営業タイプ *",
-            options=list(SalesType),
-            format_func=lambda x: f"{x.value} ({get_sales_type_emoji(x)})",
-            key="qs_sales_type",
-        )
-        industry = st.text_input("業界 *", value=preset["industry"], key="qs_industry")
-        product = st.text_input("商品・サービス *", value=preset["product"], key="qs_product")
-        purpose = st.text_input("目的 *", value=preset["purpose"], key="qs_purpose")
-        submitted = st.form_submit_button(
-            "🚀 アドバイスを生成", type="primary", use_container_width=True
-        )
-
-    form_data = {
-        "sales_type": sales_type,
-        "industry": industry,
-        "product": product,
-        "description": None,
-        "description_url": None,
-        "competitor": None,
-        "competitor_url": None,
-        "stage": "初期接触",
-        "purpose": purpose,
-        "constraints_input": None,
-    }
-    return submitted, form_data
+    return submitted or skip_clicked, form_data
 
 
 def render_icebreaker_section():
@@ -590,35 +613,33 @@ def show_pre_advice_page():
 
     is_mobile = st.session_state.get("screen_width", 1000) < 700
 
-    if st.session_state.get("quickstart_mode"):
-        submitted, form_data = render_quickstart_form()
+    if "pre_advice_form_data" not in st.session_state:
+        st.session_state.pre_advice_form_data = {}
+    if is_mobile:
+        tab_form, tab_ice = st.tabs([t("input_form_tab"), t("icebreaker_tab")])
+        with tab_form:
+            submitted, form_data = render_pre_advice_form()
+        with tab_ice:
+            render_icebreaker_section()
     else:
-            if "pre_advice_form_data" not in st.session_state:
-                st.session_state.pre_advice_form_data = {}
-            if is_mobile:
-                tab_form, tab_ice = st.tabs([t("input_form_tab"), t("icebreaker_tab")])
-                with tab_form:
-                    submitted, form_data = render_pre_advice_form()
-                with tab_ice:
-                    render_icebreaker_section()
-            else:
-                submitted, form_data = render_pre_advice_form()
-                render_icebreaker_section()
+        submitted, form_data = render_pre_advice_form()
+        render_icebreaker_section()
 
     autorun = st.session_state.pop("pre_advice_autorun", False)
     if submitted or autorun:
         constraints_input = form_data.get("constraints_input")
         constraints = [c.strip() for c in constraints_input.split("\n") if c.strip()] if constraints_input else []
 
+        quickstart = st.session_state.get("quickstart_mode")
         sales_input = SalesInput(
             sales_type=form_data["sales_type"],
             industry=form_data["industry"],
-            product=form_data["product"],
+            product=form_data["product"] or ("未入力" if quickstart else ""),
             description=form_data["description"],
             description_url=form_data["description_url"],
             competitor=form_data["competitor"],
             competitor_url=form_data["competitor_url"],
-            stage=form_data["stage"],
+            stage=form_data["stage"] or ("初期接触" if quickstart else ""),
             purpose=form_data["purpose"],
             constraints=constraints,
         )
