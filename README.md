@@ -30,6 +30,9 @@ GCP上で動く**マルチテナント**の営業特化SaaS（Streamlit UI + 将
 ### Dockerでの起動（推奨）
 
 ```bash
+# Dockerイメージのビルド
+make docker-build
+
 # 起動ファイルに実行権限を付与
 chmod +x start_docker.sh
 

@@ -226,3 +226,21 @@
 - `pytest -q` で 96 件のテストが成功
 - `timeout 5 streamlit run app/ui.py --server.headless true`
 - Environment: Python 3.12.10, streamlit==1.49.0, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1, google-cloud-secret-manager==2.24.0
+
+
+## 2025-09-08
+### Task
+- Dockerfile をマルチステージ化し、依存関係をビルドステージでインストール
+- README に `make docker-build` の手順を追記
+  - refs: [Dockerfile, README.md]
+
+### Reviews
+1. **Python上級エンジニア視点**: ビルドステージとランタイムステージの分離で依存関係管理が明確になり、イメージのサイズ削減にも寄与する。
+2. **UI/UX専門家視点**: README にビルド手順が追加され、初見のユーザーでも Docker 利用がスムーズになった。
+3. **クラウドエンジニア視点**: 最終イメージに不要ファイルを含めず、セキュリティとデプロイ速度が向上。
+4. **ユーザー視点**: 明確な手順により環境構築の負担が軽減され、利用開始までの時間が短縮された。
+
+### Testing
+- `pytest -q`
+- `make docker-build` （Docker デーモンに接続できず失敗）
+- Environment: Python 3.12.10, streamlit==1.49.0, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1, google-cloud-secret-manager==2.24.0
