@@ -156,19 +156,29 @@ deploy_to_cloud_run() {
 # シークレットの設定
 setup_secrets() {
     log_info "シークレットの設定中..."
-    
+
     # OpenAI APIキーの入力
     read -p "OpenAI APIキーを入力してください: " OPENAI_API_KEY
-    
+
     if [[ -n "$OPENAI_API_KEY" ]]; then
-        # シークレットの作成
-        echo -n "$OPENAI_API_KEY" | gcloud secrets create openai-api-key --data-file=-
-        
-        # Cloud Runサービスにシークレットを追加
+        # シークレットの作成または新バージョンの追加
+        if gcloud secrets describe openai-api-key &> /dev/null; then
+            echo -n "$OPENAI_API_KEY" | gcloud secrets versions add openai-api-key --data-file=-
+        else
+            echo -n "$OPENAI_API_KEY" | gcloud secrets create openai-api-key --data-file=-
+        fi
+
+        # Cloud Runサービスアカウントにアクセス権を付与
+        SERVICE_ACCOUNT=$(gcloud run services describe "$SERVICE_NAME" --region="$REGION" --format="value(spec.template.spec.serviceAccountName)")
+        gcloud secrets add-iam-policy-binding openai-api-key \
+            --member="serviceAccount:${SERVICE_ACCOUNT}" \
+            --role="roles/secretmanager.secretAccessor"
+
+        # Cloud Runサービスにシークレット名を環境変数として設定
         gcloud run services update "$SERVICE_NAME" \
             --region="$REGION" \
-            --set-env-vars="OPENAI_API_KEY=projects/$PROJECT_ID/secrets/openai-api-key/versions/latest"
-        
+            --set-env-vars="OPENAI_API_SECRET_NAME=openai-api-key"
+
         log_success "シークレット設定完了"
     else
         log_warning "OpenAI APIキーが入力されませんでした。後で手動で設定してください。"
