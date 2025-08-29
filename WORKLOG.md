@@ -262,3 +262,19 @@
 - `pytest` で 100 件のテストが成功
 - Environment: Python 3.12.10, streamlit==1.49.0, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1
 
+
+## 2025-09-10
+### Task
+- ローカルテスト指示書を追加し、AGENT.mdに追記
+  - refs: [Localtest.md, AGENT.md]
+
+### Reviews
+1. **Python上級エンジニア視点**: 手順が役割別に整理され、テスト実行までの流れが明確になった。
+2. **UI/UX専門家視点**: デザイン指針が明文化され、UX改善の観点が参照しやすい。
+3. **クラウドエンジニア視点**: Docker ビルドや GCP 疎通確認が手順に含まれ、移行準備が容易。
+4. **ユーザー視点**: BtoC/BtoB 両シナリオが記載され、利用開始時の戸惑いが減る。
+
+### Testing
+- `pytest -q` で 101 件のテストが成功
+- Environment: Python 3.12.10, streamlit==1.49.0, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1
+

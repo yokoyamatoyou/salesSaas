@@ -541,3 +541,5 @@ chmod +x start_docker.sh
 - 重要な決定は `docs/DECISIONS.md`（ADR方式）に記録。番号付け。
 - Issueテンプレ（GitHub）に「再現手順／期待結果／実結果」を必須化。
 
+
+- 2025-09-10: `Localtest.md`（ローカルテスト指示書）を追加し、各視点を統合した手順を記載。
