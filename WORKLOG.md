@@ -210,3 +210,19 @@
 - `docker compose up --build -d` （Docker がインストールされておらず実行不可）
 - Environment: Python 3.12.10, streamlit==1.49.0, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1, google-cloud-secret-manager==2.24.0
 
+
+## 2025-09-07
+### Task
+- モバイル最適化CSSを `app/ui.py` から `app/static/responsive.css` へ移動し、外部ファイルとして読み込むよう変更
+  - refs: [app/ui.py, app/static/responsive.css]
+
+### Reviews
+1. **Python上級エンジニア視点**: CSSを外部ファイル化したことでUIコードが簡潔になり、再利用性も高まった。
+2. **UI/UX専門家視点**: 端末幅に応じたレイアウト調整が維持され、主要ページで表示崩れがないことを確認した。
+3. **クラウドエンジニア視点**: 静的アセットとしてCSSを分離したことでキャッシュ最適化やCDN配置が容易になる。
+4. **ユーザー視点**: モバイルでもボタンやフォームの見やすさが損なわれず、操作性が向上した。
+
+### Testing
+- `pytest -q` で 96 件のテストが成功
+- `timeout 5 streamlit run app/ui.py --server.headless true`
+- Environment: Python 3.12.10, streamlit==1.49.0, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1, google-cloud-secret-manager==2.24.0

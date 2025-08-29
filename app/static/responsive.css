@@ -1,0 +1,6 @@
+@media (max-width: 640px) {
+  .block-container { padding-left: 0.6rem; padding-right: 0.6rem; }
+  .stButton>button { width: 100%; }
+  .stTextInput>div>div>input, textarea, select { font-size: 16px; }
+  section[data-testid="stSidebar"] { display: none; }
+}
