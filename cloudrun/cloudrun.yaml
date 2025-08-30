@@ -1,0 +1,18 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: sales-saas
+spec:
+  template:
+    spec:
+      containers:
+        - image: gcr.io/PROJECT_ID/sales-saas:latest
+          env:
+            - name: APP_ENV
+              value: "production"
+            - name: DATA_DIR
+              value: "/tmp"
+            - name: PORT
+              value: "8080"
+          ports:
+            - containerPort: 8080
