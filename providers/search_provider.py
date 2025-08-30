@@ -5,6 +5,9 @@ import re
 from datetime import datetime, timezone
 from urllib.parse import urlparse
 import httpx
+import logging
+
+logger = logging.getLogger(__name__)
 
 class WebSearchProvider:
     """Web検索プロバイダーのインターフェース"""
@@ -166,7 +169,8 @@ class WebSearchProvider:
                 resp = client.get(url, params=params)
                 resp.raise_for_status()
                 data = resp.json()
-        except Exception:
+        except Exception as e:
+            logger.warning("CSE search failed: %s", e)
             return []
         items = data.get("items", []) or []
         results: List[Dict[str, Any]] = []
@@ -198,7 +202,8 @@ class WebSearchProvider:
                 resp = client.get(url, params=params)
                 resp.raise_for_status()
                 data = resp.json()
-        except Exception:
+        except Exception as e:
+            logger.warning("NewsAPI search failed: %s", e)
             return []
         arts = data.get("articles", []) or []
         results: List[Dict[str, Any]] = []
