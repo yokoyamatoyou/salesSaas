@@ -8,9 +8,9 @@ query_optimization:
   
   user: |
     以下の検索クエリを最適化してください：
-    元のクエリ: {original_query}
-    業界: {industry}
-    目的: {purpose}
+    元のクエリ: ${original_query}
+    業界: ${industry}
+    目的: ${purpose}
     
     最適化されたクエリを3つ提案し、それぞれの理由を説明してください。
   schema:
@@ -43,8 +43,8 @@ quality_assessment:
   
   user: |
     以下の検索結果を品質評価してください：
-    検索クエリ: {query}
-    検索結果: {search_results}
+    検索クエリ: ${query}
+    検索結果: ${search_results}
     
     各結果について、信頼性、関連性、時効性の観点から評価し、
     総合スコアを算出してください。
@@ -88,9 +88,9 @@ industry_search_strategy:
   
   user: |
     以下の業界について、最適な検索戦略を提案してください：
-    業界: {industry}
-    検索目的: {purpose}
-    対象期間: {time_period}
+    業界: ${industry}
+    検索目的: ${purpose}
+    対象期間: ${time_period}
     
     信頼できる情報源、キーワード戦略、時効性の考慮事項を含めて
     包括的な検索戦略を提案してください。
@@ -117,8 +117,8 @@ result_integration:
   
   user: |
     以下の検索結果を統合・要約してください：
-    検索クエリ: {query}
-    検索結果: {search_results}
+    検索クエリ: ${query}
+    検索結果: ${search_results}
     
     主要な洞察、トレンド、機会、リスクを抽出し、
     アクション可能な推奨事項を提示してください。
@@ -149,9 +149,9 @@ continuous_improvement:
   
   user: |
     検索品質の継続改善について、以下の観点から戦略を提案してください：
-    現在の課題: {current_challenges}
-    目標: {improvement_goals}
-    利用可能なリソース: {available_resources}
+    現在の課題: ${current_challenges}
+    目標: ${improvement_goals}
+    利用可能なリソース: ${available_resources}
     
     短期的な改善策、長期的な戦略、測定可能な指標を含めて
     包括的な改善計画を提案してください。

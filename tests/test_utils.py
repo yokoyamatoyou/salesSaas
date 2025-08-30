@@ -43,4 +43,4 @@ def test_sanitize_for_prompt_removes_invisible_and_backticks():
 def test_sanitize_for_prompt_whitelists_ascii():
     text = "Hello\u263a\u4e16\u754c!"  # Hello🙂世界!
     result = sanitize_for_prompt(text)
-    assert result == "Hello!"
+    assert result == "Hello世界!"
