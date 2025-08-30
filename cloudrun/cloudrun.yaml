@@ -6,7 +6,8 @@ spec:
   template:
     spec:
       containers:
-        - image: gcr.io/PROJECT_ID/sales-saas:latest
+        - image: REGION-docker.pkg.dev/PROJECT_ID/REPOSITORY_NAME/sales-saas:latest
+          # Replace REGION, PROJECT_ID, and REPOSITORY_NAME with your Google Cloud settings.
           env:
             - name: APP_ENV
               value: "production"
