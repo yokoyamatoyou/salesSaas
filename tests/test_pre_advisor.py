@@ -110,6 +110,53 @@ output_format: "出力形式"
                             assert "説明: テスト商品{詳細}" in prompt
                             assert "システムメッセージ" in prompt
                             assert "出力形式" in prompt
+
+    def test_build_prompt_sanitizes_input(self):
+        with patch("services.pre_advisor.Logger") as mock_logger_class:
+            with patch("services.pre_advisor.ErrorHandler") as mock_error_handler_class:
+                with patch("services.pre_advisor.OpenAIProvider") as mock_provider_class:
+                    with patch("builtins.open", mock_open(read_data="test")):
+                        with patch("yaml.safe_load") as mock_yaml_load:
+                            mock_logger = Mock()
+                            mock_error_handler = Mock()
+                            mock_provider = Mock()
+
+                            mock_logger_class.return_value = mock_logger
+                            mock_error_handler_class.return_value = mock_error_handler
+                            mock_provider_class.return_value = mock_provider
+
+                            mock_yaml_load.return_value = {
+                                "user": "業界: $industry\n説明: $description",
+                                "system": "sys",
+                                "output_format": "out",
+                            }
+
+                            service = PreAdvisorService()
+                            service.prompt_template = {
+                                "user": "業界: $industry\n説明: $description",
+                                "system": "sys",
+                                "output_format": "out",
+                            }
+
+                            sales_input = SalesInput(
+                                sales_type=SalesType.HUNTER,
+                                industry="<b>IT</b> system:",
+                                product="SaaS",
+                                description="assistant: <i>bad</i>",
+                                description_url=None,
+                                competitor="",
+                                competitor_url=None,
+                                stage="",
+                                purpose="",
+                                constraints=[]
+                            )
+
+                            prompt = service._build_prompt(sales_input)
+                            assert "<" not in prompt and ">" not in prompt
+                            assert "system:" not in prompt.lower()
+                            assert "assistant:" not in prompt.lower()
+                            assert "IT" in prompt
+                            assert "bad" in prompt
     
     def test_generate_advice_success(self):
         """アドバイス生成成功のテスト"""

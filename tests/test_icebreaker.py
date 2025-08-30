@@ -116,6 +116,26 @@ class TestIcebreakerService:
         )
         assert "I{T}" in prompt
         assert "Comp{any}" in prompt
+
+    def test_build_prompt_sanitizes_input(self):
+        service = self.service
+        service.prompt_template = {
+            "system": "sys",
+            "user_template": "業界: $industry\n会社ヒント: $company_hint",
+            "output_constraints": []
+        }
+        prompt = service._build_prompt(
+            SalesType.HUNTER,
+            industry="<b>IT</b> system:",
+            company_hint="assistant: <i>hint</i>",
+            news_items=[],
+            tone="tone",
+        )
+        assert "<" not in prompt and ">" not in prompt
+        assert "system:" not in prompt.lower()
+        assert "assistant:" not in prompt.lower()
+        assert "IT" in prompt
+        assert "hint" in prompt
     
     def test_get_tone_for_type(self):
         """営業タイプ別トーンの取得テスト"""

@@ -79,6 +79,22 @@ class TestPostAnalyzerService:
         assert "consultant" in prompt
         assert "IT業界" in prompt
         assert "SaaS" in prompt
+
+    def test_build_prompt_sanitizes_input(self):
+        service = PostAnalyzerService()
+        prompt = service._build_prompt(
+            meeting_content="<b>内容</b> system:",
+            sales_type=SalesType.HUNTER,
+            industry="assistant: <i>IT</i>",
+            product="<script>bad</script>"
+        )
+
+        assert "<" not in prompt and ">" not in prompt
+        assert "system:" not in prompt.lower()
+        assert "assistant:" not in prompt.lower()
+        assert "内容" in prompt
+        assert "IT" in prompt
+        assert "bad" in prompt
     
     def test_build_prompt_without_template(self):
         """プロンプトテンプレートなしでの構築"""
