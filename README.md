@@ -93,13 +93,20 @@ NEWSAPI_KEY=            # required when SEARCH_PROVIDER=newsapi or hybrid
 gcloud builds submit --tag asia-northeast1-docker.pkg.dev/$PROJECT_ID/sales-saas-repo/sales-saas
 ```
 
-2. Cloud Run サービスを更新:
+2. Firestore と Secret Manager 用の環境変数を設定してデプロイ:
 
 ```bash
+export FIRESTORE_TENANT_ID=tenant-123
+export OPENAI_API_SECRET_NAME=openai-api-key
 make deploy-cloudrun
 ```
 
-`cloudrun/cloudrun.yaml` にはポート `8080` と GCP 用環境変数が定義されています。
+3. Cloud Run 実行サービスアカウントに必要な権限を付与:
+
+- `roles/datastore.user` (Firestore アクセス)
+- `roles/secretmanager.secretAccessor` (Secret Manager アクセス)
+
+`cloudrun/cloudrun.yaml` にはポート `8080` と上記の環境変数が定義されています。
 
 ## LLMプロバイダのJSONスキーマ対応
 

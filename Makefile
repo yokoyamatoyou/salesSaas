@@ -37,7 +37,8 @@ docker-build:
 
 # Cloud Run へデプロイ
 deploy-cloudrun:
-	gcloud run services replace cloudrun/cloudrun.yaml --region=asia-northeast1
+	gcloud run services replace cloudrun/cloudrun.yaml --region=asia-northeast1 \
+		--set-env-vars="FIRESTORE_TENANT_ID=$(FIRESTORE_TENANT_ID),OPENAI_API_SECRET_NAME=$(OPENAI_API_SECRET_NAME),STORAGE_PROVIDER=firestore"
 
 # ヘルプ
 help:

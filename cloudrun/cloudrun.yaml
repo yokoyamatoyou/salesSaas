@@ -15,5 +15,11 @@ spec:
               value: "/tmp"
             - name: PORT
               value: "8080"
+            - name: STORAGE_PROVIDER
+              value: "firestore"
+            - name: FIRESTORE_TENANT_ID
+              value: "tenant-123"
+            - name: OPENAI_API_SECRET_NAME
+              value: "openai-api-key"
           ports:
             - containerPort: 8080
