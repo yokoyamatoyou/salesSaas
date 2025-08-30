@@ -54,12 +54,16 @@
   - refs: [services/post_analyzer.py] (8321c16)
 - API キー有無で初期化が成功することを確認するユニットテストを追加
   - refs: [tests/test_post_analyzer.py] (8321c16)
+- GCS ストレージでテナント ID プレフィックスを付与し、マルチテナントの隔離を強化
+  - refs: [providers/storage_gcs.py, services/storage_service.py, tests/test_storage_service.py] (d434382)
+- UsageMeter を導入しユーザー別のトークン使用量を追跡
+  - refs: [services/usage_meter.py, providers/llm_openai.py, tests/test_llm_provider.py] (e509d85)
 
 ### Reviews
-1. **Python上級エンジニア視点**: Singleton の導入で不要な初期化が避けられ、エラーハンドリングも改善された。
-2. **UI/UX専門家視点**: API キー欠如時に警告ログが出ることで、ユーザーへのフィードバックが明確になった。
-3. **クラウドエンジニア視点**: 環境変数による設定が標準化され、デプロイ環境での秘密管理が容易に。
-4. **ユーザー視点**: API キーがない場合でもサービスがフォールバックするため、最低限の機能が維持され安心できる。
+1. **Python上級エンジニア視点**: Singleton と UsageMeter により再利用と監視が明確になり、GCS プレフィックス追加も含め保守性が向上した。
+2. **UI/UX専門家視点**: トークン使用量の追跡で上限超過時の通知準備ができ、ストレージ分離でユーザー混乱を防げる。
+3. **クラウドエンジニア視点**: テナントプレフィックスにより GCS 上でのデータ隔離が容易になり、UsageMeter でリソース管理が可視化された。
+4. **ユーザー視点**: トークン上限が管理され、テナントごとのデータが混在しないため安心して利用できる。
 
 ### Testing
 - `pytest -q` で 75 件のテストが成功
@@ -467,5 +471,20 @@
 
 ### Testing
 - `pytest tests/test_storage_service.py -q`
+- `pytest -q`
+- Environment: Python 3.12.10, streamlit==1.49.1, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1, google-cloud-secret-manager==2.24.0
+
+## 2025-10-01
+### Task
+- AGENT.md と WORKLOG.md に UsageMeter と GCS テナントプレフィックスの進捗を追記し、PROGRESS.md を更新
+  - refs: [AGENT.md, WORKLOG.md, docs/PROGRESS.md]
+
+### Reviews
+1. **Python上級エンジニア視点**: コード機能とドキュメントが整合し、保守性が向上。
+2. **UI/UX専門家視点**: 進捗情報が明確化され、関係者が状況を把握しやすい。
+3. **クラウドエンジニア視点**: トークン使用量とテナント分離の記録が追跡性を高めた。
+4. **ユーザー視点**: ドキュメントと実装の一致により、提供機能への信頼感が高まる。
+
+### Testing
 - `pytest -q`
 - Environment: Python 3.12.10, streamlit==1.49.1, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1, google-cloud-secret-manager==2.24.0
