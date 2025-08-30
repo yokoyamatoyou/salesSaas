@@ -4,7 +4,7 @@ from string import Template
 from core.models import SalesType
 from providers.llm_openai import OpenAIProvider
 from providers.search_provider import WebSearchProvider
-from services.utils import escape_braces
+from services.utils import escape_braces, sanitize_for_prompt
 
 class IcebreakerService:
     def __init__(self, settings_manager=None):
@@ -89,19 +89,20 @@ class IcebreakerService:
         if news_items:
             news_details = "\n".join(
                 [
-                    f"- {escape_braces(item['title'])}: {escape_braces(item['snippet'])}"
+                    f"- {escape_braces(sanitize_for_prompt(item['title']))}: {escape_braces(sanitize_for_prompt(item['snippet']))}"
                     for item in news_items
                 ]
             )
+            news_details = sanitize_for_prompt(news_details)
 
         # ユーザーメッセージ
         user_template = Template(self.prompt_template["user_template"])
         user_msg = user_template.safe_substitute(
-            sales_type=escape_braces(sales_type.value),
-            tone=escape_braces(tone),
-            industry=escape_braces(industry),
-            company_hint=escape_braces(company_hint or 'なし'),
-            news_items=escape_braces(news_details),
+            sales_type=escape_braces(sanitize_for_prompt(sales_type.value)),
+            tone=escape_braces(sanitize_for_prompt(tone)),
+            industry=escape_braces(sanitize_for_prompt(industry)),
+            company_hint=escape_braces(sanitize_for_prompt(company_hint or 'なし')),
+            news_items=escape_braces(sanitize_for_prompt(news_details)),
         )
 
         # 出力制約

@@ -8,6 +8,7 @@ from core.models import SalesType
 from providers.llm_openai import OpenAIProvider
 from services.error_handler import ServiceError, ConfigurationError
 from services.logger import Logger
+from services.utils import escape_braces, sanitize_for_prompt
 
 logger = Logger("PostAnalyzerService")
 
@@ -120,14 +121,19 @@ class PostAnalyzerService:
             raise ConfigurationError("プロンプトテンプレートが読み込まれていません")
         
         # テンプレートの置換
+        meeting_content_clean = escape_braces(sanitize_for_prompt(meeting_content))
+        sales_type_clean = escape_braces(sanitize_for_prompt(sales_type.value))
+        industry_clean = escape_braces(sanitize_for_prompt(industry))
+        product_clean = escape_braces(sanitize_for_prompt(product))
+
         prompt = self.prompt_template['system'] + "\n\n"
         prompt += self.prompt_template['user'].format(
-            meeting_content=meeting_content,
-            sales_type=sales_type.value,
-            industry=industry,
-            product=product
+            meeting_content=meeting_content_clean,
+            sales_type=sales_type_clean,
+            industry=industry_clean,
+            product=product_clean
         )
-        
+
         return prompt
     
     def _get_analysis_schema(self) -> Dict[str, Any]:

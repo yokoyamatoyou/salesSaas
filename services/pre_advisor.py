@@ -11,7 +11,7 @@ from providers.llm_openai import OpenAIProvider
 from providers.search_provider import WebSearchProvider
 from services.logger import Logger
 from services.error_handler import ErrorHandler, ServiceError, ConfigurationError
-from services.utils import escape_braces
+from services.utils import escape_braces, sanitize_for_prompt
 
 class PreAdvisorService:
     def __init__(self, settings_manager=None):
@@ -164,30 +164,32 @@ class PreAdvisorService:
     def _build_prompt(self, sales_input: SalesInput) -> str:
         """プロンプトを構築"""
         # 説明フィールドの処理
-        description = escape_braces(sales_input.description or "")
-        description_url = escape_braces(sales_input.description_url or "")
+        description = escape_braces(sanitize_for_prompt(sales_input.description or ""))
+        description_url = escape_braces(sanitize_for_prompt(sales_input.description_url or ""))
 
         # 競合フィールドの処理
-        competitor = escape_braces(sales_input.competitor or "")
-        competitor_url = escape_braces(sales_input.competitor_url or "")
+        competitor = escape_braces(sanitize_for_prompt(sales_input.competitor or ""))
+        competitor_url = escape_braces(sanitize_for_prompt(sales_input.competitor_url or ""))
 
         # 制約の処理
         constraints_text = escape_braces(
-            ", ".join(sales_input.constraints) if sales_input.constraints else "なし"
+            sanitize_for_prompt(
+                ", ".join(sales_input.constraints) if sales_input.constraints else "なし"
+            )
         )
 
         # プロンプトテンプレートを適用
         user_template = Template(self.prompt_template["user"])
         prompt = user_template.safe_substitute(
-            sales_type=escape_braces(sales_input.sales_type.value),
-            industry=escape_braces(sales_input.industry),
-            product=escape_braces(sales_input.product),
+            sales_type=escape_braces(sanitize_for_prompt(sales_input.sales_type.value)),
+            industry=escape_braces(sanitize_for_prompt(sales_input.industry)),
+            product=escape_braces(sanitize_for_prompt(sales_input.product)),
             description=description,
             description_url=description_url,
             competitor=competitor,
             competitor_url=competitor_url,
-            stage=escape_braces(sales_input.stage),
-            purpose=escape_braces(sales_input.purpose),
+            stage=escape_braces(sanitize_for_prompt(sales_input.stage)),
+            purpose=escape_braces(sanitize_for_prompt(sales_input.purpose)),
             constraints=constraints_text,
         )
 
