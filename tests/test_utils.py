@@ -21,3 +21,26 @@ def test_sanitize_for_prompt():
     assert 'assistant:' not in result.lower()
     assert '<' not in result and '>' not in result
     assert 'alert(1)' in result
+
+
+def test_sanitize_for_prompt_removes_all_role_keywords():
+    text = "User: greet Developer: fix System: set Assistant: help"
+    result = sanitize_for_prompt(text)
+    lowered = result.lower()
+    for role in ("user:", "developer:", "system:", "assistant:"):
+        assert role not in lowered
+    assert result == "greet fix set help"
+
+
+def test_sanitize_for_prompt_removes_invisible_and_backticks():
+    text = "Here\u200b is `code` and ```block```"
+    result = sanitize_for_prompt(text)
+    assert "\u200b" not in result
+    assert "`" not in result
+    assert result == "Here is code and block"
+
+
+def test_sanitize_for_prompt_whitelists_ascii():
+    text = "Hello\u263a\u4e16\u754c!"  # Hello🙂世界!
+    result = sanitize_for_prompt(text)
+    assert result == "Hello!"

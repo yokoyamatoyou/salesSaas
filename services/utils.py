@@ -4,16 +4,34 @@ import re
 
 
 def sanitize_for_prompt(text: str) -> str:
-    """Remove potentially dangerous prompt directives and HTML tags.
+    """Remove potentially dangerous prompt directives and unwanted characters.
 
-    This helps mitigate prompt injection by stripping markers like
-    ``system:`` or ``assistant:`` and removing any HTML tags that may carry
-    embedded instructions.
+    This helper strips role markers like ``system:`` or ``developer:``, HTML
+    tags, backticks, and zero-width characters. After cleaning, only
+    alphanumeric characters, whitespace, and common punctuation remain to
+    prevent prompt injections.
     """
     if not isinstance(text, str):
         return text
-    sanitized = re.sub(r"(?i)\b(system|assistant)\s*:", "", text)
+
+    # remove role keywords such as ``system:``, ``assistant:``, ``user:``, ``developer:``
+    sanitized = re.sub(r"(?i)\b(?:system|assistant|user|developer)\s*:", "", text)
+
+    # strip HTML tags completely
     sanitized = re.sub(r"<[^>]*>", "", sanitized)
+
+    # remove backticks and markdown code fences
+    sanitized = sanitized.replace("`", "")
+
+    # remove zero-width and other invisible unicode characters
+    sanitized = re.sub(r"[\u200B-\u200F\u202A-\u202E\u2060\uFEFF]", "", sanitized)
+
+    # whitelist: allow only alphanumerics, whitespace, and common punctuation
+    sanitized = re.sub(r"[^0-9A-Za-z\s.,!?;:'\"()\-_/]", "", sanitized)
+
+    # collapse consecutive whitespace to a single space
+    sanitized = re.sub(r"\s+", " ", sanitized)
+
     return sanitized.strip()
 
 
