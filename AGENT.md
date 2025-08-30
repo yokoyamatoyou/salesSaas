@@ -94,9 +94,16 @@ pytest-mock>=3.14
 APP_ENV=local
 OPENAI_API_KEY=sk-xxxx
 DATA_DIR=./data
-SEARCH_PROVIDER=none   # none|cse|newsapi 等
-CSE_API_KEY=
-CSE_CX=
+STORAGE_PROVIDER=local  # local|gcs|firestore
+GCS_BUCKET_NAME=        # required when STORAGE_PROVIDER=gcs
+GCS_PREFIX=sessions     # optional prefix path
+FIRESTORE_TENANT_ID=    # required when STORAGE_PROVIDER=firestore
+GOOGLE_APPLICATION_CREDENTIALS=path/to/cred.json  # optional on Cloud Run
+SEARCH_PROVIDER=none   # none|cse|newsapi|hybrid
+CSE_API_KEY=            # required when SEARCH_PROVIDER=cse or hybrid
+CSE_CX=                 # required when SEARCH_PROVIDER=cse or hybrid
+NEWSAPI_KEY=            # required when SEARCH_PROVIDER=newsapi or hybrid
+CRM_API_KEY=            # required when using CRM integration
 ```
 
 6. **Dockerfile（Python 3.11）**
@@ -549,4 +556,6 @@ chmod +x start_docker.sh
 - 2025-09-10: `Localtest.md`（ローカルテスト指示書）を追加し、各視点を統合した手順を記載。
 
 - 2025-09-11: READMEとMakefileの開発コマンドを文書化し、フェーズ7完了としてPR準備。
+- 2025-09-20: Cloud Run デプロイ設定に Firestore/Secret Manager 用の環境変数を追加し、README に手順を追記。
 - 2025-09-24: フェーズ8開発を開始し、マルチテナント化の設計を着手。
+- 2025-09-30: Cloud Run で `GOOGLE_APPLICATION_CREDENTIALS` 未設定でも Firestore が動作するよう修正し、関連テストとドキュメントを更新。
