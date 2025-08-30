@@ -185,8 +185,9 @@ def display_icebreakers(sales_type: SalesType, industry: str, icebreakers: list,
     col1, col2 = st.columns([1, 1])
     with col1:
         if st.button("💾 セッションに保存", use_container_width=True):
-            save_icebreakers(sales_type, industry, icebreakers, company_hint, search_enabled)
-            st.success("アイスブレイクをセッションに保存しました！セッションID: {session_id[:8]}...")
+            session_id = save_icebreakers(sales_type, industry, icebreakers, company_hint, search_enabled)
+            if session_id:
+                st.success(f"アイスブレイクをセッションに保存しました！セッションID: {session_id[:8]}...")
     
     with col2:
         if st.button("📥 JSONでダウンロード", use_container_width=True):
@@ -270,11 +271,8 @@ def save_icebreakers(sales_type: SalesType, industry: str, icebreakers: list, co
         # セッション状態に保存
         if "icebreaker_sessions" not in st.session_state:
             st.session_state.icebreaker_sessions = {}
-        
+
         st.session_state.icebreaker_sessions[session_id] = session_data
-        
-        # 成功メッセージ
-        st.success(f"アイスブレイクをセッションに保存しました！セッションID: {session_id[:8]}...")
         
         # 履歴ページで表示できるように保存
         try:
@@ -302,9 +300,12 @@ def save_icebreakers(sales_type: SalesType, industry: str, icebreakers: list, co
 
         except Exception as storage_error:
             st.warning(f"履歴への保存に失敗しました: {storage_error}")
-        
+
+        return session_id
+
     except Exception as e:
         st.error(f"保存に失敗しました: {e}")
+        return None
 
 def download_icebreakers_json(sales_type: SalesType, industry: str, icebreakers: list, company_hint: str = None, search_enabled: bool = True):
     """アイスブレイク結果をJSONファイルでダウンロード"""
