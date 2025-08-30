@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import Mock, patch, MagicMock
 from openai import RateLimitError, BadRequestError, AuthenticationError, APIError
 from providers.llm_openai import OpenAIProvider, LLMError
+from services.usage_meter import UsageMeter
 
 class TestOpenAIProvider:
     """OpenAIプロバイダーのテスト"""
@@ -441,3 +442,31 @@ class TestOpenAIProvider:
                     provider.call_llm("プロンプト", "speed")
 
                 assert mock_client.chat.completions.create.call_count == 3
+
+    def test_call_llm_usage_limit(self):
+        """使用量メータが閾値を超えるとエラーを投げる"""
+        with patch.dict('os.environ', {'OPENAI_API_KEY': 'test-key', 'TOKEN_USAGE_LIMIT': '50'}):
+            with patch('providers.llm_openai.OpenAI') as mock_openai:
+                mock_client = Mock()
+                mock_openai.return_value = mock_client
+
+                mock_response = Mock()
+                mock_choice = Mock()
+                mock_message = Mock()
+                mock_message.content = "レスポンス"
+                mock_message.refusal = None
+                mock_choice.message = mock_message
+                mock_choice.finish_reason = "stop"
+                mock_response.choices = [mock_choice]
+                usage = Mock()
+                usage.total_tokens = 30
+                mock_response.usage = usage
+                mock_client.chat.completions.create.return_value = mock_response
+
+                UsageMeter.reset()
+                provider = OpenAIProvider()
+
+                provider.call_llm("プロンプト", "speed", user_id="u1")
+
+                with pytest.raises(LLMError, match="使用上限に達しました"):
+                    provider.call_llm("プロンプト", "speed", user_id="u1")

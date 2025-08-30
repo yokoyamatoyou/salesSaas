@@ -11,16 +11,13 @@ from openai import (
 )
 from tenacity import retry, stop_after_attempt, wait_exponential
 from jsonschema import validate as jsonschema_validate, ValidationError
+from services.error_handler import LLMError
+from services.usage_meter import UsageMeter
 
 
 logger = logging.getLogger(__name__)
 
 MODEL_TOKEN_LIMIT = 4000
-
-
-class LLMError(Exception):
-    """カスタムLLM例外"""
-    pass
 
 class OpenAIProvider:
     def __init__(self, settings_manager=None):
@@ -99,9 +96,14 @@ class OpenAIProvider:
         prompt: str,
         mode: Literal["speed", "deep", "creative"],
         json_schema: Optional[Dict[str, Any]] = None,
+        user_id: str = "default",
     ) -> Dict[str, Any]:
         """LLMを呼び出してJSON形式で応答を取得"""
         mode_config = self.MODES[mode]
+
+        # pre-call usage check
+        if UsageMeter.get_tokens(user_id) >= UsageMeter.get_limit(user_id):
+            raise LLMError("使用上限に達しました", error_code="rate_limit")
         
         try:
             # システムメッセージを構築
@@ -143,6 +145,15 @@ class OpenAIProvider:
                 }
             
             response = self.client.chat.completions.create(**request_params)
+
+            # update usage based on response tokens
+            usage_info = getattr(response, "usage", None)
+            tokens_used = getattr(usage_info, "total_tokens", 0)
+            if not isinstance(tokens_used, int):
+                tokens_used = 0
+            total = UsageMeter.add_tokens(user_id, tokens_used)
+            if total > UsageMeter.get_limit(user_id):
+                raise LLMError("使用上限に達しました", error_code="rate_limit")
 
             choice = response.choices[0]
             finish_reason = getattr(choice, "finish_reason", "stop")
