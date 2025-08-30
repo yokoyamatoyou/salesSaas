@@ -1,4 +1,5 @@
 # 営業特化SaaS
+[![CI](https://github.com/USER/salesSaas/actions/workflows/ci.yml/badge.svg)](https://github.com/USER/salesSaas/actions/workflows/ci.yml)
 
 GCP上で動く**マルチテナント**の営業特化SaaS（Streamlit UI + 将来的にAPI層）。
 
@@ -118,6 +119,12 @@ make deploy-cloudrun
 ## テスト
 
 ```bash
+# Lint
+make lint
+
+# Security
+make security
+
 # テスト実行（全体）
 pytest -q
 
@@ -137,6 +144,7 @@ make run         # ローカル環境で起動
 make docker-run  # Dockerで起動
 make test        # テスト実行
 make lint        # 構文チェック
+make security    # セキュリティチェック
 make deploy-cloudrun  # Cloud Run にデプロイ
 ```
 

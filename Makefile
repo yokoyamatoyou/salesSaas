@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-.PHONY: run docker-run test lint clean docker-build deploy-cloudrun help
+.PHONY: run docker-run test lint security clean docker-build deploy-cloudrun help
 
 # デフォルトターゲット
 all: run
@@ -22,8 +22,15 @@ test:
 
 # 構文チェック
 lint:
-	@echo "構文チェック中..."
-	find . -name "*.py" -not -path "./.venv/*" -exec python -m py_compile {} +
+	@echo "Lint 実行中..."
+	ruff check . --select E9,F63,F7 --quiet
+
+
+# セキュリティチェック
+security:
+	@echo "Security チェック中..."
+	bandit -q -r app core services providers --exit-zero
+	pip-audit
 
 # クリーンアップ
 clean:
@@ -47,6 +54,7 @@ help:
 	@echo "  docker-run  - Dockerで起動"
 	@echo "  test        - テスト実行"
 	@echo "  lint        - 構文チェック"
+	@echo "  security    - セキュリティチェック"
 	@echo "  clean       - クリーンアップ"
 	@echo "  docker-build- Dockerイメージビルド"
 	@echo "  deploy-cloudrun- Cloud Run にデプロイ"
