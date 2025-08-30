@@ -3,6 +3,7 @@
 LLMの知識を活用して検索結果の品質向上とスコアリングアルゴリズムを改善
 """
 
+import os
 import yaml
 import json
 import re
@@ -11,7 +12,7 @@ from datetime import datetime, timezone
 from urllib.parse import urlparse
 from core.models import AppSettings
 from providers.llm_openai import OpenAIProvider
-from providers.search_provider import WebSearchProvider
+from providers.search_provider import WebSearchProvider, CSEProvider, NewsAPIProvider
 from services.error_handler import ErrorHandler
 from services.logger import Logger
 
@@ -33,7 +34,13 @@ class SearchEnhancerService:
                 self.logger.warning(f"OpenAIProviderの初期化に失敗: {e}")
                 self.llm_provider = None
 
-        self.search_provider = WebSearchProvider(settings_manager)
+        provider_name = os.getenv("SEARCH_PROVIDER", "none").lower()
+        if provider_name == "cse":
+            self.search_provider = CSEProvider(settings_manager)
+        elif provider_name == "newsapi":
+            self.search_provider = NewsAPIProvider(settings_manager)
+        else:
+            self.search_provider = WebSearchProvider(settings_manager)
         
     def _load_prompts(self) -> Dict[str, Any]:
         """プロンプトテンプレートを読み込み"""

@@ -73,6 +73,11 @@ NEWSAPI_KEY=            # required when SEARCH_PROVIDER=newsapi or hybrid
 
 `SEARCH_PROVIDER` を `cse` または `hybrid` に設定する場合は `CSE_API_KEY` と `CSE_CX` を、`newsapi` または `hybrid` に設定する場合は `NEWSAPI_KEY` をそれぞれ設定してください。
 
+各キーの取得先:
+
+- `CSE_API_KEY` と `CSE_CX`: Google Custom Search Engine の設定画面
+- `NEWSAPI_KEY`: https://newsapi.org で発行
+
 ## GCPへの移行
 
 `migrate-to-gcp.sh` を使うとアプリを Google Cloud にデプロイできます。非対話モードでの実行例:

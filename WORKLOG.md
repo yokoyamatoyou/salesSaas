@@ -391,3 +391,19 @@
 ### Testing
 - `pytest -q`
 - Environment: Python 3.12.10, streamlit==1.49.1, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1
+## 2025-09-18
+### Task
+- NewsAPI と CSE の検索プロバイダクラスを追加し、環境変数で選択できるように更新
+  - refs: [providers/search_provider.py, services/search_enhancer.py, tests/test_search_provider.py, env.example, README.md]
+- 進捗ログを更新
+  - refs: [docs/PROGRESS.md, WORKLOG.md]
+
+### Reviews
+1. **Python上級エンジニア視点**: 検索プロバイダがクラス化され、責務が明確になった。
+2. **UI/UX専門家視点**: `.env` の設定だけで検索ソースを切り替えられ、導入が簡潔に。
+3. **クラウドエンジニア視点**: API キーが明示され、クラウドでの秘密情報管理が容易になった。
+4. **ユーザー視点**: ニュースソースを選択でき、より関連性の高い情報取得が期待できる。
+
+### Testing
+- `pytest -q`
+- Environment: Python 3.12.10, streamlit==1.49.1, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1

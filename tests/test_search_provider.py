@@ -5,7 +5,7 @@ from urllib.parse import urlparse
 
 import pytest
 
-from providers.search_provider import WebSearchProvider
+from providers.search_provider import WebSearchProvider, NewsAPIProvider, CSEProvider
 
 
 def _make_item(url: str, days_old: int = 0):
@@ -77,3 +77,48 @@ def test_search_none_provider_returns_message():
         results = provider.search("unknown", num=3)
         assert len(results) == 1
         assert results[0]["snippet"] == "ヒットしませんでした。別のキーワードで再検索してください。"
+
+
+def test_newsapi_provider_returns_results(mocker):
+    mock_resp = mocker.Mock()
+    mock_resp.json.return_value = {
+        "articles": [
+            {
+                "title": "Sample", "url": "https://example.com", "description": "desc", "publishedAt": "2024-01-01T00:00:00Z"
+            }
+        ]
+    }
+    mock_resp.raise_for_status.return_value = None
+    mock_client = mocker.Mock()
+    mock_client.get.return_value = mock_resp
+    mock_client.__enter__ = mocker.Mock(return_value=mock_client)
+    mock_client.__exit__ = mocker.Mock(return_value=None)
+    mocker.patch("httpx.Client", return_value=mock_client)
+    with pytest.MonkeyPatch().context() as mp:
+        mp.setenv("NEWSAPI_KEY", "k")
+        provider = NewsAPIProvider()
+        results = provider.search("AI", num=1)
+        assert len(results) == 1
+        assert results[0]["source"] == "newsapi"
+
+
+def test_cse_provider_returns_results(mocker):
+    mock_resp = mocker.Mock()
+    mock_resp.json.return_value = {
+        "items": [
+            {"title": "Sample", "link": "https://example.com", "snippet": "desc"}
+        ]
+    }
+    mock_resp.raise_for_status.return_value = None
+    mock_client = mocker.Mock()
+    mock_client.get.return_value = mock_resp
+    mock_client.__enter__ = mocker.Mock(return_value=mock_client)
+    mock_client.__exit__ = mocker.Mock(return_value=None)
+    mocker.patch("httpx.Client", return_value=mock_client)
+    with pytest.MonkeyPatch().context() as mp:
+        mp.setenv("CSE_API_KEY", "k")
+        mp.setenv("CSE_CX", "cx")
+        provider = CSEProvider()
+        results = provider.search("AI", num=1)
+        assert len(results) == 1
+        assert results[0]["source"] == "cse"

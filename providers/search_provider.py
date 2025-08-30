@@ -431,3 +431,20 @@ class WebSearchProvider:
         
         return final_results[:num]
 
+
+class CSEProvider(WebSearchProvider):
+    """Google Custom Search Engine を利用したプロバイダ"""
+
+    def __init__(self, settings_manager=None):
+        super().__init__(settings_manager)
+        self.search_provider = "cse"
+
+
+class NewsAPIProvider(WebSearchProvider):
+    """NewsAPI を利用したプロバイダ"""
+
+    def __init__(self, settings_manager=None):
+        super().__init__(settings_manager)
+        self.search_provider = "newsapi"
+
+
