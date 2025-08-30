@@ -204,6 +204,11 @@ repo/
 - [ ] フェーズ9：Webリサーチ実装
 - [ ] フェーズ10：品質・セキュリティ
 
+## プロジェクトドキュメント
+
+- 進捗ログ: [docs/PROGRESS.md](docs/PROGRESS.md)
+- 重要な決定: [docs/DECISIONS.md](docs/DECISIONS.md)
+
 ## ライセンス
 
 MIT License
