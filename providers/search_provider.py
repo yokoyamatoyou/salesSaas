@@ -67,39 +67,18 @@ class WebSearchProvider:
         config = self._get_search_config()
         provider = (config.get("provider") or "none").lower()
 
-        results: List[Dict[str, Any]] = []
-
         if provider == "none":
-            results = []
+            results = self._search_none(query, num)
         elif provider == "stub":
-            results = self._rank_results(self._get_stub_results(query, num), query, num)
+            results = self._search_stub(query, num)
         elif provider == "cse":
-            res = self._rank_results(self._search_cse(query, num), query, num)
-            if not res:
-                # Fallback: newsapi -> stub
-                alt = self._rank_results(self._search_newsapi(query, num), query, num)
-                results = alt if alt else self._rank_results(self._get_stub_results(query, num), query, num)
-            else:
-                results = res
+            results = self._search_cse_with_fallback(query, num)
         elif provider == "newsapi":
-            res = self._rank_results(self._search_newsapi(query, num), query, num)
-            if not res:
-                # Fallback: cse -> stub
-                alt = self._rank_results(self._search_cse(query, num), query, num)
-                results = alt if alt else self._rank_results(self._get_stub_results(query, num), query, num)
-            else:
-                results = res
+            results = self._search_newsapi_with_fallback(query, num)
         elif provider == "hybrid":
-            merged = self._merge_dedupe(
-                self._search_cse(query, num),
-                self._search_newsapi(query, num),
-                limit=max(num, config.get("limit", num)),
-            )
-            res = self._rank_results(merged, query, num)
-            results = res if res else self._rank_results(self._get_stub_results(query, num), query, num)
+            results = self._search_hybrid(query, num, config.get("limit", num))
         else:
-            # 未知指定は安全にスタブ
-            results = self._rank_results(self._get_stub_results(query, num), query, num)
+            results = self._search_unknown(query, num)
 
         if not results:
             return [{
@@ -113,6 +92,38 @@ class WebSearchProvider:
             logger.warning("オフラインモード: Web検索に失敗したためスタブデータを使用します。")
 
         return results
+
+    def _search_none(self, query: str, num: int) -> List[Dict[str, Any]]:
+        return []
+
+    def _search_stub(self, query: str, num: int) -> List[Dict[str, Any]]:
+        return self._rank_results(self._get_stub_results(query, num), query, num)
+
+    def _search_cse_with_fallback(self, query: str, num: int) -> List[Dict[str, Any]]:
+        res = self._rank_results(self._search_cse(query, num), query, num)
+        if res:
+            return res
+        alt = self._rank_results(self._search_newsapi(query, num), query, num)
+        return alt if alt else self._rank_results(self._get_stub_results(query, num), query, num)
+
+    def _search_newsapi_with_fallback(self, query: str, num: int) -> List[Dict[str, Any]]:
+        res = self._rank_results(self._search_newsapi(query, num), query, num)
+        if res:
+            return res
+        alt = self._rank_results(self._search_cse(query, num), query, num)
+        return alt if alt else self._rank_results(self._get_stub_results(query, num), query, num)
+
+    def _search_hybrid(self, query: str, num: int, limit: int) -> List[Dict[str, Any]]:
+        merged = self._merge_dedupe(
+            self._search_cse(query, num),
+            self._search_newsapi(query, num),
+            limit=max(num, limit),
+        )
+        res = self._rank_results(merged, query, num)
+        return res if res else self._rank_results(self._get_stub_results(query, num), query, num)
+
+    def _search_unknown(self, query: str, num: int) -> List[Dict[str, Any]]:
+        return self._rank_results(self._get_stub_results(query, num), query, num)
     
     def _get_stub_results(self, query: str, num: int) -> List[Dict[str, Any]]:
         """スタブ検索結果を返す"""

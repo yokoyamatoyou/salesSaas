@@ -1,4 +1,3 @@
-import os
 import random
 from datetime import datetime, timedelta, timezone
 from urllib.parse import urlparse
@@ -77,3 +76,32 @@ def test_search_none_provider_returns_message():
         results = provider.search("unknown", num=3)
         assert len(results) == 1
         assert results[0]["snippet"] == "ヒットしませんでした。別のキーワードで再検索してください。"
+
+
+def test_cse_with_fallback_uses_newsapi(mocker):
+    provider = WebSearchProvider()
+    mocker.patch.object(provider, "_search_cse", return_value=[])
+    mocker.patch.object(
+        provider,
+        "_search_newsapi",
+        return_value=[{"title": "n", "url": "https://e.com", "snippet": "s", "source": "newsapi", "published_at": None}],
+    )
+    mocker.patch.object(provider, "_rank_results", side_effect=lambda items, q, n: items[:n])
+    mocker.patch.object(provider, "_get_stub_results")
+    results = provider._search_cse_with_fallback("q", 1)
+    assert results[0]["source"] == "newsapi"
+    provider._get_stub_results.assert_not_called()
+
+
+def test_newsapi_with_fallback_uses_stub(mocker):
+    provider = WebSearchProvider()
+    mocker.patch.object(provider, "_search_newsapi", return_value=[])
+    mocker.patch.object(provider, "_search_cse", return_value=[])
+    mocker.patch.object(
+        provider,
+        "_get_stub_results",
+        return_value=[{"title": "s", "url": "https://e.com", "snippet": "s", "source": "stub", "published_at": None}],
+    )
+    mocker.patch.object(provider, "_rank_results", side_effect=lambda items, q, n: items[:n])
+    results = provider._search_newsapi_with_fallback("q", 1)
+    assert results[0]["source"] == "stub"
