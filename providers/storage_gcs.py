@@ -12,12 +12,16 @@ from google.cloud import storage
 class GCSStorageProvider:
     """Google Cloud Storage based session storage provider"""
 
-    def __init__(self, bucket_name: str, prefix: str = "sessions") -> None:
+    def __init__(
+        self, bucket_name: str, tenant_id: str, prefix: str = "sessions"
+    ) -> None:
         if not bucket_name:
             raise ValueError("bucket_name is required")
+        if not tenant_id:
+            raise ValueError("tenant_id is required")
         self.client = storage.Client()
         self.bucket = self.client.bucket(bucket_name)
-        self.prefix = prefix.rstrip("/") + "/"
+        self.prefix = f"{tenant_id}/{prefix.rstrip('/')}/"
 
     def _blob(self, session_id: str):
         return self.bucket.blob(f"{self.prefix}{session_id}.json")
