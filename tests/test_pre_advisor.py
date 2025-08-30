@@ -212,3 +212,49 @@ output_format: "出力形式"
                             
                             with pytest.raises(ServiceError, match="予期しないエラーが発生しました"):
                                 service.generate_advice(sales_input)
+
+    def test_offline_fallback(self, tmp_path):
+        """LLM接続失敗時にスタブデータを返す"""
+        stub_data = {
+            "short_term": {
+                "openers": {"call": "オフライン", "visit": "オフライン", "email": "オフライン"},
+                "discovery": ["オフライン"],
+                "differentiation": [{"vs": "オフライン", "talk": "オフライン"}],
+                "objections": [{"type": "オフライン", "script": "オフライン"}],
+                "next_actions": ["オフライン"],
+                "kpi": {"next_meeting_rate": "0%", "poc_rate": "0%"},
+                "summary": "オフラインスタブ"
+            },
+            "mid_term": {"plan_weeks_4_12": ["オフライン"]},
+            "offline": True
+        }
+
+        with patch("services.pre_advisor.Logger") as mock_logger_class:
+            mock_logger = Mock()
+            mock_logger_class.return_value = mock_logger
+
+            with patch("services.pre_advisor.WebSearchProvider") as mock_search_class:
+                mock_search = Mock()
+                mock_search.search.return_value = []
+                mock_search_class.return_value = mock_search
+
+                with patch("services.pre_advisor.OpenAIProvider") as mock_provider_class:
+                    mock_provider = Mock()
+                    mock_provider.call_llm.side_effect = ConnectionError("network")
+                    mock_provider_class.return_value = mock_provider
+
+                    with patch("services.pre_advisor.PreAdvisorService._load_prompt_template") as mock_tpl:
+                        mock_tpl.return_value = {"user": "", "system": "", "output_format": ""}
+                        service = PreAdvisorService()
+                        with patch.object(service, "_load_stub_response", return_value=stub_data):
+                            sales_input = SalesInput(
+                                sales_type=SalesType.HUNTER,
+                                industry="IT",
+                                product="SaaS",
+                                description="", description_url=None,
+                                competitor="", competitor_url=None,
+                                stage="", purpose="", constraints=[]
+                            )
+                            result = service.generate_advice(sales_input)
+                            assert result == stub_data
+                            mock_logger.warning.assert_any_call("オフラインモード: LLM接続に失敗しました。スタブデータを使用します。")

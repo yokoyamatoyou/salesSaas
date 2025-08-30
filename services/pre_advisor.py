@@ -1,6 +1,7 @@
 import yaml
 import os
 import time
+import json
 from pathlib import Path
 from typing import Dict, Any
 from string import Template
@@ -51,6 +52,32 @@ class PreAdvisorService:
                 "invalid_format",
                 {"file_path": str(file_path), "error": str(e)},
             )
+
+    def _load_stub_response(self) -> Dict[str, Any]:
+        """オフライン時に使用するスタブレスポンスを読み込み"""
+        stub_path = Path(__file__).resolve().parent.parent / "data" / "pre_advice_stub.json"
+        try:
+            with open(stub_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if isinstance(data, dict):
+                    data["offline"] = True
+                return data
+        except Exception:
+            return {
+                "short_term": {
+                    "openers": {"call": "オフライン", "visit": "オフライン", "email": "オフライン"},
+                    "discovery": ["オフライン"],
+                    "differentiation": [{"vs": "オフライン", "talk": "オフライン"}],
+                    "objections": [{"type": "オフライン", "script": "オフライン"}],
+                    "next_actions": ["オフライン"],
+                    "kpi": {"next_meeting_rate": "0%", "poc_rate": "0%"},
+                    "summary": "オフラインスタブ"
+                },
+                "mid_term": {
+                    "plan_weeks_4_12": ["オフライン"]
+                },
+                "offline": True
+            }
     
     def generate_advice(self, sales_input: SalesInput) -> Dict[str, Any]:
         """事前アドバイスを生成"""
@@ -75,16 +102,27 @@ class PreAdvisorService:
             try:
                 search_provider = WebSearchProvider(self.settings_manager)
                 sources = search_provider.search(f"{sales_input.industry} 最新ニュース", 3)
+                if getattr(search_provider, "offline_mode", False):
+                    self.logger.warning("オフラインモード: Web検索が利用できません。スタブデータを使用します。")
             except Exception:
-                sources = []
+                self.logger.warning("オフラインモード: Web検索が利用できません。スタブデータを使用します。")
+                search_provider = WebSearchProvider(self.settings_manager)
+                sources = search_provider._get_stub_results(f"{sales_input.industry} 最新ニュース", 3)
 
             # LLMでアドバイス生成
             self.logger.log_service_call("OpenAIProvider", "call_llm", {"mode": "speed"})
-            response = self.llm_provider.call_llm(
-                prompt=prompt,
-                mode="speed",
-                json_schema=get_pre_advice_schema()
-            )
+            try:
+                response = self.llm_provider.call_llm(
+                    prompt=prompt,
+                    mode="speed",
+                    json_schema=get_pre_advice_schema()
+                )
+            except Exception as e:
+                if isinstance(e, ConnectionError):
+                    self.logger.warning("オフラインモード: LLM接続に失敗しました。スタブデータを使用します。")
+                    response = self._load_stub_response()
+                else:
+                    raise
             
             # 生成JSONに参考出典URLを同期（テスト実行中はスキップして互換性維持）
             if not os.getenv("PYTEST_CURRENT_TEST"):
