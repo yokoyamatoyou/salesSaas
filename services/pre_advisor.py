@@ -1,6 +1,7 @@
 import yaml
 import os
 import time
+from pathlib import Path
 from typing import Dict, Any
 from string import Template
 from core.models import SalesInput
@@ -32,19 +33,24 @@ class PreAdvisorService:
     
     def _load_prompt_template(self) -> Dict[str, Any]:
         """プロンプトテンプレートを読み込み"""
+        file_path = Path(__file__).resolve().parent.parent / "prompts" / "pre_advice.yaml"
         try:
-            with open("prompts/pre_advice.yaml", "r", encoding="utf-8") as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 template = yaml.safe_load(f)
                 self.logger.info("Prompt template loaded successfully")
                 return template
         except FileNotFoundError:
             error_msg = "プロンプトファイル 'prompts/pre_advice.yaml' が見つかりません"
             self.logger.error(error_msg)
-            raise ConfigurationError(error_msg, "file_not_found", {"file_path": "prompts/pre_advice.yaml"})
+            raise ConfigurationError(error_msg, "file_not_found", {"file_path": str(file_path)})
         except yaml.YAMLError as e:
             error_msg = f"プロンプトファイルの形式が正しくありません: {e}"
             self.logger.error(error_msg)
-            raise ConfigurationError(error_msg, "invalid_format", {"file_path": "prompts/pre_advice.yaml", "error": str(e)})
+            raise ConfigurationError(
+                error_msg,
+                "invalid_format",
+                {"file_path": str(file_path), "error": str(e)},
+            )
     
     def generate_advice(self, sales_input: SalesInput) -> Dict[str, Any]:
         """事前アドバイスを生成"""
