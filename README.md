@@ -78,6 +78,8 @@ NEWSAPI_KEY=            # required when SEARCH_PROVIDER=newsapi or hybrid
 - `CSE_API_KEY` と `CSE_CX`: Google Custom Search Engine の設定画面
 - `NEWSAPI_KEY`: https://newsapi.org で発行
 
+各プロバイダにはレート制限があります。Google Custom Search Engine は無料枠で 1 日 100 クエリまで、NewsAPI は無料プランで 1 日 100 リクエストかつ毎秒 1 リクエストまで利用可能です。超過するとエラーや追加課金が発生するため、利用量に応じて計画してください。
+
 ## GCPへの移行
 
 `migrate-to-gcp.sh` を使うとアプリを Google Cloud にデプロイできます。非対話モードでの実行例:

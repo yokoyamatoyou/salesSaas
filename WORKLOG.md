@@ -391,6 +391,7 @@
 ### Testing
 - `pytest -q`
 - Environment: Python 3.12.10, streamlit==1.49.1, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1
+
 ## 2025-09-18
 ### Task
 - NewsAPI と CSE の検索プロバイダクラスを追加し、環境変数で選択できるように更新
@@ -417,6 +418,20 @@
 2. **UI/UX専門家視点**: 進捗表と作業記録の整合性が保たれ、利用者への情報提供が明確。
 3. **クラウドエンジニア視点**: ドキュメント更新によりデプロイ時の参照情報が最新化された。
 4. **ユーザー視点**: 開発状況が透明化され、機能追加の把握が容易。
+
+### Testing
+- `pytest -q`
+- Environment: Python 3.12.10, streamlit==1.49.1, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1
+## 2025-09-20
+### Task
+- Resolve merge conflicts in `WORKLOG.md` and `docs/PROGRESS.md`
+- Document rate limits for Google CSE and NewsAPI in README and `env.example`
+
+### Reviews
+1. **Python上級エンジニア視点**: ドキュメント更新が明確で、API利用時の制限を把握しやすくなった。
+2. **UI/UX専門家視点**: レート制限に関する注意が追記され、ユーザーがエラー原因を理解しやすい。
+3. **クラウドエンジニア視点**: 無料枠のクォータ管理を意識でき、運用コストの見積りに役立つ。
+4. **ユーザー視点**: 事前に制限が分かるため、利用計画を立てやすく安心感がある。
 
 ### Testing
 - `pytest -q`
