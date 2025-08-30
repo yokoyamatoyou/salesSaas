@@ -1,8 +1,7 @@
 import json
-import os
 from pathlib import Path
 from typing import Optional, Dict, Any
-from core.models import AppSettings, LLMMode, SearchProvider
+from core.models import AppSettings, SearchProvider
 
 class SettingsManager:
     """アプリケーション設定の管理"""

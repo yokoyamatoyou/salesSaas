@@ -1,5 +1,4 @@
 import pytest
-from unittest.mock import patch
 
 from services.crm_importer import CRMImporter
 

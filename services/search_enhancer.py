@@ -6,10 +6,9 @@ LLMの知識を活用して検索結果の品質向上とスコアリングア�
 import yaml
 import json
 import re
-from typing import List, Dict, Any, Optional, Tuple
+from typing import List, Dict, Any
 from datetime import datetime, timezone
 from urllib.parse import urlparse
-from core.models import AppSettings
 from providers.llm_openai import OpenAIProvider
 from providers.search_provider import WebSearchProvider
 from services.error_handler import ErrorHandler

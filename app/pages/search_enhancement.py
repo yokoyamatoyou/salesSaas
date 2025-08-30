@@ -30,7 +30,7 @@ def main():
     try:
         settings_manager = SettingsManager()
         search_enhancer = SearchEnhancerService(settings_manager)
-        storage_provider = get_storage_provider()
+        get_storage_provider()
     except Exception as e:
         st.error(f"サービスの初期化に失敗しました: {e}")
         return

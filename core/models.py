@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List, Optional, Union, Dict, Any
+from typing import List, Optional, Dict, Any
 from pydantic import BaseModel, Field, field_validator, HttpUrl
 
 class SalesType(str, Enum):

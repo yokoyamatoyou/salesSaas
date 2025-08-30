@@ -37,9 +37,8 @@ def test_set_pinned_and_list_order(tmp_path: Path):
     provider = LocalStorageProvider(data_dir=str(tmp_path))
 
     id_a = provider.save_session({"type": "pre_advice", "input": {}, "output": {}})
-    id_b = provider.save_session({"type": "post_review", "input": {}, "output": {}})
+    provider.save_session({"type": "post_review", "input": {}, "output": {}})
 
-    # ピン留め前は作成日時降順（id_bが先になる可能性が高い）
     sessions_before = provider.list_sessions()
     assert len(sessions_before) == 2
 

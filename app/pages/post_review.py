@@ -3,8 +3,6 @@
 """
 import streamlit as st
 import json
-from typing import List
-from core.models import SalesType
 from services.post_analyzer import PostAnalyzerService
 from services.settings_manager import SettingsManager
 from services.storage_service import get_storage_provider

@@ -1,5 +1,4 @@
 import pytest
-import os
 from unittest.mock import Mock, patch, mock_open
 from core.models import SalesType, SalesInput
 from services.pre_advisor import PreAdvisorService

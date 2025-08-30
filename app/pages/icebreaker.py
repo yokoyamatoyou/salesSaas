@@ -322,7 +322,6 @@ def download_icebreakers_json(sales_type: SalesType, industry: str, icebreakers:
         }
         
         # JSONファイルとしてダウンロード
-        import io
         json_str = json.dumps(download_data, ensure_ascii=False, indent=2)
         
         st.download_button(
