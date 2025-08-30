@@ -61,6 +61,7 @@ DATA_DIR=./data
 STORAGE_PROVIDER=local  # local|gcs|firestore
 GCS_BUCKET_NAME=        # required when STORAGE_PROVIDER=gcs
 GCS_PREFIX=sessions     # optional prefix path
+GCS_TENANT_ID=tenant-123 # required when STORAGE_PROVIDER=gcs
 FIRESTORE_TENANT_ID=    # required when STORAGE_PROVIDER=firestore
 GOOGLE_APPLICATION_CREDENTIALS=path/to/cred.json  # required when STORAGE_PROVIDER=firestore
 SEARCH_PROVIDER=none   # none|cse|newsapi|hybrid
@@ -69,7 +70,7 @@ CSE_CX=                 # required when SEARCH_PROVIDER=cse or hybrid
 NEWSAPI_KEY=            # required when SEARCH_PROVIDER=newsapi or hybrid
 ```
 
-`STORAGE_PROVIDER` を `gcs` に設定する場合は `GCS_BUCKET_NAME`（必須）と必要に応じて `GCS_PREFIX` を、`firestore` に設定する場合は `FIRESTORE_TENANT_ID` と `GOOGLE_APPLICATION_CREDENTIALS` を設定してください。ローカルからGCS/Firestore にアクセスする際は `GOOGLE_APPLICATION_CREDENTIALS` にサービスアカウントJSONのパスを設定します。
+`STORAGE_PROVIDER` を `gcs` に設定する場合は `GCS_BUCKET_NAME` と `GCS_TENANT_ID`（必須）および必要に応じて `GCS_PREFIX` を、`firestore` に設定する場合は `FIRESTORE_TENANT_ID` と `GOOGLE_APPLICATION_CREDENTIALS` を設定してください。ローカルからGCS/Firestore にアクセスする際は `GOOGLE_APPLICATION_CREDENTIALS` にサービスアカウントJSONのパスを設定します。
 
 `SEARCH_PROVIDER` を `cse` または `hybrid` に設定する場合は `CSE_API_KEY` と `CSE_CX` を、`newsapi` または `hybrid` に設定する場合は `NEWSAPI_KEY` をそれぞれ設定してください。
 

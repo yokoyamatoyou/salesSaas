@@ -93,10 +93,19 @@ pytest-mock>=3.14
 ```
 APP_ENV=local
 OPENAI_API_KEY=sk-xxxx
+OPENAI_MODEL=gpt-4o-mini
 DATA_DIR=./data
+STORAGE_PROVIDER=local  # local|gcs|firestore
+GCS_BUCKET_NAME=          # required when STORAGE_PROVIDER=gcs
+GCS_PREFIX=sessions       # optional prefix path
+GCS_TENANT_ID=tenant-123   # required when STORAGE_PROVIDER=gcs
+FIRESTORE_TENANT_ID=tenant-123   # required when STORAGE_PROVIDER=firestore
+GOOGLE_APPLICATION_CREDENTIALS=./gcp-credentials.json  # required when STORAGE_PROVIDER=firestore
 SEARCH_PROVIDER=none   # none|cse|newsapi 等
 CSE_API_KEY=
 CSE_CX=
+NEWSAPI_KEY=
+CRM_API_KEY=
 ```
 
 6. **Dockerfile（Python 3.11）**

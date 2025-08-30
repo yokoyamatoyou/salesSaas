@@ -162,6 +162,7 @@ GCSにセッションを保存するため、以下の環境変数を設定し�
 - `STORAGE_PROVIDER=gcs`
 - `GCS_BUCKET_NAME`（必須）
 - `GCS_PREFIX`（任意、デフォルトは `sessions`）
+- `GCS_TENANT_ID`（必須）
 
 ```bash
 # 環境変数としてシークレットを追加
@@ -172,6 +173,7 @@ gcloud run services update sales-saas \
   --set-env-vars="STORAGE_PROVIDER=gcs" \
   --set-env-vars="GCS_BUCKET_NAME=your-bucket-name" \
   --set-env-vars="GCS_PREFIX=sessions" \
+  --set-env-vars="GCS_TENANT_ID=tenant-123" \
   --set-env-vars="DATA_DIR=/tmp"
 ```
 
