@@ -310,3 +310,16 @@
 - `pytest -q`
 - Environment: Python 3.12.10, streamlit==1.49.0, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1, google-cloud-secret-manager==2.24.0, google-cloud-firestore==2.21.0
 
+## 2025-09-13
+### Task
+- Cloud Run 用ディレクトリを追加し、Dockerfile と cloudrun.yaml を配置
+- Cloud Run へのデプロイ手順を README に追記し、Makefile に deploy-cloudrun ターゲットを追加
+### Reviews
+1. **Python上級エンジニア視点**: Cloud Run 用設定がリポジトリに整理され、再利用が容易。
+2. **UI/UX専門家視点**: README に手順が追記され、クラウドデプロイの導線が明確に。
+3. **クラウドエンジニア視点**: cloudrun.yaml に環境変数とポートが定義され、GCP でのデプロイがスムーズ。
+4. **ユーザー視点**: make コマンドでデプロイでき、利用開始までの手順がシンプルに。
+### Testing
+- `pytest -q`
+- `make docker-build` (Docker がインストールされておらず失敗)
+- Environment: Python 3.12.10, streamlit==1.49.1, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1, google-cloud-secret-manager==2.24.0

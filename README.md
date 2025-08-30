@@ -78,6 +78,24 @@ CSE_CX=
 
 `OPENAI_API_KEY` は環境変数から取得され、未設定の場合のみ実行時にプロンプトが表示されます。
 
+## Cloud Run デプロイ
+
+`cloudrun/` ディレクトリに Cloud Run 用の `Dockerfile` と `cloudrun.yaml` を配置しています。
+
+1. イメージをビルドし Artifact Registry へプッシュ:
+
+```bash
+gcloud builds submit --tag asia-northeast1-docker.pkg.dev/$PROJECT_ID/sales-saas-repo/sales-saas
+```
+
+2. Cloud Run サービスを更新:
+
+```bash
+make deploy-cloudrun
+```
+
+`cloudrun/cloudrun.yaml` にはポート `8080` と GCP 用環境変数が定義されています。
+
 ## LLMプロバイダのJSONスキーマ対応
 
 `OpenAIProvider.call_llm` に `json_schema` を渡すと、OpenAI API は
@@ -107,6 +125,7 @@ make run         # ローカル環境で起動
 make docker-run  # Dockerで起動
 make test        # テスト実行
 make lint        # 構文チェック
+make deploy-cloudrun  # Cloud Run にデプロイ
 ```
 
 ## 翻訳キーの命名規則

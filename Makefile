@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-.PHONY: run docker-run test lint clean docker-build help
+.PHONY: run docker-run test lint clean docker-build deploy-cloudrun help
 
 # デフォルトターゲット
 all: run
@@ -35,6 +35,10 @@ clean:
 docker-build:
 	docker build -t sales-saas .
 
+# Cloud Run へデプロイ
+deploy-cloudrun:
+	gcloud run services replace cloudrun/cloudrun.yaml --region=asia-northeast1
+
 # ヘルプ
 help:
 	@echo "利用可能なコマンド:"
@@ -44,4 +48,5 @@ help:
 	@echo "  lint        - 構文チェック"
 	@echo "  clean       - クリーンアップ"
 	@echo "  docker-build- Dockerイメージビルド"
+	@echo "  deploy-cloudrun- Cloud Run にデプロイ"
 	@echo "  help        - このヘルプを表示"
