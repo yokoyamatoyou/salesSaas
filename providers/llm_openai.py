@@ -143,8 +143,19 @@ class OpenAIProvider:
                 }
             
             response = self.client.chat.completions.create(**request_params)
-            
-            content = response.choices[0].message.content
+
+            choice = response.choices[0]
+            finish_reason = getattr(choice, "finish_reason", "stop")
+            refusal = getattr(getattr(choice, "message", None), "refusal", None)
+            if finish_reason != "stop" or refusal:
+                logger.error(
+                    "LLM call not completed: finish_reason=%s refusal=%s",
+                    finish_reason,
+                    refusal,
+                )
+                raise LLMError("モデルがリクエストを完了できませんでした")
+
+            content = choice.message.content
             
             # JSONスキーマが指定されている場合はパース
             if json_schema and content:

@@ -32,7 +32,9 @@ class TestOpenAIProvider:
                 mock_choice = Mock()
                 mock_message = Mock()
                 mock_message.content = "プレーンテキストレスポンス"
+                mock_message.refusal = None
                 mock_choice.message = mock_message
+                mock_choice.finish_reason = "stop"
                 mock_response.choices = [mock_choice]
                 mock_client.chat.completions.create.return_value = mock_response
                 
@@ -61,7 +63,9 @@ class TestOpenAIProvider:
                 mock_choice = Mock()
                 mock_message = Mock()
                 mock_message.content = "プレーンテキストレスポンス"
+                mock_message.refusal = None
                 mock_choice.message = mock_message
+                mock_choice.finish_reason = "stop"
                 mock_response.choices = [mock_choice]
                 mock_client.chat.completions.create.return_value = mock_response
                 
@@ -86,7 +90,9 @@ class TestOpenAIProvider:
                 mock_choice = Mock()
                 mock_message = Mock()
                 mock_message.content = "レスポンス"
+                mock_message.refusal = None
                 mock_choice.message = mock_message
+                mock_choice.finish_reason = "stop"
                 mock_response.choices = [mock_choice]
                 mock_client.chat.completions.create.return_value = mock_response
 
@@ -107,7 +113,9 @@ class TestOpenAIProvider:
                 mock_choice = Mock()
                 mock_message = Mock()
                 mock_message.content = "レスポンス"
+                mock_message.refusal = None
                 mock_choice.message = mock_message
+                mock_choice.finish_reason = "stop"
                 mock_response.choices = [mock_choice]
                 mock_client.chat.completions.create.return_value = mock_response
 
@@ -132,7 +140,9 @@ class TestOpenAIProvider:
                 mock_choice = Mock()
                 mock_message = Mock()
                 mock_message.content = '{"structured": "data"}'
+                mock_message.refusal = None
                 mock_choice.message = mock_message
+                mock_choice.finish_reason = "stop"
                 mock_response.choices = [mock_choice]
                 mock_client.chat.completions.create.return_value = mock_response
                 
@@ -161,7 +171,9 @@ class TestOpenAIProvider:
                 mock_choice = Mock()
                 mock_message = Mock()
                 mock_message.content = "プレーンテキストレスポンス"
+                mock_message.refusal = None
                 mock_choice.message = mock_message
+                mock_choice.finish_reason = "stop"
                 mock_response.choices = [mock_choice]
                 mock_client.chat.completions.create.return_value = mock_response
                 
@@ -184,7 +196,9 @@ class TestOpenAIProvider:
                 mock_choice = Mock()
                 mock_message = Mock()
                 mock_message.content = "無効なJSON"
+                mock_message.refusal = None
                 mock_choice.message = mock_message
+                mock_choice.finish_reason = "stop"
                 mock_response.choices = [mock_choice]
                 mock_client.chat.completions.create.return_value = mock_response
                 
@@ -205,7 +219,9 @@ class TestOpenAIProvider:
                 mock_choice = Mock()
                 mock_message = Mock()
                 mock_message.content = '{"field1": "value1"}'  # requiredフィールドが不足
+                mock_message.refusal = None
                 mock_choice.message = mock_message
+                mock_choice.finish_reason = "stop"
                 mock_response.choices = [mock_choice]
                 mock_client.chat.completions.create.return_value = mock_response
                 
@@ -221,7 +237,47 @@ class TestOpenAIProvider:
                     "json_schema": schema,
                     "strict": True,
                 }
-    
+
+    def test_call_llm_refusal_raises_error(self):
+        with patch.dict('os.environ', {'OPENAI_API_KEY': 'test-key'}):
+            with patch('providers.llm_openai.OpenAI') as mock_openai:
+                mock_client = Mock()
+                mock_openai.return_value = mock_client
+
+                mock_response = Mock()
+                mock_choice = Mock()
+                mock_message = Mock()
+                mock_message.content = "拒否"
+                mock_message.refusal = "refused"
+                mock_choice.message = mock_message
+                mock_choice.finish_reason = "stop"
+                mock_response.choices = [mock_choice]
+                mock_client.chat.completions.create.return_value = mock_response
+
+                provider = OpenAIProvider()
+                with pytest.raises(LLMError, match="モデルがリクエストを完了できませんでした"):
+                    provider.call_llm("プロンプト", "speed")
+
+    def test_call_llm_non_stop_finish_reason(self):
+        with patch.dict('os.environ', {'OPENAI_API_KEY': 'test-key'}):
+            with patch('providers.llm_openai.OpenAI') as mock_openai:
+                mock_client = Mock()
+                mock_openai.return_value = mock_client
+
+                mock_response = Mock()
+                mock_choice = Mock()
+                mock_message = Mock()
+                mock_message.content = "途中"
+                mock_message.refusal = None
+                mock_choice.message = mock_message
+                mock_choice.finish_reason = "length"
+                mock_response.choices = [mock_choice]
+                mock_client.chat.completions.create.return_value = mock_response
+
+                provider = OpenAIProvider()
+                with pytest.raises(LLMError, match="モデルがリクエストを完了できませんでした"):
+                    provider.call_llm("プロンプト", "speed")
+
     def test_validate_schema(self):
         """スキーマ検証のテスト"""
         with patch.dict('os.environ', {'OPENAI_API_KEY': 'test-key'}):
@@ -352,7 +408,9 @@ class TestOpenAIProvider:
                 mock_choice = Mock()
                 mock_message = Mock()
                 mock_message.content = "レスポンス"
+                mock_message.refusal = None
                 mock_choice.message = mock_message
+                mock_choice.finish_reason = "stop"
                 mock_response.choices = [mock_choice]
 
                 mock_client.chat.completions.create.side_effect = [
