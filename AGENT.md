@@ -541,8 +541,8 @@ chmod +x start_docker.sh
 
 ---
 
-- `docs/PROGRESS.md` を用意：日付/担当/フェーズ/完了・未完/次アクション/メモ を1セクション追記。
-- 重要な決定は `docs/DECISIONS.md`（ADR方式）に記録。番号付け。
+- 進捗は `docs/PROGRESS.md` に日付/担当/フェーズ/完了・未完/次アクション/メモで記録。
+- 重要な決定は `docs/DECISIONS.md`（ADR方式：番号/背景/決定/影響）に記録。
 - Issueテンプレ（GitHub）に「再現手順／期待結果／実結果」を必須化。
 
 
