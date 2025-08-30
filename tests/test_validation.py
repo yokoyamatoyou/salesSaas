@@ -169,10 +169,10 @@ class TestFieldValidation:
         """商談ステージの検証テスト"""
         valid_stages = ["初期接触", "ニーズ発掘", "提案", "商談", "クロージング"]
         for stage in valid_stages:
-            assert validate_stage(stage) == True, f"Stage should be valid: {stage}"
-        
-        assert validate_stage("無効なステージ") == False
-        assert validate_stage("") == False
+            assert validate_stage(stage), f"Stage should be valid: {stage}"
+
+        assert not validate_stage("無効なステージ")
+        assert not validate_stage("")
     
     def test_purpose_validation(self):
         """目的の検証テスト"""

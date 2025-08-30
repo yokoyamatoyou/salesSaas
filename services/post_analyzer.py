@@ -6,7 +6,7 @@ import os
 from typing import Dict, Any, Optional
 from core.models import SalesType
 from providers.llm_openai import OpenAIProvider
-from services.error_handler import ServiceError, ConfigurationError
+from services.error_handler import ConfigurationError
 from services.logger import Logger
 
 logger = Logger("PostAnalyzerService")
@@ -136,8 +136,8 @@ class PostAnalyzerService:
             raise ConfigurationError("プロンプトテンプレートが読み込まれていません")
         
         # YAMLからスキーマを抽出（簡略化）
-        schema_text = self.prompt_template.get('output_schema', '{}')
-        
+        self.prompt_template.get('output_schema', '{}')
+
         # 基本的なスキーマ構造を返す
         return {
             "type": "object",

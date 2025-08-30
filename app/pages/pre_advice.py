@@ -493,7 +493,7 @@ def render_icebreaker_section():
 
                 with col1:
                     if st.button(
-                        f"🎯 選択",
+                        "🎯 選択",
                         key=f"select_{idx}",
                         use_container_width=True,
                         type="primary"
@@ -508,7 +508,7 @@ def render_icebreaker_section():
 
                 with col3:
                     if st.button(
-                        f"👁️ 詳細",
+                        "👁️ 詳細",
                         key=f"detail_{idx}",
                         use_container_width=True,
                     ):
@@ -1014,7 +1014,7 @@ def _legacy_show_pre_advice_page():
                 
                 with col1:
                     # 選択ボタン
-                    if st.button(f"🎯 選択", key=f"select_{idx}", use_container_width=True, 
+                    if st.button("🎯 選択", key=f"select_{idx}", use_container_width=True,
                                type="primary" if st.session_state.selected_icebreaker == line else "secondary"):
                         st.session_state.selected_icebreaker = line
                         st.rerun()
@@ -1024,7 +1024,7 @@ def _legacy_show_pre_advice_page():
                 
                 with col3:
                     # 詳細表示ボタン
-                    if st.button(f"👁️ 詳細", key=f"detail_{idx}", use_container_width=True):
+                    if st.button("👁️ 詳細", key=f"detail_{idx}", use_container_width=True):
                         st.info(f"**アイスブレイク詳細：**\n\n{line}")
                 
                 st.markdown("---")
@@ -1057,7 +1057,6 @@ def _legacy_show_pre_advice_page():
 
     # 検索出典の表示（IcebreakerServiceが直近ニュースを保持）
     try:
-        from services.icebreaker import IcebreakerService as _IS
         # 既存のサービスインスタンスは保持していないため、軽く再取得
         # 表示用のみに利用（実際の生成は上で実行済み）
         if 'last_news_displayed' not in st.session_state:
@@ -1129,9 +1128,12 @@ def _legacy_show_pre_advice_page():
                     score = item.get('score')
                     reasons = ", ".join(item.get('reasons', [])) if isinstance(item.get('reasons'), list) else None
                     meta = []
-                    if src: meta.append(src)
-                    if score is not None: meta.append(f"score: {score}")
-                    if reasons: meta.append(reasons)
+                    if src:
+                        meta.append(src)
+                    if score is not None:
+                        meta.append(f"score: {score}")
+                    if reasons:
+                        meta.append(reasons)
                     meta_str = f"（{' / '.join(meta)}）" if meta else ""
                     if url:
                         st.markdown(f"- [{title}]({url}) {meta_str}")

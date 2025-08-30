@@ -88,15 +88,20 @@ def show_history_page() -> None:
             )
         with s2:
             default_size = st.session_state.get("history_page_size", 10)
-            page_size = st.selectbox("表示件数", options=[5, 10, 20, 50], index=[5, 10, 20, 50].index(default_size), key="history_page_size")
+            st.selectbox(
+                "表示件数",
+                options=[5, 10, 20, 50],
+                index=[5, 10, 20, 50].index(default_size),
+                key="history_page_size",
+            )
         with s3:
             # 既存タグ/ドメインを収集してサジェスト
             all_tags: set[str] = set()
             all_domains: set[str] = set()
             for s in all_sessions:
-                for t in (s.get("tags", []) or []):
-                    if isinstance(t, str) and t.strip():
-                        all_tags.add(t.strip())
+                for tag in (s.get("tags", []) or []):
+                    if isinstance(tag, str) and tag.strip():
+                        all_tags.add(tag.strip())
                 data_blob = s.get("data", {}) or {}
                 if data_blob.get("type") == "pre_advice":
                     ev = ((data_blob.get("output", {}) or {}).get("advice", {}) or {}).get("evidence_urls", [])
@@ -109,13 +114,13 @@ def show_history_page() -> None:
                             all_domains.add(host)
                     except Exception:
                         pass
-            tag_filter_multi = st.multiselect(
+            st.multiselect(
                 "タグで絞り込み",
                 options=sorted(all_tags),
                 default=[],
                 key="history_tag_filter_multi",
             )
-            domain_filter_multi = st.multiselect(
+            st.multiselect(
                 "出典ドメインで絞り込み",
                 options=sorted(all_domains),
                 default=[],

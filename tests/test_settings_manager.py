@@ -1,8 +1,6 @@
-import pytest
 import json
 import tempfile
 from pathlib import Path
-from unittest.mock import patch, mock_open
 from services.settings_manager import SettingsManager
 from core.models import AppSettings, LLMMode, SearchProvider
 

@@ -1,4 +1,3 @@
-import pytest
 from unittest.mock import Mock, patch
 from core.models import SalesType
 from services.icebreaker import IcebreakerService
