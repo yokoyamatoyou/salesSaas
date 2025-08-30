@@ -70,7 +70,11 @@ def main():
         # ハンバーガーメニューでサイドバーをトグル表示
         cols = st.columns([1, 9])
         with cols[0]:
-            if st.button("☰", help=t("sidebar_toggle_help"), key="menu_toggle"):
+            if st.button(
+                t("sidebar_toggle_label"),
+                help=t("sidebar_toggle_help"),
+                key="menu_toggle",
+            ):
                 st.session_state.show_sidebar = not st.session_state.show_sidebar
             # aria-label: toggle navigation menu
 
