@@ -20,6 +20,8 @@ def get_storage_provider():
     provider_name = os.getenv("STORAGE_PROVIDER")
     if provider_name:
         provider = provider_name
+    elif app_env == "gcp":
+        provider = "firestore"
     elif app_env != "local":
         provider = "gcs"
     else:

@@ -47,3 +47,37 @@ def test_firestore_requires_tenant(monkeypatch, tmp_path):
     with pytest.raises(RuntimeError) as exc:
         storage_service.get_storage_provider()
     assert "FIRESTORE_TENANT_ID" in str(exc.value)
+
+
+def test_firestore_save_and_load(monkeypatch, tmp_path):
+    class DummyFSProvider:
+        def __init__(self, *args, **kwargs):
+            self.sessions = {}
+
+        def save_session(self, data, session_id=None, user_id=None, team_id=None, success=None):
+            sid = session_id or "sid"
+            self.sessions[sid] = {"session_id": sid, "data": data}
+            return sid
+
+        def load_session(self, session_id):
+            return self.sessions[session_id]
+
+    dummy_instance = DummyFSProvider()
+
+    def provider_factory(*args, **kwargs):
+        return dummy_instance
+
+    credentials = tmp_path / "cred.json"
+    credentials.write_text("{}")
+    monkeypatch.delenv("STORAGE_PROVIDER", raising=False)
+    monkeypatch.setenv("APP_ENV", "gcp")
+    monkeypatch.setenv("GOOGLE_APPLICATION_CREDENTIALS", str(credentials))
+    monkeypatch.setenv("FIRESTORE_TENANT_ID", "tenant")
+    monkeypatch.setattr(storage_service, "FirestoreStorageProvider", provider_factory)
+
+    payload = {"foo": "bar"}
+    session_id = storage_service.save_session(payload)
+
+    provider = storage_service.get_storage_provider()
+    loaded = provider.load_session(session_id)
+    assert loaded["data"] == payload

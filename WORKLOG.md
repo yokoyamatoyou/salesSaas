@@ -370,3 +370,24 @@
 ### Testing
 - `pytest -q tests/test_storage_service.py`
 - Environment: Python 3.12.10, streamlit==1.49.1, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1
+
+## 2025-09-17
+### Task
+- `APP_ENV=gcp` で Firestore を選択する分岐を追加
+  - refs: [services/storage_service.py]
+- `env.example` に Firestore 用のサンプル値を追記
+  - refs: [env.example]
+- Firestore 使用時の保存・取得テストを追加
+  - refs: [tests/test_storage_service.py]
+- 進捗ログを更新
+  - refs: [docs/PROGRESS.md]
+
+### Reviews
+1. **Python上級エンジニア視点**: 環境分岐が明確化され、テストで動作確認できるため拡張性が高い。
+2. **UI/UX専門家視点**: クラウド環境でのデータ保存が自動切替され、利用者が設定を意識せずに済む。
+3. **クラウドエンジニア視点**: Firestore への移行準備が整い、認証情報とテナント分離が標準化された。
+4. **ユーザー視点**: セッションがクラウドに保存され、複数端末からのアクセス性が向上した。
+
+### Testing
+- `pytest -q`
+- Environment: Python 3.12.10, streamlit==1.49.1, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1
