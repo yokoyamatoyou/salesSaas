@@ -7,6 +7,11 @@ try:
 except Exception:  # pragma: no cover
     GCSStorageProvider = None
 
+try:
+    from providers.storage_firestore import FirestoreStorageProvider  # type: ignore
+except Exception:  # pragma: no cover
+    FirestoreStorageProvider = None
+
 
 def get_storage_provider():
     """Return storage provider based on environment"""
@@ -29,6 +34,21 @@ def get_storage_provider():
         if not prefix:
             raise RuntimeError("GCS_PREFIX environment variable is required for GCS storage")
         return GCSStorageProvider(bucket_name=bucket, prefix=prefix)
+
+    if provider == "firestore":
+        if FirestoreStorageProvider is None:
+            raise RuntimeError("FirestoreStorageProvider not available")
+        credentials = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+        if not credentials:
+            raise RuntimeError(
+                "GOOGLE_APPLICATION_CREDENTIALS environment variable is required for Firestore storage"
+            )
+        tenant_id = os.getenv("FIRESTORE_TENANT_ID")
+        if not tenant_id:
+            raise RuntimeError(
+                "FIRESTORE_TENANT_ID environment variable is required for Firestore storage"
+            )
+        return FirestoreStorageProvider(tenant_id=tenant_id, credentials_path=credentials)
 
     data_dir = os.getenv("DATA_DIR", "./data")
     return LocalStorageProvider(data_dir=data_dir)

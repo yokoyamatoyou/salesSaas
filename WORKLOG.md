@@ -294,3 +294,19 @@
 - `pytest -q` で 101 件のテストが成功
 - Environment: Python 3.12.10, streamlit==1.49.0, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1, google-cloud-secret-manager==2.24.0
 
+
+## 2025-09-12
+### Task
+- Firestore 向けストレージプロバイダを追加し、`tenants/{tenant_id}/sessions/{session_id}` パスでデータを保存・取得できるよう実装
+  - refs: [providers/storage_firestore.py, services/storage_service.py, tests/test_storage_service.py, requirements.txt, env.example]
+
+### Reviews
+1. **Python上級エンジニア視点**: Firestore クライアントの接続とテナント別コレクション構造が明確で、マルチテナント拡張が容易。
+2. **UI/UX専門家視点**: ストレージ層のDIが拡張され、環境に応じた保存先の切替がシンプルになり利用者への提供が柔軟に。
+3. **クラウドエンジニア視点**: `GOOGLE_APPLICATION_CREDENTIALS` と `FIRESTORE_TENANT_ID` を必須化することで、認証とデータ分離が堅牢に。
+4. **ユーザー視点**: セッション履歴がクラウドに安全に保存され、異なる端末からもアクセスしやすくなる。
+
+### Testing
+- `pytest -q`
+- Environment: Python 3.12.10, streamlit==1.49.0, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1, google-cloud-secret-manager==2.24.0, google-cloud-firestore==2.21.0
+
