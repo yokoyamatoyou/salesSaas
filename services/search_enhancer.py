@@ -9,11 +9,13 @@ import re
 from typing import List, Dict, Any, Optional, Tuple
 from datetime import datetime, timezone
 from urllib.parse import urlparse
+from string import Template
 from core.models import AppSettings
 from providers.llm_openai import OpenAIProvider
 from providers.search_provider import WebSearchProvider
 from services.error_handler import ErrorHandler
 from services.logger import Logger
+from services.utils import escape_braces, sanitize_for_prompt
 
 class SearchEnhancerService:
     """検索機能の高度化サービス"""
@@ -51,11 +53,18 @@ class SearchEnhancerService:
                 return {"error": "プロンプトテンプレートが見つかりません"}
 
             prompt = self.prompts["query_optimization"]
-            user_prompt = prompt["user"].format(
-                original_query=original_query,
-                industry=industry or "未指定",
-                purpose=purpose or "一般的な調査",
-            )
+            try:
+                user_prompt = Template(prompt["user"]).safe_substitute(
+                    original_query=escape_braces(sanitize_for_prompt(original_query)),
+                    industry=escape_braces(sanitize_for_prompt(industry or "未指定")),
+                    purpose=escape_braces(sanitize_for_prompt(purpose or "一般的な調査")),
+                )
+            except Exception as e:
+                self.error_handler.handle_error(
+                    e,
+                    context="SearchEnhancerService.enhance_search_query.template",
+                )
+                return {"error": f"テンプレート処理に失敗: {e}"}
             full_prompt = f"{prompt['system']}\n{user_prompt}"
 
             if not self.llm_provider:
@@ -120,10 +129,28 @@ class SearchEnhancerService:
                 return {"error": "プロンプトテンプレートが見つかりません"}
 
             prompt = self.prompts["quality_assessment"]
-            user_prompt = prompt["user"].format(
-                query=query,
-                search_results=json.dumps(search_results, ensure_ascii=False, indent=2)
-            )
+
+            sanitized_query = escape_braces(sanitize_for_prompt(query))
+            sanitized_results: List[Dict[str, Any]] = []
+            for r in search_results:
+                sanitized_r = {
+                    k: escape_braces(sanitize_for_prompt(v)) if isinstance(v, str) else v
+                    for k, v in r.items()
+                }
+                sanitized_results.append(sanitized_r)
+
+            try:
+                user_prompt = Template(prompt["user"]).safe_substitute(
+                    query=sanitized_query,
+                    search_results=json.dumps(sanitized_results, ensure_ascii=False, indent=2),
+                )
+            except Exception as e:
+                self.error_handler.handle_error(
+                    e,
+                    context="SearchEnhancerService.assess_search_quality.template",
+                )
+                return {"error": f"テンプレート処理に失敗: {e}"}
+
             full_prompt = f"{prompt['system']}\n{user_prompt}"
 
             if not self.llm_provider:
@@ -231,11 +258,18 @@ class SearchEnhancerService:
                 return {"error": "プロンプトテンプレートが見つかりません"}
 
             prompt = self.prompts["industry_search_strategy"]
-            user_prompt = prompt["user"].format(
-                industry=industry,
-                purpose=purpose,
-                time_period=time_period
-            )
+            try:
+                user_prompt = Template(prompt["user"]).safe_substitute(
+                    industry=escape_braces(sanitize_for_prompt(industry)),
+                    purpose=escape_braces(sanitize_for_prompt(purpose)),
+                    time_period=escape_braces(sanitize_for_prompt(time_period)),
+                )
+            except Exception as e:
+                self.error_handler.handle_error(
+                    e,
+                    context="SearchEnhancerService.get_industry_search_strategy.template",
+                )
+                return {"error": f"テンプレート処理に失敗: {e}"}
             full_prompt = f"{prompt['system']}\n{user_prompt}"
 
             if not self.llm_provider:
@@ -303,10 +337,28 @@ class SearchEnhancerService:
                 return {"error": "プロンプトテンプレートが見つかりません"}
 
             prompt = self.prompts["result_integration"]
-            user_prompt = prompt["user"].format(
-                query=query,
-                search_results=json.dumps(search_results, ensure_ascii=False, indent=2)
-            )
+
+            sanitized_query = escape_braces(sanitize_for_prompt(query))
+            sanitized_results: List[Dict[str, Any]] = []
+            for r in search_results:
+                sanitized_r = {
+                    k: escape_braces(sanitize_for_prompt(v)) if isinstance(v, str) else v
+                    for k, v in r.items()
+                }
+                sanitized_results.append(sanitized_r)
+
+            try:
+                user_prompt = Template(prompt["user"]).safe_substitute(
+                    query=sanitized_query,
+                    search_results=json.dumps(sanitized_results, ensure_ascii=False, indent=2),
+                )
+            except Exception as e:
+                self.error_handler.handle_error(
+                    e,
+                    context="SearchEnhancerService.integrate_search_results.template",
+                )
+                return {"error": f"テンプレート処理に失敗: {e}"}
+
             full_prompt = f"{prompt['system']}\n{user_prompt}"
 
             if not self.llm_provider:
@@ -434,11 +486,18 @@ class SearchEnhancerService:
                 return {"error": "プロンプトテンプレートが見つかりません"}
 
             prompt = self.prompts["continuous_improvement"]
-            user_prompt = prompt["user"].format(
-                current_challenges=current_challenges,
-                improvement_goals=improvement_goals,
-                available_resources=available_resources
-            )
+            try:
+                user_prompt = Template(prompt["user"]).safe_substitute(
+                    current_challenges=escape_braces(sanitize_for_prompt(current_challenges)),
+                    improvement_goals=escape_braces(sanitize_for_prompt(improvement_goals)),
+                    available_resources=escape_braces(sanitize_for_prompt(available_resources)),
+                )
+            except Exception as e:
+                self.error_handler.handle_error(
+                    e,
+                    context="SearchEnhancerService.get_continuous_improvement_plan.template",
+                )
+                return {"error": f"テンプレート処理に失敗: {e}"}
             full_prompt = f"{prompt['system']}\n{user_prompt}"
 
             if not self.llm_provider:
