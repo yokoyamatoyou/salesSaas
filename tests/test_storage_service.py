@@ -1,3 +1,8 @@
+import csv
+import importlib
+import sys
+import types
+
 import pytest
 from services import storage_service
 
@@ -132,3 +137,44 @@ def test_firestore_save_and_load(monkeypatch, tmp_path):
     provider = storage_service.get_storage_provider()
     loaded = provider.load_session(session_id)
     assert loaded["data"] == payload
+
+
+def test_firestore_export_sessions_csv(monkeypatch):
+    dummy_firestore = types.SimpleNamespace()
+    dummy_cloud = types.SimpleNamespace(firestore=dummy_firestore)
+    monkeypatch.setitem(sys.modules, "google", types.SimpleNamespace(cloud=dummy_cloud))
+    monkeypatch.setitem(sys.modules, "google.cloud", dummy_cloud)
+    monkeypatch.setitem(sys.modules, "google.cloud.firestore", dummy_firestore)
+
+    firestore_module = importlib.import_module("providers.storage_firestore")
+    FirestoreStorageProvider = firestore_module.FirestoreStorageProvider
+
+    provider = FirestoreStorageProvider.__new__(FirestoreStorageProvider)
+    sessions = [
+        {
+            "session_id": "s1",
+            "user_id": "u1",
+            "team_id": "t1",
+            "created_at": "2024-01-01T00:00:00",
+            "success": True,
+            "pinned": False,
+            "tags": ["a", "b"],
+            "data": {"type": "pre_advice"},
+        },
+        {
+            "session_id": "s2",
+            "user_id": "u2",
+            "team_id": "t2",
+            "created_at": "2024-01-02T00:00:00",
+            "success": False,
+            "pinned": True,
+            "tags": ["x"],
+            "data": {"type": "post_review"},
+        },
+    ]
+    csv_output = provider.export_sessions("csv", sessions=sessions)
+    reader = csv.DictReader(csv_output.splitlines())
+    rows = list(reader)
+    assert rows[0]["session_id"] == "s1"
+    assert rows[0]["tags"] == "a,b"
+    assert rows[1]["type"] == "post_review"
