@@ -46,18 +46,13 @@ def get_storage_provider():
     if provider == "firestore":
         if FirestoreStorageProvider is None:
             raise RuntimeError("FirestoreStorageProvider not available")
-        credentials = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-        if not credentials:
-            raise RuntimeError(
-                "GOOGLE_APPLICATION_CREDENTIALS environment variable is required for Firestore storage"
-            )
+        credentials = os.getenv("GOOGLE_APPLICATION_CREDENTIALS") or None
         tenant_id = os.getenv("FIRESTORE_TENANT_ID")
         if not tenant_id:
             raise RuntimeError(
-                "FIRESTORE_TENANT_ID environment variable is required for Firestore storage"
+                "FIRESTORE_TENANT_ID environment variable is required for Firestore storage",
             )
         return FirestoreStorageProvider(tenant_id=tenant_id, credentials_path=credentials)
-
     data_dir = os.getenv("DATA_DIR", "./data")
     return LocalStorageProvider(data_dir=data_dir)
 

@@ -175,7 +175,7 @@ gcloud run services update sales-saas \
   --set-env-vars="DATA_DIR=/tmp"
 ```
 
-ローカル環境からGCSへアクセスする場合は `GOOGLE_APPLICATION_CREDENTIALS` にサービスアカウントJSONのパスを設定してください。
+ローカル環境から GCS や Firestore へアクセスする場合は `GOOGLE_APPLICATION_CREDENTIALS` にサービスアカウント JSON のパスを設定してください。Cloud Run 上ではデフォルトのサービスアカウントが利用されるため、この変数を設定する必要はありません。
 
 ---
 
