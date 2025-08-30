@@ -3,6 +3,7 @@
 LLMの知識を活用した検索結果の品質向上とスコアリングアルゴリズムの改善
 """
 
+import os
 import streamlit as st
 import json
 from datetime import datetime
@@ -20,6 +21,10 @@ def main():
 
     st.title(t("search_enhancement_title"))
     st.markdown(t("search_enhancement_desc"))
+
+    missing_keys = [k for k in ("CSE_API_KEY", "NEWSAPI_KEY") if not os.getenv(k)]
+    if missing_keys:
+        st.warning(f"未設定のAPIキー: {', '.join(missing_keys)}")
     
     # サービスの初期化
     try:
@@ -474,117 +479,99 @@ def show_enhanced_search(search_enhancer, industry, purpose, num_results):
     """高度化検索の表示"""
     st.header("🚀 高度化された検索")
     st.markdown("LLMの知識を活用した包括的な検索機能を実行します")
-    
-    # 検索クエリ入力
+
     query = st.text_input(
         "検索クエリ",
         placeholder="例: AI技術 製造業 最新動向",
-        help="検索したいキーワードやトピックを入力してください"
+        help="検索したいキーワードやトピックを入力してください",
     )
-    
+
     if st.button("高度化検索を実行", type="primary"):
         if not query:
             st.warning("検索クエリを入力してください")
             return
-        
+
         with st.spinner("高度化検索を実行中..."):
             try:
-                result = search_enhancer.enhanced_search(query, industry, purpose, num_results)
-                
-                if "error" in result:
-                    st.error(f"高度化検索に失敗しました: {result['error']}")
+                opt_result = search_enhancer.enhance_search_query(query, industry, purpose)
+                if "error" in opt_result:
+                    st.error(f"クエリ最適化に失敗しました: {opt_result['error']}")
                     return
-                
+
+                optimized_query = query
+                if opt_result.get("optimized_queries"):
+                    optimized_query = opt_result["optimized_queries"][0]["query"]
+
+                search_results = search_enhancer.search_provider.search(optimized_query, num_results)
+                quality = search_enhancer.assess_search_quality(query, search_results)
+
                 st.success("高度化検索が完了しました！")
-                
-                # クエリ最適化の結果
-                if result.get("query_optimization"):
-                    st.subheader("🔧 クエリ最適化")
-                    opt_result = result["query_optimization"]
-                    
-                    if opt_result.get("optimized_queries"):
-                        for i, opt_query in enumerate(opt_result["optimized_queries"][:3]):
-                            with st.expander(f"最適化案 {i+1}: {opt_query['query']}"):
-                                st.write(f"**理由:** {opt_query['reason']}")
-                                st.write(f"**期待される改善:** {opt_query['expected_improvement']}")
-                    
-                    if opt_result.get("search_strategy"):
-                        st.write(f"**検索戦略:** {opt_result['search_strategy']}")
-                
-                # 検索結果
-                if result.get("search_results"):
-                    st.subheader("📋 検索結果")
-                    
-                    for i, item in enumerate(result["search_results"]):
-                        with st.expander(f"{i+1}. {item.get('title', 'タイトルなし')}"):
-                            col1, col2 = st.columns([3, 1])
-                            
-                            with col1:
-                                st.write(f"**URL:** {item.get('url', 'N/A')}")
-                                st.write(f"**スニペット:** {item.get('snippet', 'N/A')}")
-                                st.write(f"**ソース:** {item.get('source', 'N/A')}")
-                                if item.get("published_at"):
-                                    st.write(f"**公開日:** {item['published_at']}")
-                            
-                            with col2:
-                                if item.get("score"):
-                                    st.metric("スコア", f"{item['score']:.3f}")
-                                if item.get("reasons"):
-                                    st.write("**理由:**")
-                                    for reason in item["reasons"]:
-                                        st.write(f"• {reason}")
-                
-                # 品質評価
-                if result.get("quality_assessment"):
+
+                st.subheader("🔧 クエリ最適化")
+                if opt_result.get("optimized_queries"):
+                    for i, opt_query in enumerate(opt_result["optimized_queries"][:3]):
+                        with st.expander(f"最適化案 {i+1}: {opt_query['query']}"):
+                            st.write(f"**理由:** {opt_query['reason']}")
+                            st.write(f"**期待される改善:** {opt_query['expected_improvement']}")
+                if opt_result.get("search_strategy"):
+                    st.write(f"**検索戦略:** {opt_result['search_strategy']}")
+
+                st.subheader("📋 検索結果")
+                if search_results:
+                    for item in search_results:
+                        with st.container(border=True):
+                            st.markdown(f"**[{item.get('title', 'タイトルなし')}]({item.get('url', '#')})**")
+                            st.write(item.get('snippet', 'N/A'))
+                            meta = []
+                            if item.get('source'):
+                                meta.append(item['source'])
+                            if item.get('published_at'):
+                                meta.append(item['published_at'])
+                            if meta:
+                                st.caption(' | '.join(meta))
+                            if item.get('score'):
+                                st.metric('スコア', f"{item['score']:.3f}")
+                            if item.get('reasons'):
+                                st.write('**理由:**')
+                                for reason in item['reasons']:
+                                    st.write(f"• {reason}")
+                else:
+                    st.info("検索結果がありません")
+
+                if quality and quality.get('quality_scores'):
                     st.subheader("📊 品質評価")
-                    quality = result["quality_assessment"]
-                    
-                    if quality.get("quality_scores"):
-                        for score_data in quality["quality_scores"]:
-                            with st.expander(f"品質スコア: {score_data['url'][:50]}..."):
-                                col1, col2, col3, col4 = st.columns(4)
-                                
-                                with col1:
-                                    st.metric("信頼性", f"{score_data.get('reliability_score', 0):.3f}")
-                                with col2:
-                                    st.metric("関連性", f"{score_data.get('relevance_score', 0):.3f}")
-                                with col3:
-                                    st.metric("新鮮度", f"{score_data.get('freshness_score', 0):.3f}")
-                                with col4:
-                                    st.metric("総合スコア", f"{score_data.get('overall_score', 0):.3f}")
-                
-                # 結果統合
-                if result.get("result_integration"):
-                    st.subheader("🔗 結果統合")
-                    integration = result["result_integration"]
-                    
-                    if integration.get("key_insights"):
-                        st.write("**主要洞察:**")
-                        for insight in integration["key_insights"]:
-                            st.write(f"• {insight}")
-                    
-                    if integration.get("recommendations"):
-                        st.write("**推奨事項:**")
-                        for rec in integration["recommendations"]:
-                            st.write(f"• {rec['action']} (優先度: {rec['priority']})")
-                
-                # 業界戦略
-                if result.get("industry_strategy"):
-                    st.subheader("🏭 業界戦略")
-                    strategy = result["industry_strategy"]
-                    
-                    if strategy.get("trusted_sources"):
-                        st.write("**信頼できる情報源:**")
-                        for source in strategy["trusted_sources"]:
-                            st.write(f"• {source}")
-                
-                # 結果の保存
+                    for score_data in quality['quality_scores']:
+                        with st.container(border=True):
+                            st.markdown(f"**{score_data['url']}**")
+                            col1, col2, col3, col4 = st.columns(4)
+                            with col1:
+                                st.metric("信頼性", f"{score_data.get('reliability_score',0):.3f}")
+                            with col2:
+                                st.metric("関連性", f"{score_data.get('relevance_score',0):.3f}")
+                            with col3:
+                                st.metric("新鮮度", f"{score_data.get('freshness_score',0):.3f}")
+                            with col4:
+                                st.metric("総合スコア", f"{score_data.get('overall_score',0):.3f}")
+                            st.write(f"**評価根拠:** {score_data.get('reasoning','')}")
+                            if score_data.get('improvement_suggestions'):
+                                for suggestion in score_data['improvement_suggestions']:
+                                    st.write(f"• {suggestion}")
+
                 if st.button("高度化検索結果を保存"):
-                    save_enhanced_search_result(result, industry, purpose)
-                
+                    save_enhanced_search_result(
+                        {
+                            "original_query": query,
+                            "optimized_query": optimized_query,
+                            "query_optimization": opt_result,
+                            "search_results": search_results,
+                            "quality_assessment": quality,
+                        },
+                        industry,
+                        purpose,
+                    )
+
             except Exception as e:
                 st.error(f"高度化検索の実行中にエラーが発生しました: {e}")
-
 def save_optimization_result(original_query, result, industry, purpose):
     """最適化結果の保存"""
     try:
