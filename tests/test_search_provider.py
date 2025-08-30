@@ -68,3 +68,12 @@ def test_scoring_freshness_and_trusted_domain():
     assert fresh["detailed_scoring"]["freshness"] > old["detailed_scoring"]["freshness"]
     assert "high_trusted_domain" in fresh["reasons"]
     assert "trusted_domain" not in old["reasons"]
+
+
+def test_search_none_provider_returns_message():
+    with pytest.MonkeyPatch().context() as mp:
+        mp.setenv("SEARCH_PROVIDER", "none")
+        provider = WebSearchProvider()
+        results = provider.search("unknown", num=3)
+        assert len(results) == 1
+        assert results[0]["snippet"] == "ヒットしませんでした。別のキーワードで再検索してください。"

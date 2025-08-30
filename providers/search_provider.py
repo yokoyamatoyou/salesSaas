@@ -64,34 +64,49 @@ class WebSearchProvider:
         config = self._get_search_config()
         provider = (config.get("provider") or "none").lower()
 
+        results: List[Dict[str, Any]] = []
+
         if provider == "none":
-            return []
-        if provider == "stub":
-            return self._rank_results(self._get_stub_results(query, num), query, num)
-        if provider == "cse":
+            results = []
+        elif provider == "stub":
+            results = self._rank_results(self._get_stub_results(query, num), query, num)
+        elif provider == "cse":
             res = self._rank_results(self._search_cse(query, num), query, num)
             if not res:
                 # Fallback: newsapi -> stub
                 alt = self._rank_results(self._search_newsapi(query, num), query, num)
-                return alt if alt else self._rank_results(self._get_stub_results(query, num), query, num)
-            return res
-        if provider == "newsapi":
+                results = alt if alt else self._rank_results(self._get_stub_results(query, num), query, num)
+            else:
+                results = res
+        elif provider == "newsapi":
             res = self._rank_results(self._search_newsapi(query, num), query, num)
             if not res:
                 # Fallback: cse -> stub
                 alt = self._rank_results(self._search_cse(query, num), query, num)
-                return alt if alt else self._rank_results(self._get_stub_results(query, num), query, num)
-            return res
-        if provider == "hybrid":
+                results = alt if alt else self._rank_results(self._get_stub_results(query, num), query, num)
+            else:
+                results = res
+        elif provider == "hybrid":
             merged = self._merge_dedupe(
                 self._search_cse(query, num),
                 self._search_newsapi(query, num),
                 limit=max(num, config.get("limit", num)),
             )
             res = self._rank_results(merged, query, num)
-            return res if res else self._rank_results(self._get_stub_results(query, num), query, num)
-        # 未知指定は安全にスタブ
-        return self._rank_results(self._get_stub_results(query, num), query, num)
+            results = res if res else self._rank_results(self._get_stub_results(query, num), query, num)
+        else:
+            # 未知指定は安全にスタブ
+            results = self._rank_results(self._get_stub_results(query, num), query, num)
+
+        if not results:
+            return [{
+                "title": "検索結果なし",
+                "snippet": "ヒットしませんでした。別のキーワードで再検索してください。",
+                "url": "",
+                "source": "system",
+            }]
+
+        return results
     
     def _get_stub_results(self, query: str, num: int) -> List[Dict[str, Any]]:
         """スタブ検索結果を返す"""
