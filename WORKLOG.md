@@ -339,3 +339,20 @@
 - `pytest tests/test_pre_advice.py`
 - Environment: Python 3.12.10, streamlit==1.49.1, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1
 
+## 2025-09-15
+### Task
+- モバイル表示のサイドバートグルボタンにテキストラベルを追加し、翻訳キーを整備
+  - refs: [app/ui.py, app/translations.py]
+
+### Reviews
+1. **Python上級エンジニア視点**: 翻訳キーを利用して文字列を一元管理でき、コードの可読性が向上した。
+2. **UI/UX専門家視点**: ハンバーガーメニューにラベルが付き、モバイル利用時の操作が直感的になった。
+3. **クラウドエンジニア視点**: i18n対応が整理され、多言語環境でのデプロイが容易に。
+4. **ユーザー視点**: メニューが明示され、初めてのユーザーでも迷わずナビゲーションできる。
+
+### Testing
+- `make lint`
+- `pytest -q`
+- `streamlit run app/ui.py`
+- Environment: Python 3.12.10, streamlit==1.49.1, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1
+
