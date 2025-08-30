@@ -20,8 +20,8 @@ class SearchEnhancerService:
     
     def __init__(self, settings_manager=None, llm_provider=None):
         self.settings_manager = settings_manager
-        self.error_handler = ErrorHandler()
         self.logger = Logger()
+        self.error_handler = ErrorHandler(self.logger)
         self.prompts = self._load_prompts()
 
         if llm_provider is not None:
@@ -65,7 +65,10 @@ class SearchEnhancerService:
             return self.llm_provider.call_llm(full_prompt, "speed", json_schema=schema)
 
         except Exception as e:
-            self.error_handler.handle_error(f"クエリ最適化に失敗: {e}")
+            self.error_handler.handle_error(
+                e,
+                context="SearchEnhancerService.enhance_search_query",
+            )
             return {"error": f"クエリ最適化に失敗: {e}"}
     def _fallback_query_optimization(self, query: str, industry: str) -> Dict[str, Any]:
         """フォールバック用のクエリ最適化"""
@@ -130,7 +133,10 @@ class SearchEnhancerService:
             return self.llm_provider.call_llm(full_prompt, "deep", json_schema=schema)
 
         except Exception as e:
-            self.error_handler.handle_error(f"品質評価に失敗: {e}")
+            self.error_handler.handle_error(
+                e,
+                context="SearchEnhancerService.assess_search_quality",
+            )
             return {"error": f"品質評価に失敗: {e}"}
     def _fallback_quality_assessment(self, query: str, search_results: List[Dict[str, Any]]) -> Dict[str, Any]:
         """フォールバック用の品質評価"""
@@ -244,7 +250,10 @@ class SearchEnhancerService:
                 return self._fallback_industry_strategy(industry, purpose)
 
         except Exception as e:
-            self.error_handler.handle_error(f"業界戦略の取得に失敗: {e}")
+            self.error_handler.handle_error(
+                e,
+                context="SearchEnhancerService.get_industry_search_strategy",
+            )
             return {"error": f"業界戦略の取得に失敗: {e}"}
     
     def _fallback_industry_strategy(self, industry: str, purpose: str) -> Dict[str, Any]:
@@ -312,7 +321,10 @@ class SearchEnhancerService:
                 return self._fallback_result_integration(query, search_results)
 
         except Exception as e:
-            self.error_handler.handle_error(f"結果統合に失敗: {e}")
+            self.error_handler.handle_error(
+                e,
+                context="SearchEnhancerService.integrate_search_results",
+            )
             return {"error": f"結果統合に失敗: {e}"}
     
     def _fallback_result_integration(self, query: str, search_results: List[Dict[str, Any]]) -> Dict[str, Any]:
@@ -409,7 +421,10 @@ class SearchEnhancerService:
             }
             
         except Exception as e:
-            self.error_handler.handle_error(f"高度化検索に失敗: {e}")
+            self.error_handler.handle_error(
+                e,
+                context="SearchEnhancerService.enhanced_search",
+            )
             return {"error": f"高度化検索に失敗: {e}"}
     
     def get_continuous_improvement_plan(self, current_challenges: str, improvement_goals: str, available_resources: str) -> Dict[str, Any]:
@@ -438,7 +453,10 @@ class SearchEnhancerService:
                 return self._fallback_improvement_plan(current_challenges, improvement_goals)
 
         except Exception as e:
-            self.error_handler.handle_error(f"改善計画の取得に失敗: {e}")
+            self.error_handler.handle_error(
+                e,
+                context="SearchEnhancerService.get_continuous_improvement_plan",
+            )
             return {"error": f"改善計画の取得に失敗: {e}"}
     
     def _fallback_improvement_plan(self, current_challenges: str, improvement_goals: str) -> Dict[str, Any]:
