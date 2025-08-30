@@ -92,12 +92,24 @@ def main():
         # ハンバーガーメニューでサイドバーをトグル表示
         cols = st.columns([1, 9])
         with cols[0]:
-            if st.button(
-                t("sidebar_toggle_label"),
-                help=t("sidebar_toggle_help"),
-                key="menu_toggle",
-            ):
+            st.markdown(
+                f'<button id="menu-toggle" aria-label="メニュー">{t("sidebar_toggle_label")}</button>',
+                unsafe_allow_html=True,
+            )
+            clicked_ts = st_javascript(
+                """
+                const btn = document.getElementById('menu-toggle');
+                if (btn) {
+                    btn.setAttribute('aria-label', 'メニュー');
+                    btn.onclick = () => Streamlit.setComponentValue(Date.now());
+                }
+                """,
+                key="menu_toggle_js",
+            )
+            last_clicked = st.session_state.get("menu_toggle_last")
+            if clicked_ts and clicked_ts != last_clicked:
                 st.session_state.show_sidebar = not st.session_state.show_sidebar
+                st.session_state.menu_toggle_last = clicked_ts
             # aria-label: toggle navigation menu
 
         if st.session_state.show_sidebar:

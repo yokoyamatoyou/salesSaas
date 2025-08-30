@@ -410,3 +410,18 @@
 ### Testing
 - `pytest -q`
 - Environment: Python 3.12.10, streamlit==1.49.1, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1
+
+## 2025-09-22
+### Task
+- モバイルメニューのトグルボタンをカスタムHTMLに置き換え、`aria-label="メニュー"` を付与
+  - refs: [app/ui.py]
+
+### Reviews
+1. **Python上級エンジニア視点**: JSを介したクリックイベント処理とステート管理が明示化され、保守が容易。
+2. **UI/UX専門家視点**: スクリーンリーダーがメニューを正しく読み上げ、アクセシビリティが向上。
+3. **クラウドエンジニア視点**: DOM操作はクライアントサイドのみで完結し、デプロイ構成に影響しない。
+4. **ユーザー視点**: ハンバーガーメニューがより直感的に操作でき、モバイル体験が改善。
+
+### Testing
+- `pytest -q`
+- Environment: Python 3.12.10, streamlit==1.49.1, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1
