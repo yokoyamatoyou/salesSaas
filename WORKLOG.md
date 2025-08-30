@@ -356,3 +356,17 @@
 - `streamlit run app/ui.py`
 - Environment: Python 3.12.10, streamlit==1.49.1, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1
 
+## 2025-09-16
+### Task
+- ストレージサービスで環境変数取得のため `os` を明示的にインポートし、標準ライブラリとローカルモジュールのグルーピングを整理
+  - refs: [services/storage_service.py]
+
+### Reviews
+1. **Python上級エンジニア視点**: インポートがグループ化され、依存関係が明確になった。
+2. **UI/UX専門家視点**: ストレージ設定に関するバグが防止され、ユーザーがエラーに遭遇しにくくなった。
+3. **クラウドエンジニア視点**: 環境変数の参照が明示され、クラウド環境での設定ミスを検知しやすい。
+4. **ユーザー視点**: セッション保存が安定し、データが失われる心配が減った。
+
+### Testing
+- `pytest -q tests/test_storage_service.py`
+- Environment: Python 3.12.10, streamlit==1.49.1, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1
