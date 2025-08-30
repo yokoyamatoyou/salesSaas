@@ -22,8 +22,10 @@ test:
 
 # 構文チェック
 lint:
-	@echo "構文チェック中..."
-	find . -name "*.py" -not -path "./.venv/*" -exec python -m py_compile {} +
+        @echo "ruff 実行中..."
+        ruff check .
+        @echo "bandit 実行中..."
+        bandit -r core providers services tests
 
 # クリーンアップ
 clean:
@@ -45,7 +47,7 @@ help:
 	@echo "  run         - ローカル環境で起動"
 	@echo "  docker-run  - Dockerで起動"
 	@echo "  test        - テスト実行"
-	@echo "  lint        - 構文チェック"
+        @echo "  lint        - ruff と bandit によるコードチェック"
 	@echo "  clean       - クリーンアップ"
 	@echo "  docker-build- Dockerイメージビルド"
 	@echo "  deploy-cloudrun- Cloud Run にデプロイ"
