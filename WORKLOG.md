@@ -323,3 +323,19 @@
 - `pytest -q`
 - `make docker-build` (Docker がインストールされておらず失敗)
 - Environment: Python 3.12.10, streamlit==1.49.1, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1, google-cloud-secret-manager==2.24.0
+
+## 2025-09-14
+### Task
+- Remove legacy pre-advice page function
+  - refs: [app/pages/pre_advice.py] (ef5120a)
+
+### Reviews
+1. **Python上級エンジニア視点**: レガシーコードが整理され、保守性が向上。
+2. **UI/UX専門家視点**: 不要な関数がなくなり、UIの読み込みが明快。
+3. **クラウドエンジニア視点**: コードベースのシンプル化によりデプロイのリスクが低減。
+4. **ユーザー視点**: 旧UIが除去され、最新のページのみが表示される。
+
+### Testing
+- `pytest tests/test_pre_advice.py`
+- Environment: Python 3.12.10, streamlit==1.49.1, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1
+
