@@ -391,3 +391,22 @@
 ### Testing
 - `pytest -q`
 - Environment: Python 3.12.10, streamlit==1.49.1, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1
+
+## 2025-09-20
+### Task
+- Cloud Run 用 YAML に Firestore/Secret Manager の環境変数を追加し、デプロイスクリプトを更新
+  - refs: [cloudrun/cloudrun.yaml, Makefile]
+- Cloud Run セクションにデプロイ手順と権限設定を追記
+  - refs: [README.md]
+- 進捗ログを更新
+  - refs: [docs/PROGRESS.md]
+
+### Reviews
+1. **Python上級エンジニア視点**: デプロイ設定がコード化され、環境変数の追跡が容易に。
+2. **UI/UX専門家視点**: README に手順が明記され、利用者が迷わず Cloud Run を構築できる。
+3. **クラウドエンジニア視点**: Firestore と Secret Manager の権限が明示され、運用ミスを防げる。
+4. **ユーザー視点**: クラウド上でも安全にデータ保存と鍵管理が行われる安心感が得られる。
+
+### Testing
+- `pytest -q`
+- Environment: Python 3.12.10, streamlit==1.49.1, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1
