@@ -6,6 +6,8 @@ from datetime import datetime, timezone
 from urllib.parse import urlparse
 import httpx
 import logging
+import json
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -15,6 +17,7 @@ class WebSearchProvider:
     def __init__(self, settings_manager=None):
         self.settings_manager = settings_manager
         self.search_provider = os.getenv("SEARCH_PROVIDER", "none")
+        self.offline_mode = False
     
     def _get_search_config(self):
         """設定から検索設定を取得"""
@@ -106,6 +109,9 @@ class WebSearchProvider:
                 "source": "system",
             }]
 
+        if self.offline_mode:
+            logger.warning("オフラインモード: Web検索に失敗したためスタブデータを使用します。")
+
         return results
     
     def _get_stub_results(self, query: str, num: int) -> List[Dict[str, Any]]:
@@ -185,8 +191,9 @@ class WebSearchProvider:
                 resp.raise_for_status()
                 data = resp.json()
         except Exception as e:
+            self.offline_mode = True
             logger.warning("CSE search failed: %s", e)
-            return []
+            return self._load_cached_results(query, num)
         items = data.get("items", []) or []
         results: List[Dict[str, Any]] = []
         for it in items[:num]:
@@ -218,8 +225,9 @@ class WebSearchProvider:
                 resp.raise_for_status()
                 data = resp.json()
         except Exception as e:
+            self.offline_mode = True
             logger.warning("NewsAPI search failed: %s", e)
-            return []
+            return self._load_cached_results(query, num)
         arts = data.get("articles", []) or []
         results: List[Dict[str, Any]] = []
         for a in arts[: max(1, num * 2)]:
@@ -231,6 +239,18 @@ class WebSearchProvider:
                 "published_at": a.get("publishedAt"),
             })
         return results[:num]
+
+    def _load_cached_results(self, query: str, num: int) -> List[Dict[str, Any]]:
+        cache_path = Path(__file__).resolve().parent.parent / "data" / "search_cache.json"
+        try:
+            with open(cache_path, "r", encoding="utf-8") as f:
+                cache = json.load(f)
+            for key, items in cache.items():
+                if key.lower() in query.lower():
+                    return items[:num]
+        except Exception:
+            pass
+        return self._get_stub_results(query, num)
 
     # ============ マージ・スコアリング ============
     def _merge_dedupe(self, a: List[Dict[str, Any]], b: List[Dict[str, Any]], limit: int) -> List[Dict[str, Any]]:
