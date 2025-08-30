@@ -54,25 +54,19 @@ class SearchEnhancerService:
             user_prompt = prompt["user"].format(
                 original_query=original_query,
                 industry=industry or "未指定",
-                purpose=purpose or "一般的な調査"
+                purpose=purpose or "一般的な調査",
             )
             full_prompt = f"{prompt['system']}\n{user_prompt}"
 
             if not self.llm_provider:
                 return self._fallback_query_optimization(original_query, industry)
 
-            response = self.llm_provider.call_llm(full_prompt, "speed")
-            content = response.get("content", "")
-
-            try:
-                return json.loads(content)
-            except json.JSONDecodeError:
-                return self._fallback_query_optimization(original_query, industry)
+            schema = prompt.get("schema")
+            return self.llm_provider.call_llm(full_prompt, "speed", json_schema=schema)
 
         except Exception as e:
             self.error_handler.handle_error(f"クエリ最適化に失敗: {e}")
             return {"error": f"クエリ最適化に失敗: {e}"}
-    
     def _fallback_query_optimization(self, query: str, industry: str) -> Dict[str, Any]:
         """フォールバック用のクエリ最適化"""
         # 基本的なクエリ最適化ロジック
@@ -132,18 +126,12 @@ class SearchEnhancerService:
             if not self.llm_provider:
                 return self._fallback_quality_assessment(query, search_results)
 
-            response = self.llm_provider.call_llm(full_prompt, "deep")
-            content = response.get("content", "")
-
-            try:
-                return json.loads(content)
-            except json.JSONDecodeError:
-                return self._fallback_quality_assessment(query, search_results)
+            schema = prompt.get("schema")
+            return self.llm_provider.call_llm(full_prompt, "deep", json_schema=schema)
 
         except Exception as e:
             self.error_handler.handle_error(f"品質評価に失敗: {e}")
             return {"error": f"品質評価に失敗: {e}"}
-    
     def _fallback_quality_assessment(self, query: str, search_results: List[Dict[str, Any]]) -> Dict[str, Any]:
         """フォールバック用の品質評価"""
         quality_scores = []

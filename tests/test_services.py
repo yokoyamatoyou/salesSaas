@@ -84,7 +84,7 @@ def test_search_enhancer_calls_llm():
     """検索高度化サービスがLLMを呼び出すことを確認"""
     with patch('services.search_enhancer.OpenAIProvider') as mock_provider:
         mock_llm = Mock()
-        mock_llm.call_llm.return_value = {"content": json.dumps({"optimized_queries": [], "search_strategy": ""})}
+        mock_llm.call_llm.return_value = {"optimized_queries": [], "search_strategy": ""}
         mock_provider.return_value = mock_llm
 
         service = SearchEnhancerService()
@@ -92,8 +92,9 @@ def test_search_enhancer_calls_llm():
 
         assert "optimized_queries" in result
         mock_llm.call_llm.assert_called_once()
-        args, _ = mock_llm.call_llm.call_args
+        args, kwargs = mock_llm.call_llm.call_args
         assert args[1] == "speed"
+        assert "json_schema" in kwargs
 
 
 def test_search_enhancer_without_api_key():
