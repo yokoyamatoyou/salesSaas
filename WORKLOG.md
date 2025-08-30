@@ -410,3 +410,20 @@
 ### Testing
 - `pytest -q`
 - Environment: Python 3.12.10, streamlit==1.49.1, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1
+
+## 2025-09-22
+### Task
+- Makefile に lint と security ターゲットを追加し、pytest・lint・security を並列実行する CI を構成。README にバッジとコマンドを追記し、進捗ログを更新。
+  - refs: [Makefile, .github/workflows/ci.yml, README.md, docs/PROGRESS.md]
+
+### Reviews
+1. **Python上級エンジニア視点**: ルールが簡潔な Ruff と Bandit/Pip-audit の導入で品質と安全性を自動チェックできるようになった。
+2. **UI/UX専門家視点**: README にバッジとコマンドが掲載され、CI 状態と実行方法が一目で分かる。
+3. **クラウドエンジニア視点**: GitHub Actions でテスト・Lint・セキュリティを分離し並列化したことで、パイプラインの信頼性が向上。
+4. **ユーザー視点**: 開発プロセスが透明化され、安心してプロジェクトの進捗を確認できる。
+
+### Testing
+- `make lint`
+- `make security`
+- `pytest -q`
+- Environment: Python 3.12.10, streamlit==1.49.1, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1, ruff==0.12.7, bandit==1.8.6, pip-audit==2.9.0
