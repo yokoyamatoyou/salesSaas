@@ -83,21 +83,26 @@ def test_gcs_prefix_with_tenant(monkeypatch):
     assert dummy.list_prefix == "tenant1/myprefix/"
 
 
-def test_firestore_requires_credentials(monkeypatch):
+def test_firestore_allows_default_credentials(monkeypatch):
     monkeypatch.setenv("STORAGE_PROVIDER", "firestore")
     monkeypatch.delenv("GOOGLE_APPLICATION_CREDENTIALS", raising=False)
     monkeypatch.setenv("FIRESTORE_TENANT_ID", "tenant")
-    monkeypatch.setattr(storage_service, "FirestoreStorageProvider", DummyProvider)
-    with pytest.raises(RuntimeError) as exc:
-        storage_service.get_storage_provider()
-    assert "GOOGLE_APPLICATION_CREDENTIALS" in str(exc.value)
+
+    captured = {}
+
+    def provider_factory(*args, **kwargs):
+        captured["credentials_path"] = kwargs.get("credentials_path")
+        return DummyProvider()
+
+    monkeypatch.setattr(storage_service, "FirestoreStorageProvider", provider_factory)
+
+    storage_service.get_storage_provider()
+
+    assert captured["credentials_path"] is None
 
 
-def test_firestore_requires_tenant(monkeypatch, tmp_path):
+def test_firestore_requires_tenant(monkeypatch):
     monkeypatch.setenv("STORAGE_PROVIDER", "firestore")
-    credentials = tmp_path / "cred.json"
-    credentials.write_text("{}")
-    monkeypatch.setenv("GOOGLE_APPLICATION_CREDENTIALS", str(credentials))
     monkeypatch.delenv("FIRESTORE_TENANT_ID", raising=False)
     monkeypatch.setattr(storage_service, "FirestoreStorageProvider", DummyProvider)
     with pytest.raises(RuntimeError) as exc:

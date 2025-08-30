@@ -453,3 +453,19 @@
 ### Testing
 - `pytest -q` で 129 件のテストが成功
 - Environment: Python 3.12.10, streamlit==1.49.1, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1, google-cloud-secret-manager==2.24.0
+
+## 2025-09-30
+### Task
+- Cloud Runで`GOOGLE_APPLICATION_CREDENTIALS`が未設定でもFirestoreが動作するよう修正し、テストとドキュメントを追加
+  - refs: [services/storage_service.py, tests/test_storage_service.py, README.md, env.example, GOOGLE_CLOUD_MIGRATION.md]
+
+### Reviews
+1. **Python上級エンジニア視点**: 環境変数未設定時に`None`を渡す実装で例外発生を防ぎつつ明確な依存関係を保てた。
+2. **UI/UX専門家視点**: READMEとサンプル環境変数の注釈更新により、設定手順が分かりやすくなった。
+3. **クラウドエンジニア視点**: Cloud Runのデフォルト認証を利用できるため、デプロイ時のシークレット管理が簡素化された。
+4. **ユーザー視点**: 余計な設定が不要となり、Cloud Run利用時の導入ハードルが下がった。
+
+### Testing
+- `pytest tests/test_storage_service.py -q`
+- `pytest -q`
+- Environment: Python 3.12.10, streamlit==1.49.1, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1, google-cloud-secret-manager==2.24.0
