@@ -11,6 +11,7 @@ def test_gcs_requires_bucket(monkeypatch):
     monkeypatch.setenv("STORAGE_PROVIDER", "gcs")
     monkeypatch.delenv("GCS_BUCKET_NAME", raising=False)
     monkeypatch.delenv("GCS_PREFIX", raising=False)
+    monkeypatch.setenv("GCS_TENANT_ID", "tenant")
     monkeypatch.setattr(storage_service, "GCSStorageProvider", DummyProvider)
     with pytest.raises(RuntimeError) as exc:
         storage_service.get_storage_provider()
@@ -21,10 +22,60 @@ def test_gcs_requires_prefix(monkeypatch):
     monkeypatch.setenv("STORAGE_PROVIDER", "gcs")
     monkeypatch.setenv("GCS_BUCKET_NAME", "bucket")
     monkeypatch.setenv("GCS_PREFIX", "")
+    monkeypatch.setenv("GCS_TENANT_ID", "tenant")
     monkeypatch.setattr(storage_service, "GCSStorageProvider", DummyProvider)
     with pytest.raises(RuntimeError) as exc:
         storage_service.get_storage_provider()
     assert "GCS_PREFIX" in str(exc.value)
+
+
+def test_gcs_requires_tenant(monkeypatch):
+    monkeypatch.setenv("STORAGE_PROVIDER", "gcs")
+    monkeypatch.setenv("GCS_BUCKET_NAME", "bucket")
+    monkeypatch.setenv("GCS_PREFIX", "sessions")
+    monkeypatch.delenv("GCS_TENANT_ID", raising=False)
+    monkeypatch.setattr(storage_service, "GCSStorageProvider", DummyProvider)
+    with pytest.raises(RuntimeError) as exc:
+        storage_service.get_storage_provider()
+    assert "GCS_TENANT_ID" in str(exc.value)
+
+
+def test_gcs_prefix_with_tenant(monkeypatch):
+    monkeypatch.setenv("STORAGE_PROVIDER", "gcs")
+    monkeypatch.setenv("GCS_BUCKET_NAME", "bucket")
+    monkeypatch.setenv("GCS_PREFIX", "myprefix")
+    monkeypatch.setenv("GCS_TENANT_ID", "tenant1")
+
+    class DummyGCSProvider:
+        def __init__(self, bucket_name, tenant_id, prefix):
+            self.prefix = f"{tenant_id}/{prefix.rstrip('/')}/"
+            self.saved = []
+            self.list_prefix = None
+
+        def list_sessions(self):
+            self.list_prefix = self.prefix
+            return []
+
+        def save_data(self, filename, data):
+            self.saved.append(f"{self.prefix}{filename}")
+            return filename
+
+    created = {}
+
+    def provider_factory(bucket_name, tenant_id, prefix):
+        dummy = DummyGCSProvider(bucket_name, tenant_id, prefix)
+        created["instance"] = dummy
+        return dummy
+
+    monkeypatch.setattr(storage_service, "GCSStorageProvider", provider_factory)
+
+    provider = storage_service.get_storage_provider()
+    provider.save_data("foo.json", {"a": 1})
+    provider.list_sessions()
+
+    dummy = created["instance"]
+    assert dummy.saved == ["tenant1/myprefix/foo.json"]
+    assert dummy.list_prefix == "tenant1/myprefix/"
 
 
 def test_firestore_requires_credentials(monkeypatch):

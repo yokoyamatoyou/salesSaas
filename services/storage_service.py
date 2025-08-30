@@ -36,7 +36,12 @@ def get_storage_provider():
         prefix = os.getenv("GCS_PREFIX", "sessions")
         if not prefix:
             raise RuntimeError("GCS_PREFIX environment variable is required for GCS storage")
-        return GCSStorageProvider(bucket_name=bucket, prefix=prefix)
+        tenant_id = os.getenv("GCS_TENANT_ID")
+        if not tenant_id:
+            raise RuntimeError(
+                "GCS_TENANT_ID environment variable is required for GCS storage"
+            )
+        return GCSStorageProvider(bucket_name=bucket, tenant_id=tenant_id, prefix=prefix)
 
     if provider == "firestore":
         if FirestoreStorageProvider is None:
