@@ -2,7 +2,7 @@ import os
 import streamlit as st
 from dotenv import load_dotenv
 from streamlit_javascript import st_javascript
-from translations import t
+from translations import t, get_language
 from services.settings_manager import SettingsManager
 
 # 環境変数を読み込み
@@ -53,7 +53,29 @@ def main():
                 width = 1000
         st.session_state.screen_width = width
 
-    st.title(t("app_title"))
+    current_lang = get_language()
+    lang_options = {
+        "ja": "\U0001F1EF\U0001F1F5 日本語",
+        "en": "\U0001F1FA\U0001F1F8 English",
+        "es": "\U0001F1EA\U0001F1F8 Español",
+    }
+    header_cols = st.columns([8, 2])
+    with header_cols[0]:
+        st.title(t("app_title"))
+    with header_cols[1]:
+        selected_lang = st.selectbox(
+            "language",
+            options=list(lang_options.keys()),
+            index=list(lang_options.keys()).index(current_lang),
+            format_func=lambda x: lang_options[x],
+            key="language_select",
+            label_visibility="collapsed",
+        )
+        if selected_lang != current_lang:
+            st.session_state["language"] = selected_lang
+            settings_manager.update_setting("language", selected_lang)
+            st.rerun()
+
     st.markdown("---")
 
     is_mobile = st.session_state.get("screen_width", 1000) < 700
