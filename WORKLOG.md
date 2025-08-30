@@ -278,3 +278,19 @@
 - `pytest -q` で 101 件のテストが成功
 - Environment: Python 3.12.10, streamlit==1.49.0, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1
 
+## 2025-09-11
+### Task
+- README を起動手順・環境変数・テスト方法で補強し、Makefile に run/test/lint ターゲットを整備してフェーズ7を完了
+  - refs: [README.md, Makefile, AGENT.md]
+
+### Reviews
+1. **Python上級エンジニア視点**: Makefile が簡潔になり、コマンドの意図が明確。
+2. **UI/UX専門家視点**: README に必要な情報がまとまり、初回利用時の迷いが減った。
+3. **クラウドエンジニア視点**: 起動手順と環境変数が明示され、デプロイ時の設定が容易。
+4. **ユーザー視点**: ワンコマンドで起動でき、導入のハードルが下がった。
+
+### Testing
+- `make lint` （構文エラーなし）
+- `pytest -q` で 101 件のテストが成功
+- Environment: Python 3.12.10, streamlit==1.49.0, pydantic==2.11.7, jinja2==3.1.6, httpx==0.28.1, python-dotenv==1.1.1, openai==1.102.0, tenacity==9.1.2, pytest==8.4.1, google-cloud-secret-manager==2.24.0
+

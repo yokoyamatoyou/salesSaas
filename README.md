@@ -98,6 +98,17 @@ pytest tests/test_icebreaker.py -q
 pytest tests/test_storage_local.py -q
 ```
 
+## Makefile コマンド
+
+開発を簡単にするための Makefile ターゲットを用意しています。
+
+```bash
+make run         # ローカル環境で起動
+make docker-run  # Dockerで起動
+make test        # テスト実行
+make lint        # 構文チェック
+```
+
 ## 翻訳キーの命名規則
 
 - 重複を避けるため、翻訳キーは `page_element_name` 形式で命名する
@@ -164,7 +175,7 @@ repo/
 - [x] フェーズ4：事前アドバイス生成（UI + サービス）
 - [x] フェーズ5：商談後ふりかえり解析
 - [x] フェーズ6：ローカル永続化・履歴・テンプレ
-- [ ] フェーズ7：起動・配布（MVP完了チェック）
+- [x] フェーズ7：起動・配布（MVP完了チェック）
 - [ ] フェーズ8：GCP移行（シングルテナント→マルチテナント）
 - [ ] フェーズ9：Webリサーチ実装
 - [ ] フェーズ10：品質・セキュリティ
